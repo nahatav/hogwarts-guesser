@@ -113,19 +113,19 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 setCurrentLevel('world');
                 sound.playWandWhoosh();
               }}
-              className="px-2.5 py-1 rounded bg-[#dfcba8] hover:bg-[#cbb38d] text-[#4a260e] text-xs font-serif font-bold uppercase tracking-wider flex items-center gap-1.5 border border-[#8c6b45]/60 transition active:scale-95"
+              className="px-3 py-1.5 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border border-[#181818] text-xs font-cinzel font-bold uppercase tracking-wider flex items-center gap-1.5 transition active:scale-95 shadow-sm"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#ffd700]" />
               <span>Great Britain Map</span>
             </button>
           ) : (
-            <span className="font-serif font-bold text-xs sm:text-sm tracking-wider uppercase text-[#4a260e] flex items-center gap-1.5">
+            <span className="font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase text-[#181818] flex items-center gap-1.5">
               <span>✦</span> The Wizarding World of Great Britain & Ireland
             </span>
           )}
 
           {currentLevel === 'castle' && (
-            <span className="font-serif font-bold text-xs sm:text-sm tracking-wider uppercase text-[#4a260e] ml-2 hidden sm:inline">
+            <span className="font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase text-[#181818] ml-2 hidden sm:inline">
               • Hogwarts Castle Floorplans
             </span>
           )}
@@ -139,9 +139,9 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 setCurrentLevel('castle');
                 sound.playWandWhoosh();
               }}
-              className="px-2.5 py-1 rounded bg-[#5c3214] hover:bg-[#783e16] text-[#f7f0e3] text-[11px] font-serif font-bold uppercase tracking-wider flex items-center gap-1 shadow-sm transition active:scale-95"
+              className="px-3 py-1.5 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border border-[#181818] text-xs font-cinzel font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition active:scale-95"
             >
-              <ZoomIn className="w-3.5 h-3.5" />
+              <ZoomIn className="w-3.5 h-3.5 text-[#ffd700]" />
               <span>Zoom to Hogwarts Castle</span>
             </button>
           )}
@@ -465,13 +465,13 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!activeGuess || disabled}
-            className={`px-4 py-1.5 rounded-xl font-serif font-bold text-xs tracking-wider uppercase transition shadow-md flex items-center gap-1.5 shrink-0 ${
+            className={`px-5 py-2 rounded-lg font-headline text-lg sm:text-xl tracking-widest uppercase transition-all shadow-md flex items-center gap-2 shrink-0 border-2 ${
               activeGuess && !disabled
-                ? 'bg-gradient-to-r from-[#7a3e14] to-[#4a2208] text-[#fbf5e8] hover:from-[#944c18] hover:to-[#5e2b0b] border border-[#d4af37] shadow-[0_0_12px_rgba(212,175,55,0.35)] active:scale-95'
-                : 'bg-[#d5bf9f] text-[#8c6b45] cursor-not-allowed border border-[#bfa583]'
+                ? 'bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border-[#181818] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] active:scale-95 cursor-pointer'
+                : 'bg-[#d5bf9f] text-[#8c6b45] cursor-not-allowed border-[#bfa583]'
             }`}
           >
-            <Navigation className="w-3.5 h-3.5" />
+            <Navigation className="w-4 h-4 text-[#ffd700]" />
             <span>Cast Guess</span>
           </button>
         )}

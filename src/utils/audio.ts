@@ -3,8 +3,8 @@
 class WizardSoundEngine {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
-  private bgAudio: HTMLAudioElement | null = null;
   private isMusicPlaying: boolean = false;
+  private bgAudio: HTMLAudioElement | null = null;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -104,7 +104,7 @@ class WizardSoundEngine {
 
   public isThemePlaying(): boolean {
     const audio = this.getBgAudio();
-    return !!(audio && !audio.paused && !audio.muted);
+    return !!(audio && !audio.paused && !audio.muted) || this.isMusicPlaying;
   }
 
   public setMuted(muted: boolean) {

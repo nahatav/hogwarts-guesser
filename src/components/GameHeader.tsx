@@ -1,20 +1,13 @@
 import React, { useState } from 'react';
 import type { GameState, HogwartsHouse } from '../types/game';
 import { sound } from '../utils/audio';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Newspaper } from 'lucide-react';
 
 interface GameHeaderProps {
   gameState: GameState;
   onNewGame: () => void;
   onOpenRules: () => void;
 }
-
-const houseGlow: Record<HogwartsHouse, string> = {
-  Gryffindor: '#e11d48',
-  Slytherin:  '#10b981',
-  Ravenclaw:  '#0ea5e9',
-  Hufflepuff: '#f59e0b',
-};
 
 const houseCrest: Record<HogwartsHouse, string> = {
   Gryffindor: '🦁',
@@ -32,54 +25,56 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState, onNewGame, on
     if (!muted) sound.playTick();
   };
 
-  const glow = houseGlow[gameState.house];
   const crest = houseCrest[gameState.house];
   const roundLabel = gameState.mode === 'owl_streak' ? `${gameState.streakCount} 🔥` : `${gameState.currentRound} / ${gameState.totalRounds}`;
 
   return (
     <header className="fixed top-3 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
-      {/* Left: crest + score */}
+      {/* Left: House Crest + Score in Broadsheet Parchment */}
       <div className="flex items-center gap-2 pointer-events-auto">
         <div
-          className="w-9 h-9 rounded-full flex items-center justify-center text-base bg-[#0a100d] border"
-          style={{ borderColor: glow + '80', boxShadow: `0 0 10px ${glow}28` }}
+          className="w-10 h-10 rounded-full flex items-center justify-center text-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)]"
         >
           {crest}
         </div>
         <div
-          className="px-3 py-1.5 rounded-lg bg-[#06090700] border backdrop-blur-md text-center"
-          style={{ borderColor: '#1b2a22', background: 'rgba(6,9,7,0.80)' }}
+          className="px-3.5 py-1.5 rounded-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] text-center relative"
         >
-          <p className="text-[8px] font-cinzel tracking-[0.2em] text-[#5a6d60] uppercase">Score</p>
-          <p className="font-cinzel font-bold text-sm text-[#e8f0eb]">{gameState.totalScore.toLocaleString()}</p>
+          <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#555] uppercase leading-none">Score</p>
+          <p className="font-headline text-lg text-[#121212] tracking-wider leading-none mt-0.5">
+            {gameState.totalScore.toLocaleString()}
+          </p>
         </div>
       </div>
 
-      {/* Center: round */}
+      {/* Center: Round / Streak Indicator in Broadsheet Parchment */}
       <div
-        className="px-3 py-1.5 rounded-lg backdrop-blur-md text-center pointer-events-auto"
-        style={{ background: 'rgba(6,9,7,0.80)', border: '1px solid #1b2a22' }}
+        className="px-4 py-1.5 rounded-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] text-center pointer-events-auto"
       >
-        <p className="text-[8px] font-cinzel tracking-[0.2em] text-[#5a6d60] uppercase">{gameState.mode === 'owl_streak' ? 'Streak' : 'Round'}</p>
-        <p className="font-cinzel font-bold text-sm text-[#e8f0eb]">{roundLabel}</p>
+        <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#555] uppercase leading-none">
+          {gameState.mode === 'owl_streak' ? 'Streak' : 'Round'}
+        </p>
+        <p className="font-headline text-lg text-[#121212] tracking-wider leading-none mt-0.5">
+          {roundLabel}
+        </p>
       </div>
 
-      {/* Right: sound + new game */}
-      <div className="flex items-center gap-1.5 pointer-events-auto">
+      {/* Right: Sound Toggle + Front Page Button matching RETURN TO HOGWARTS */}
+      <div className="flex items-center gap-2 pointer-events-auto">
         <button
           onClick={toggleSound}
-          className="p-2 rounded-lg backdrop-blur-md transition"
-          style={{ background: 'rgba(6,9,7,0.80)', border: '1px solid #1b2a22' }}
+          className="p-2 rounded-lg bg-[#ded6c4] border-2 border-[#181818] text-[#121212] hover:bg-[#181818] hover:text-[#ded6c4] transition shadow-md"
           title={isMuted ? 'Unmute' : 'Mute'}
         >
-          {isMuted ? <VolumeX className="w-3.5 h-3.5 text-[#6b7e70]" /> : <Volume2 className="w-3.5 h-3.5 text-[#34d399]" />}
+          {isMuted ? <VolumeX className="w-4 h-4 text-red-700" /> : <Volume2 className="w-4 h-4 text-emerald-800" />}
         </button>
+
         <button
           onClick={onNewGame}
-          className="px-3 py-1.5 rounded-lg font-cinzel font-bold text-[10px] tracking-wider uppercase transition flex items-center gap-1"
-          style={{ background: 'rgba(6,9,7,0.80)', border: `1px solid ${glow}40`, color: glow }}
+          className="px-4 py-2 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] font-headline text-sm tracking-widest uppercase transition flex items-center gap-1.5 active:scale-95"
           title="Return to The Daily Prophet broadsheet"
         >
+          <Newspaper className="w-3.5 h-3.5 text-[#ffd700]" />
           <span>Front Page</span>
         </button>
       </div>
