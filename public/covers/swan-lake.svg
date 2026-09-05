@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">
+  <rect width="500" height="500" fill="#0f0f14"/>
+  <rect x="25" y="25" width="450" height="450" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+  <rect x="35" y="35" width="430" height="430" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="3 3"/>
+  
+  <!-- Classical Swan Motif -->
+  <path d="M190 280 C210 210, 260 170, 290 190 C310 205, 300 230, 275 240 C250 250, 240 270, 240 290 L340 290 C340 290, 310 320, 250 320 C190 320, 170 300, 190 280 Z" fill="#ffffff" opacity="0.9"/>
+  <circle cx="295" cy="195" r="3" fill="#0f0f14"/>
+  
+  <text x="250" y="90" font-family="'Cinzel', 'Times New Roman', serif" font-size="14" fill="#d4af37" text-anchor="middle" letter-spacing="6">DEUTSCHE BALLETT ARCHIV</text>
+  <text x="250" y="130" font-family="'Cinzel Decorative', 'Georgia', serif" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4">SWAN LAKE</text>
+  <text x="250" y="160" font-family="'Times New Roman', serif" font-size="16" font-style="italic" fill="#cccccc" text-anchor="middle" letter-spacing="2">Op. 20: No. 10 Scène</text>
+  <text x="250" y="420" font-family="'Times New Roman', serif" font-size="18" font-weight="600" fill="#ffffff" text-anchor="middle" letter-spacing="3">PYOTR ILYICH TCHAIKOVSKY</text>
+  <text x="250" y="445" font-family="'Times New Roman', serif" font-size="12" font-style="italic" fill="#888888" text-anchor="middle">London Philharmonic Orchestra</text>
+</svg>

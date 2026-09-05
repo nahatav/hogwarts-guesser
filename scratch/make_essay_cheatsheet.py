@@ -1,0 +1,466 @@
+﻿import os, subprocess, re
+
+# Build clean single-column essay-style bullet points PDF without code or formulas
+html_content = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DSC 80 — 4-Page Review Guide (Lectures 13-16)</title>
+<style>
+  @page {
+    size: letter portrait;
+    margin: 0.45in 0.55in 0.45in 0.55in;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 8.4pt;
+    line-height: 1.34;
+    color: #111;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    width: 100%;
+    height: 10.1in;
+    max-height: 10.1in;
+    overflow: hidden;
+    page-break-after: always;
+    page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 2px;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  
+  .page-header {
+    border-bottom: 2pt solid #000;
+    padding-bottom: 3px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .page-title {
+    font-size: 13pt;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: #000;
+  }
+  .page-subtitle {
+    font-size: 8.5pt;
+    font-weight: 500;
+    color: #333;
+  }
+  .page-meta {
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: right;
+    color: #444;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .section-title {
+    font-size: 9.2pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 1pt solid #222;
+    padding-bottom: 1.5px;
+    margin-bottom: 3.5px;
+    letter-spacing: 0.3px;
+    color: #000;
+  }
+
+  ul {
+    margin: 0 0 4px 0;
+    padding-left: 14px;
+  }
+  li {
+    margin-bottom: 2.5px;
+  }
+  p {
+    margin: 0 0 3.5px 0;
+  }
+  b, strong {
+    font-weight: 700;
+    color: #000;
+  }
+  em {
+    font-style: italic;
+  }
+
+  .interview-block {
+    background: #fbfbfb;
+    border-left: 2.5pt solid #000;
+    padding: 4px 8px;
+    margin-top: 3px;
+  }
+  .interview-title {
+    font-weight: 800;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .footer {
+    border-top: 0.8pt solid #666;
+    font-size: 7pt;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 2px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: LECTURE 13 -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Lecture 13 — Text Features, Bag of Words & TF-IDF</div>
+        <div class="page-subtitle">DSC 80 • Text Preprocessing, Vector Representations, Cosine Similarity, and Term Importance</div>
+      </div>
+      <div class="page-meta">Page 1 of 4<br>INTERVIEW STUDY GUIDE</div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="section-title">The Need for Text Features and Preprocessing</div>
+        <ul>
+          <li>Machine learning algorithms and statistical models cannot directly interpret raw text strings, requiring unstructured text to be translated into informative numerical features.</li>
+          <li>Text preprocessing begins with canonicalization to standardize text across documents and remove surface-level variations that do not reflect topical differences.</li>
+          <li>Lowercasing all characters ensures words with different capitalization are treated as the exact same term, preventing artificial vocabulary inflation.</li>
+          <li>Punctuation stripping removes trailing commas, periods, and hyphens so words like abbreviations and base words are mapped to identical tokens.</li>
+          <li>Removing common stop words (such as "and", "of", "the", "in", and "to") filters out ubiquitous grammatical glue that carries no distinct topical meaning across documents.</li>
+          <li>Domain-specific cleaning handles contextual artifacts, such as stripping Roman numerals, pay grades, or department codes when analyzing job title data.</li>
+          <li>When analyzing publicly accessible text containing personal records (like public sector salary databases), ethical data science requires redacting personal identifiable information and working only with necessary attributes.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Bag of Words and Vector Representations</div>
+        <ul>
+          <li>The Bag of Words model represents each document as an unordered collection of word frequencies based on a shared vocabulary extracted from the entire corpus.</li>
+          <li>This builds a document-term matrix where each row represents an individual document and each column represents the count of a specific vocabulary word.</li>
+          <li>Grammar, sentence syntax, word order, and semantic negation are completely discarded (for instance, "not great, bad" and "not bad, great" produce identical vector representations).</li>
+          <li>Because individual documents only contain a small subset of the entire vocabulary, the document-term matrix is mostly zeros and is stored in a compressed sparse format to conserve memory.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Quantifying Text Similarity with Cosine Similarity</div>
+        <ul>
+          <li>Using the raw dot product to measure overlap between document vectors is heavily biased by document length, causing two long, unrelated texts to appear more similar than two short, identical texts.</li>
+          <li>Cosine similarity resolves this issue by calculating the cosine of the angle between two vectors, effectively measuring the similarity in word proportions rather than absolute word volume.</li>
+          <li>For non-negative count vectors, cosine similarity strictly ranges between 0 (orthogonal vectors with zero shared words) and 1 (vectors pointing in the exact same direction with identical word distributions).</li>
+          <li>Because cosine similarity normalizes by vector length, a short summary and a comprehensive book on the exact same subject will achieve a similarity score close to 1.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Term Frequency – Inverse Document Frequency (TF-IDF)</div>
+        <ul>
+          <li>TF-IDF measures how uniquely characteristic and important a word is to a specific document relative to an entire collection of documents.</li>
+          <li>Term Frequency measures local importance by calculating the proportion of words in a given document that match the target word.</li>
+          <li>Inverse Document Frequency measures global rarity by computing the logarithm of the total number of documents divided by the number of documents containing that word.</li>
+          <li>The logarithm in Inverse Document Frequency dampens the scale of extreme ratios, preventing words that appear only once in a massive corpus from completely overpowering term frequency.</li>
+          <li>The logarithm also reflects diminishing returns of rarity, ensuring that a word appearing in 2 out of 50 documents is weighted similarly to a word appearing in 2 out of 500 documents.</li>
+          <li>If a word appears in every single document across the corpus, its Inverse Document Frequency evaluates to the logarithm of one, which equals zero, naturally assigning universal words a TF-IDF score of zero.</li>
+          <li>TF-IDF evaluates to zero in only two cases: when a word does not appear in the document at all, or when a word appears in every single document in the corpus.</li>
+          <li>In real applications like analyzing Presidential Inaugural Addresses, common political terms receive near-zero TF-IDF scores, while distinctive terms reflect key historical themes.</li>
+        </ul>
+      </div>
+
+      <div class="interview-block">
+        <div class="interview-title">Professor Engagement Interview Focus</div>
+        <ul>
+          <li><strong>Why is Cosine Similarity preferred over Euclidean Distance for text?</strong> Euclidean distance increases as documents get longer even if their topical word proportions are identical; cosine similarity normalizes by vector magnitude and is strictly length-invariant.</li>
+          <li><strong>What happens when new words appear at test time?</strong> When transforming unseen test text, words that were not part of the training vocabulary are simply ignored because the feature dimensions were fixed during training.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Lecture 13: Text Features, Bag of Words & TF-IDF</span>
+    <span>Page 1 of 4</span>
+  </div>
+</div>
+
+<!-- PAGE 2: LECTURE 14 -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Lecture 14 — Linear Regression & Model Evaluation</div>
+        <div class="page-subtitle">DSC 80 • Modeling Philosophy, Empirical Risk Minimization, Multiple Regression, and Evaluation Metrics</div>
+      </div>
+      <div class="page-meta">Page 2 of 4<br>INTERVIEW STUDY GUIDE</div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="section-title">The Philosophy of Modeling and Empirical Risk Minimization</div>
+        <ul>
+          <li>A statistical model is an intentional simplification and approximation of reality built to serve two main purposes: predicting unseen future responses and inferring the relationships between features and outcomes.</li>
+          <li>A residual represents the prediction error for an observation, calculated as the difference between the true observed response and the model's predicted value.</li>
+          <li>Squared loss measures penalty by squaring the residual, which places disproportionately heavier penalties on large prediction errors.</li>
+          <li>Empirical risk minimization under squared loss seeks model parameters that minimize the average squared residual across the observed training sample, known as Mean Squared Error.</li>
+          <li>Root Mean Squared Error is the square root of Mean Squared Error and serves as a highly interpretable metric because it is measured in the exact same physical units as the target variable.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Constant Baselines and Simple Linear Regression</div>
+        <ul>
+          <li>The optimal constant model that minimizes squared error is simply the sample mean of the target variable.</li>
+          <li>The Root Mean Squared Error of the constant mean model equals the sample standard deviation of the target variable, establishing a critical baseline benchmark that any useful regression model must outperform.</li>
+          <li>Simple linear regression fits a straight line where the optimal slope is the correlation coefficient scaled by the ratio of the standard deviation of the response to the standard deviation of the feature.</li>
+          <li>The optimal intercept is derived by taking the sample mean of the response and subtracting the optimal slope multiplied by the sample mean of the feature.</li>
+          <li>Simple linear regression possesses three fundamental properties: the line of best fit always passes through the center of mass of the data, the residuals always sum and average to zero, and the residuals are completely uncorrelated with the input feature.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Multiple Linear Regression and Parameter Estimation</div>
+        <ul>
+          <li>Multiple linear regression extends simple regression by modeling the response as a weighted linear combination of multiple input features alongside an intercept.</li>
+          <li>Data is organized into a design matrix containing all feature values for all observations, prepended with a column of ones to account for the intercept term.</li>
+          <li>The normal equation provides the closed-form mathematical solution that directly computes the parameter weights that minimize empirical risk.</li>
+          <li>A unique closed-form solution exists if and only if the design matrix has full column rank, meaning that no feature can be written as an exact linear combination of other features.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Model Assessment: R-Squared and Residual Diagnostics</div>
+        <ul>
+          <li>The coefficient of determination (R-squared) measures the proportion of variance in the response variable that is explained by the linear model relative to the baseline constant mean model.</li>
+          <li>An R-squared of one indicates perfect prediction where all residuals are zero; an R-squared of zero indicates the model performs no better than simply guessing the sample mean.</li>
+          <li>On unseen test data, R-squared can be negative if the model's predictions perform worse than simply guessing the mean of the test responses.</li>
+          <li>In simple linear regression with an intercept, R-squared mathematically equals the square of the Pearson correlation coefficient between the feature and response.</li>
+          <li>Residual plots graph residuals against fitted predictions; a well-fit linear model displays a random horizontal band around zero with constant variance (homoscedasticity).</li>
+          <li>Clear curvature in a residual plot indicates that the true relationship is non-linear and requires feature transformations, while a funnel shape indicates that prediction variance grows with the magnitude of the response.</li>
+        </ul>
+      </div>
+
+      <div class="interview-block">
+        <div class="interview-title">Professor Engagement Interview Focus</div>
+        <ul>
+          <li><strong>What happens to training error when adding extra features?</strong> Training Root Mean Squared Error will always decrease or stay the same (and training R-squared will always increase or stay the same), but test error may worsen due to overfitting.</li>
+          <li><strong>How are Root Mean Squared Error and R-Squared connected?</strong> Root Mean Squared Error equals the standard deviation of the response multiplied by the square root of one minus R-squared.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Lecture 14: Linear Regression & Model Evaluation</span>
+    <span>Page 2 of 4</span>
+  </div>
+</div>
+
+<!-- PAGE 3: LECTURE 15 -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Lecture 15 — Feature Engineering & sklearn Transformers</div>
+        <div class="page-subtitle">DSC 80 • Encoding Categoricals, Linearization, Scaling Methods, and the Transformer Architecture</div>
+      </div>
+      <div class="page-meta">Page 3 of 4<br>INTERVIEW STUDY GUIDE</div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="section-title">The Role and Motivation of Feature Engineering</div>
+        <ul>
+          <li>Linear regression is mathematically restricted to fitting flat planes directly onto the numerical features it receives, but real-world relationships are frequently non-linear, categorical, or multi-scale.</li>
+          <li>Feature engineering transforms raw domain columns into new numerical representations, allowing linear models to capture complex curves and categories while keeping the mathematical optimization linear in the weights.</li>
+          <li>Uninformative features such as unique identification numbers, constant columns, or random timestamps provide no predictive signal and must be dropped to prevent models from learning spurious patterns.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Encoding Categorical Data: Ordinal vs. Nominal</div>
+        <ul>
+          <li>Ordinal features possess an inherent natural ranking (such as education levels from high school to graduate degrees, or customer satisfaction ratings from poor to excellent).</li>
+          <li>Ordinal features can be directly encoded by mapping each category level to an increasing integer that preserves its relative order.</li>
+          <li>Nominal features have no natural order or numerical relationship (such as smoker status, day of the week, or city of residence).</li>
+          <li>Assigning arbitrary sequential integers to nominal features is fundamentally flawed because it forces the linear model to assume an artificial hierarchy and equal numeric distances between unrelated categories.</li>
+          <li>Nominal features must instead be converted using One-Hot Encoding, which generates a separate binary indicator column for each unique category level.</li>
+          <li>Geometrically, one-hot encoding a categorical feature creates parallel hyperplanes that share identical slopes for numerical features but are separated by vertical shifts in the intercept.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Linearization and Quantitative Scaling</div>
+        <ul>
+          <li>Linearization applies mathematical transformations to non-linear features so that the relationship between the transformed feature and the response becomes linear.</li>
+          <li>When predicting fuel efficiency from vehicle horsepower, the raw relationship exhibits an inverse decay where a linear line fits poorly; taking the logarithm or reciprocal of horsepower linearizes the relationship, flattening curved residual plots and lowering error.</li>
+          <li>Standardization scales features to have a mean of zero and a standard deviation of one, placing features with vastly different original units onto a uniform scale.</li>
+          <li>Min-max scaling compresses feature values into a bounded interval between zero and one, but it is sensitive to extreme outliers.</li>
+          <li>Binarization converts continuous quantitative values into binary indicators based on whether they exceed a specified threshold (such as splitting restaurant table sizes into small versus large parties).</li>
+          <li>In standard unregularized linear regression, standardizing features does not change predictions, residuals, or R-squared; it only rescales the resulting feature weights.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">The Scikit-Learn Transformer Architecture and Data Leakage</div>
+        <ul>
+          <li>Scikit-Learn divides its tools into transformers (which preprocess and transform feature matrices) and estimators (which learn predictive models from data).</li>
+          <li>The transformer lifecycle uses a fitting step to compute and store parameters from the dataset (such as mean and variance for standard scaling, or category levels for one-hot encoding).</li>
+          <li>The transform step applies those pre-computed parameters to convert any data matrix into its processed form.</li>
+          <li>The golden rule of machine learning is to never fit a transformer on test data; transformers must be fitted strictly on the training set, and then used to transform both the training and test sets to prevent data leakage.</li>
+        </ul>
+      </div>
+
+      <div class="interview-block">
+        <div class="interview-title">Professor Engagement Interview Focus</div>
+        <ul>
+          <li><strong>Why must one column be dropped when one-hot encoding for linear regression?</strong> Keeping all dummy indicator columns alongside an intercept creates exact linear dependence because the sum of the dummy columns equals the constant intercept column, causing the matrix to become non-invertible.</li>
+          <li><strong>What is the difference between a Transformer and an Estimator?</strong> Transformers convert and reshape feature matrices through their transform method, whereas estimators learn predictive models to map features to responses through their predict method.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Lecture 15: Feature Engineering & Transformers</span>
+    <span>Page 3 of 4</span>
+  </div>
+</div>
+
+<!-- PAGE 4: LECTURE 16 -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Lecture 16 — Pipelines, Multicollinearity & Generalization</div>
+        <div class="page-subtitle">DSC 80 • Composition Pipelines, Collinear Redundancy, Bias-Variance Tradeoff, and Validation</div>
+      </div>
+      <div class="page-meta">Page 4 of 4<br>INTERVIEW STUDY GUIDE</div>
+    </div>
+
+    <div class="content">
+      <div>
+        <div class="section-title">Scikit-Learn Pipelines and Column Transformers</div>
+        <ul>
+          <li>Real data science workflows require applying different preprocessing transformations to different columns (such as scaling continuous features while one-hot encoding nominal categories).</li>
+          <li>Column transformers allow practitioners to route specific subsets of columns to their designated transformers, automatically concatenating the resulting processed arrays horizontally.</li>
+          <li>Function transformers wrap custom Python functions into standardized transformer objects, enabling custom cleaning logic to be integrated directly into machine learning pipelines.</li>
+          <li>Pipelines chain multiple sequential preprocessing transformers together with a final model estimator into a single unified object.</li>
+          <li>Fitting a pipeline executes all transformations and trains the final model in order, and predicting with a pipeline automatically applies the learned transformations to new data before generating predictions, completely eliminating data leakage.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Multicollinearity and the Dummy Variable Trap</div>
+        <ul>
+          <li>Multicollinearity occurs when one feature in a regression model can be accurately predicted as a linear combination of other features, indicating redundant information.</li>
+          <li>For example, including both height in inches and height in centimeters means one feature is an exact multiple of the other; infinitely many combinations of weights produce the exact same predictions and minimal error.</li>
+          <li>When features are linearly dependent, the matrix inversion required by the normal equation fails because the matrix is singular and has a determinant of zero.</li>
+          <li>The dummy variable trap is a direct example of multicollinearity: if a categorical variable has multiple categories and all indicator columns are included with an intercept, their sum equals the intercept column.</li>
+          <li>Crucial conceptual takeaway: multicollinearity does not hurt a model's ability to make accurate predictions on similar data; rather, it completely destroys the interpretability of individual feature weights because the coefficients become unstable and arbitrarily large.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Generalization and the Bias-Variance Decomposition</div>
+        <ul>
+          <li>Generalization is the measure of how accurately a model fit on a training sample performs on new, unseen data drawn from the underlying population.</li>
+          <li>Underfitting occurs when a model class is too simple to capture the underlying pattern (such as fitting a straight line to cubic data), resulting in high training error and high test error (high bias).</li>
+          <li>Overfitting occurs when a model class is overly complex (such as fitting a high-degree polynomial to few data points), resulting in near-zero training error but massive test error because the model memorizes sample-specific noise (high variance).</li>
+          <li>Generalization risk decomposes into three distinct sources of error: model bias squared, model variance, and irreducible observation noise.</li>
+          <li>Model bias represents the systemic error introduced by overly simplistic model assumptions, reflecting the difference between average predictions and the true population function.</li>
+          <li>Model variance measures how sensitive predictions are to random fluctuations in the specific training dataset used to fit the model.</li>
+          <li>Observation error represents the natural random noise inherent in real-world measurements that cannot be reduced by any model.</li>
+          <li>Collecting more training data decreases model variance toward zero while leaving bias unchanged; adding more features decreases bias but increases model variance.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="section-title">Train-Test Splits and Validation Diagnostics</div>
+        <ul>
+          <li>Train-test splits partition observed data into an isolated training set used to fit the model and a separate test set used to evaluate generalization performance on unseen data.</li>
+          <li>Training error reflects only model bias, whereas test error reflects both model bias and model variance.</li>
+          <li>When training error and test error are both low and roughly equal, the model is well-calibrated and generalizes effectively.</li>
+          <li>When training error is very low but test error is significantly higher, the model is overfitting; this can be resolved by collecting more data, removing redundant features, or applying regularization.</li>
+          <li>When training error and test error are both high, the model is underfitting; this can be resolved by engineering more informative features or using a more expressive model family.</li>
+        </ul>
+      </div>
+
+      <div class="interview-block">
+        <div class="interview-title">Professor Engagement Interview Focus</div>
+        <ul>
+          <li><strong>Why does a degree 25 polynomial achieve near-zero training error but fail on test data?</strong> It has zero bias on the training sample but massive model variance; it interpolates the random noise of that specific sample rather than learning the underlying population relationship.</li>
+          <li><strong>How do sample size and feature count affect model variance?</strong> In linear models, variance is proportional to the number of features divided by the number of observations; increasing sample size dampens variance, while adding features amplifies it.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Lecture 16: Pipelines, Multicollinearity & Generalization</span>
+    <span>Page 4 of 4</span>
+  </div>
+</div>
+
+</body>
+</html>
+"""
+
+html_file = os.path.abspath('DSC80_Review_Cheatsheet.html')
+pdf_file = os.path.abspath('DSC80_Review_Cheatsheet_Lectures_13_to_16.pdf')
+
+with open(html_file, 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print(f"Wrote clean single-column HTML to {html_file}")
+
+edge_path = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+cmd = [
+    edge_path,
+    '--headless',
+    '--disable-gpu',
+    '--allow-file-access-from-files',
+    '--print-to-pdf-no-header',
+    f'--print-to-pdf={pdf_file}',
+    html_file
+]
+
+subprocess.run(cmd, check=True)
+print(f"Rendered clean PDF to {pdf_file}")
+
+if os.path.exists(pdf_file):
+    with open(pdf_file, 'rb') as f:
+        data = f.read()
+    page_matches = re.findall(rb'/Type\s*/Page\b', data)
+    print(f"=== VERIFIED PDF PAGE COUNT: {len(page_matches)} ===")
+
+    import fitz
+    doc = fitz.open(pdf_file)
+    for i, page in enumerate(doc):
+        pix = page.get_pixmap(dpi=150)
+        pix.save(f'scratch/essay_page_{i+1}.png')
+    print("Rendered essay pages to PNG")

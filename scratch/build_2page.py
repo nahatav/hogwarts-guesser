@@ -1,0 +1,476 @@
+﻿html_content = r"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DSC 80 — High-Yield Review Cheatsheet (Lectures 13-16)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+<style>
+  @page {
+    size: letter portrait;
+    margin: 0.22in 0.26in 0.22in 0.26in;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 6.95pt;
+    line-height: 1.15;
+    color: #111;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    width: 100%;
+    height: 10.55in;
+    max-height: 10.55in;
+    overflow: hidden;
+    page-break-after: always;
+    page-break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 1px;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  
+  .page-header {
+    border-bottom: 1.8pt solid #000;
+    padding-bottom: 1px;
+    margin-bottom: 2.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .page-title {
+    font-size: 10.8pt;
+    font-weight: 800;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+    color: #000;
+  }
+  .page-subtitle {
+    font-size: 7.2pt;
+    font-weight: 600;
+    color: #333;
+  }
+  .page-meta {
+    font-size: 6.8pt;
+    font-weight: bold;
+    text-align: right;
+    color: #444;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    flex: 1;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5px;
+  }
+
+  .section-title {
+    font-size: 7.6pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-bottom: 0.8pt solid #000;
+    padding-bottom: 0.8px;
+    margin: 1.5px 0 1.2px 0;
+    letter-spacing: 0.2px;
+    color: #000;
+  }
+  .subhead {
+    font-weight: bold;
+    font-size: 6.85pt;
+    color: #000;
+    margin-top: 1px;
+    margin-bottom: 0.4px;
+  }
+
+  ul {
+    margin: 0 0 1.5px 0;
+    padding-left: 10px;
+  }
+  li {
+    margin-bottom: 0.8px;
+  }
+  p {
+    margin: 0 0 1.5px 0;
+  }
+  b, strong {
+    font-weight: 700;
+    color: #000;
+  }
+  em {
+    font-style: italic;
+  }
+
+  .formula-box {
+    background: #f8f8f8;
+    border: 0.5pt solid #444;
+    padding: 1px 2px;
+    margin: 1px 0;
+    text-align: center;
+  }
+  .katex { font-size: 0.94em !important; }
+  .katex-display { margin: 0.8px 0 !important; }
+
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 5.9pt;
+    background: #f2f2f2;
+    padding: 0.2px 1.8px;
+    border-radius: 1px;
+    border: 0.3pt solid #ccc;
+  }
+
+  .interview-block {
+    background: #f9f9f9;
+    border: 0.6pt solid #000;
+    border-left: 2pt solid #000;
+    padding: 1.5px 3px;
+    margin-top: 1px;
+  }
+  .interview-title {
+    font-weight: 800;
+    font-size: 6.6pt;
+    text-transform: uppercase;
+    margin-bottom: 0.5px;
+    border-bottom: 0.4pt solid #777;
+    padding-bottom: 0.5px;
+  }
+
+  .footer {
+    border-top: 0.5pt solid #666;
+    font-size: 5.6pt;
+    display: flex;
+    justify-content: space-between;
+    padding-top: 0.8px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========================================================================= -->
+<!-- PAGE 1: LECTURES 13 & 14 — TEXT FEATURES & LINEAR REGRESSION -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Part 1 — Text Features & Linear Regression (Lectures 13 & 14)</div>
+        <div class="page-subtitle">DSC 80 • Text Representations, Similarity, ERM Framework, SLR, MLR & Model Assessment</div>
+      </div>
+      <div class="page-meta">Page 1 of 2<br>INTERVIEW CHEATSHEET</div>
+    </div>
+
+    <div class="grid-2">
+      <!-- COLUMN 1: LECTURE 13 -->
+      <div class="column">
+        <div class="section-title">Lecture 13: Text Features, Bag of Words & TF-IDF</div>
+        
+        <div class="subhead">Text Preprocessing & Canonicalization</div>
+        <ul>
+          <li>Machine learning models require numeric matrices; raw strings must be mapped to quantitative feature vectors while preserving semantic meaning.</li>
+          <li>Lowercasing (<code>s.str.lower()</code>) ensures casing does not split identical words (e.g. "Chief" and "chief").</li>
+          <li>Punctuation removal (<code>r'[^\w\s]'</code>) strips trailing commas, periods, and hyphens so abbreviations map to base tokens.</li>
+          <li>Stop words ("and", "of", "the", "in", "to") are common grammatical words that appear everywhere; removing them prevents counts from being dominated by non-informative terms.</li>
+          <li>Domain cleaning removes Roman numerals (<code>r'\b(i|ii|iii|iv|v)\b'</code>) or job codes; privacy ethics requires redacting PII in public salary data.</li>
+        </ul>
+
+        <div class="subhead">Bag of Words (BoW) & Counts Matrix</div>
+        <ul>
+          <li>Represents each document as an unordered collection of word frequencies from a fixed shared vocabulary $V$.</li>
+          <li>Constructs matrix $M \in \mathbb{R}^{N \times |V|}$ where $M_{i,j} = \text{count}(w_j \text{ in } d_i)$. Grammar, word order, and negation are lost ("not bad, great" produces the exact same vector as "not great, bad").</li>
+          <li>Matrices are >99% zeros; stored as SciPy sparse matrices (<code>csr_matrix</code>).</li>
+        </ul>
+
+        <div class="subhead">Similarity: Dot Product vs. Cosine Similarity</div>
+        <ul>
+          <li>The raw dot product $\vec{u} \cdot \vec{v} = \sum u_j v_j$ scales with document length; two long unrelated essays can have a higher dot product than two short identical summaries.</li>
+          <li>Cosine similarity measures the angle between vectors, normalizing for length:</li>
+        </ul>
+        <div class="formula-box">
+          $$\text{CosineSim}(\vec{u}, \vec{v}) = \cos(\theta) = \frac{\vec{u} \cdot \vec{v}}{\|\vec{u}\|_2 \|\vec{v}\|_2} = \frac{\sum u_j v_j}{\sqrt{\sum u_j^2}\sqrt{\sum v_j^2}}$$
+        </div>
+        <ul>
+          <li>Ranges from $0$ (no shared words, orthogonal) to $1$ (identical word proportions). Length-invariant: a short summary and long book on the same topic achieve $\approx 1$.</li>
+        </ul>
+
+        <div class="subhead">TF-IDF (Term Frequency – Inverse Document Frequency)</div>
+        <ul>
+          <li>Measures how uniquely characteristic word $t$ is to document $d$ within $N$ documents:</li>
+        </ul>
+        <div class="formula-box">
+          $$\text{tfidf}(t, d) = \text{tf}(t, d) \times \text{idf}(t) = \frac{\text{count}(t \text{ in } d)}{\text{total words in } d} \times \log\left(\frac{N}{\text{df}(t)}\right)$$
+        </div>
+        <ul>
+          <li>$\text{tf}(t, d)$ = local importance in $d$; $\text{idf}(t)$ = global rarity across all $N$ documents ($\text{df}(t)$ = docs containing $t$).</li>
+          <li><strong>Why $\log$ in IDF:</strong> (1) Dampens extreme ratios ($N=10^6, \text{df}=1 \implies 10^6$ dampened to $\approx 13.8$ so IDF does not overpower TF); (2) Captures diminishing returns of rarity (2/50 vs 2/500 docs); (3) Cancels universal words ($\text{df}=N \implies \log(1)=0 \implies \text{tfidf}=0$).</li>
+          <li>TF-IDF is 0 if $t$ is not in $d$ ($\text{tf}=0$) OR if $t$ appears in every single document ($\text{idf}=0$).</li>
+          <li>Presidential Addresses example: common rhetoric ("america", "government") gets TF-IDF $\approx 0$, while distinctive terms stand out (Lincoln: "slaves", FDR: "action").</li>
+        </ul>
+
+        <div class="interview-block">
+          <div class="interview-title">How to Explain to the Professor</div>
+          <ul>
+            <li><strong>Why Cosine Similarity over Euclidean?</strong> Euclidean distance grows with text length even for identical topics; Cosine similarity isolates vector direction (word distribution) from magnitude.</li>
+            <li><strong>Out-of-vocabulary words:</strong> Ignored during <code>.transform()</code> because vocabulary matrix dimensions are fixed during <code>.fit()</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- COLUMN 2: LECTURE 14 -->
+      <div class="column">
+        <div class="section-title">Lecture 14: Linear Regression & Model Evaluation</div>
+        
+        <div class="subhead">Modeling Goals & Empirical Risk Minimization (ERM)</div>
+        <ul>
+          <li>Models serve two goals: <strong>prediction</strong> ($\hat{y}_{\text{new}} = H(\vec{x}_{\text{new}})$) and <strong>inference</strong> (interpreting weights $w_j$).</li>
+          <li>Residual $e_i = y_i - \hat{y}_i = y_i - H(x_i)$ is signed observation error. Squared loss $L=(y_i - \hat{y}_i)^2$ penalizes large deviations quadratically.</li>
+          <li>Mean Squared Error (MSE / Empirical Risk) & Root Mean Squared Error (RMSE):</li>
+        </ul>
+        <div class="formula-box">
+          $$R_{\text{sq}}(H) = \frac{1}{n}\sum_{i=1}^n (y_i - H(x_i))^2 = \frac{1}{n}\sum_{i=1}^n e_i^2 \quad \Big| \quad \text{RMSE} = \sqrt{\text{MSE}}$$
+        </div>
+        <ul>
+          <li>RMSE is expressed in the exact same physical units as response $y$ (e.g. dollars).</li>
+        </ul>
+
+        <div class="subhead">Constant Baseline & Simple Linear Regression (SLR)</div>
+        <ul>
+          <li>Optimal constant model $H(x)=c$ minimizing squared error is sample mean $c^* = \bar{y}$.</li>
+          <li>RMSE of constant model is standard deviation $\sigma_y = \sqrt{\frac{1}{n}\sum(y_i - \bar{y})^2}$. A regression model is only useful if its $\text{RMSE} < \sigma_y$.</li>
+          <li>Simple Linear Regression $H(x) = w_0 + w_1 x$:</li>
+        </ul>
+        <div class="formula-box">
+          $$w_1^* = r \frac{\sigma_y}{\sigma_x} = \frac{\text{Cov}(x, y)}{\sigma_x^2} = \frac{\sum(x_i - \bar{x})(y_i - \bar{y})}{\sum(x_i - \bar{x})^2} \quad \Big| \quad w_0^* = \bar{y} - w_1^* \bar{x}$$
+        </div>
+        <ul>
+          <li><strong>3 Key SLR Properties:</strong> (1) Line passes through centroid $(\bar{x}, \bar{y})$; (2) Average residual is zero ($\sum e_i = 0$); (3) Residuals are uncorrelated with input $x$ ($\sum x_i e_i = 0$).</li>
+        </ul>
+
+        <div class="subhead">Multiple Linear Regression & Normal Equation</div>
+        <ul>
+          <li>Model with $d$ features: $H(\vec{x}) = w_0 + w_1 x^{(1)} + \dots + w_d x^{(d)} = \vec{x}^T \vec{w}$.</li>
+          <li>Design matrix $X \in \mathbb{R}^{n \times (d+1)}$ has leading column of 1s for intercept $w_0$.</li>
+          <li>Predictions: $\hat{\vec{y}} = X\vec{w}$; Residuals: $\vec{e} = \vec{y} - X\vec{w}$. Normal Equation gives optimal weights:</li>
+        </ul>
+        <div class="formula-box">
+          $$\vec{w}^* = (X^T X)^{-1} X^T \vec{y}$$
+        </div>
+        <ul>
+          <li>$X^T X$ is invertible iff $X$ has full column rank $d+1$ (no collinear features and $n > d$).</li>
+        </ul>
+
+        <div class="subhead">Model Assessment: R-Squared ($R^2$) & Residual Plots</div>
+        <ul>
+          <li>Coefficient of Determination ($R^2$) = fraction of variance in $y$ explained by model:</li>
+        </ul>
+        <div class="formula-box">
+          $$R^2 = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2} = 1 - \frac{\text{MSE}(H)}{\text{MSE}(\text{mean model})} \quad \Big| \quad \text{RMSE} = \sigma_y \sqrt{1 - R^2}$$
+        </div>
+        <ul>
+          <li>$R^2 = 1 \implies \text{RMSE}=0$; $R^2 = 0 \implies$ same as predicting mean $\bar{y}$; $R^2 < 0 \implies$ worse than mean (happens on test data). In SLR with intercept, $R^2 = r^2$.</li>
+          <li><strong>Residual Plots:</strong> Homoscedastic random scatter around 0 = good linear fit; U-shape/curvature = non-linear relationship; Funnel = heteroscedasticity.</li>
+        </ul>
+
+        <div class="interview-block">
+          <div class="interview-title">How to Explain to the Professor</div>
+          <ul>
+            <li><strong>Adding features effect:</strong> Training RMSE always decreases or stays the same ($R^2$ increases), but test RMSE can increase due to overfitting.</li>
+            <li><strong>Why can test $R^2$ be negative?</strong> If test MSE exceeds test variance $\text{Var}(y_{\text{test}})$, then $1 - \frac{\text{MSE}}{\text{Var}} < 0$.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Part 1: Text Features (Lec 13) & Linear Regression (Lec 14)</span>
+    <span>Page 1 of 2</span>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- PAGE 2: LECTURES 15 & 16 — FEATURE ENGINEERING, PIPELINES & GENERALIZATION -->
+<!-- ========================================================================= -->
+<div class="page">
+  <div>
+    <div class="page-header">
+      <div>
+        <div class="page-title">Part 2 — Feature Engineering, Pipelines & Generalization (Lectures 15 & 16)</div>
+        <div class="page-subtitle">DSC 80 • Categorical Encoding, Transformers, Pipelines, Multicollinearity & Bias-Variance Decomposition</div>
+      </div>
+      <div class="page-meta">Page 2 of 2<br>INTERVIEW CHEATSHEET</div>
+    </div>
+
+    <div class="grid-2">
+      <!-- COLUMN 1: LECTURE 15 -->
+      <div class="column">
+        <div class="section-title">Lecture 15: Feature Engineering & Transformers</div>
+        
+        <div class="subhead">The Role of Feature Engineering</div>
+        <ul>
+          <li>Linear regression is restricted to flat hyperplanes $\vec{w}^T \vec{x}$ directly on input features; real relationships are non-linear, categorical, and multi-scale.</li>
+          <li>Feature engineering transforms raw domain columns $X$ into engineered numerical features $\phi(X)$, allowing linear models to capture curves and categories while keeping optimization linear in weights $\vec{w}$. Drop uninformative features (IDs, constants).</li>
+        </ul>
+
+        <div class="subhead">Categorical Encoding: Ordinal vs. Nominal</div>
+        <ul>
+          <li><strong>Ordinal Features (Ordered):</strong> Education (HS < BS < MS < PhD), Ratings (Poor < Fair < Good < Great). Map directly to integers preserving order: <code>df['rating'].map({'Poor':1, 'Fair':2, 'Good':3, 'Great':4})</code>.</li>
+          <li><strong>Nominal Features (Unordered):</strong> Smoker (Yes/No), Day (Thur, Fri, Sat, Sun). Arbitrary integers (Thur=0, Fri=1, Sat=2, Sun=3) falsely assume Sun > Thur and equal distances.</li>
+          <li><strong>One-Hot Encoding (OHE):</strong> Creates binary $0/1$ indicator column $\mathbb{I}(\text{col}=c)$ for each category.</li>
+          <li><strong>Geometry of OHE:</strong> Model $\hat{\text{tip}} = w_0 + w_1 \text{bill} + w_2 \text{size} + w_3 \mathbb{I}(\text{smoker}=\text{Yes})$:
+            <ul>
+              <li>Non-Smoker: $\hat{\text{tip}} = w_0 + w_1 \text{bill} + w_2 \text{size}$</li>
+              <li>Smoker: $\hat{\text{tip}} = (w_0 + w_3) + w_1 \text{bill} + w_2 \text{size}$</li>
+              <li>Creates <strong>two parallel hyperplanes</strong> with identical slopes separated by intercept shift $w_3$.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="subhead">Linearization & Quantitative Scaling</div>
+        <ul>
+          <li><strong>Linearization (Horsepower vs. MPG):</strong> Raw scatter shows curved decay; linear fit gives high error. Transforming feature to $\log(\text{hp})$ or $1/\text{hp}$ linearizes relationship:
+            $$\hat{\text{mpg}} = w_0 + w_1 \log(\text{hp})$$
+            Flattens curved residuals to random scatter, lowers RMSE, raises $R^2$.</li>
+          <li><code>StandardScaler()</code> standardizes via $z = \frac{x - \mu}{\sigma}$ (mean 0, variance 1). <code>MinMaxScaler()</code> rescales to $[0, 1]$. <code>Binarizer(threshold=t)</code> maps to binary $\mathbb{I}(x > t)$.</li>
+          <li><strong>Scaling Nuance:</strong> In standard OLS linear regression, standardizing features <em>does not change predictions, residuals, or $R^2$</em>; it only rescales weights $w_j$. (Scaling is essential for Ridge/Lasso, PCA, and KNN).</li>
+        </ul>
+
+        <div class="subhead">Scikit-Learn Transformer Architecture & Data Leakage</div>
+        <ul>
+          <li><strong>Transformers (Preprocessors):</strong> Implement <code>.fit()</code>, <code>.transform()</code>, <code>.fit_transform()</code>.</li>
+          <li><strong>Estimators (Models):</strong> Implement <code>.fit()</code>, <code>.predict()</code>, <code>.score()</code>.</li>
+          <li><code>.fit(X)</code> learns parameters ($\mu, \sigma$ in <code>StandardScaler</code>; categories in <code>OneHotEncoder</code>); <code>.transform(X)</code> applies transformation using stored parameters.</li>
+          <li><strong>Golden Rule:</strong> Never fit a transformer on test data. Always fit on $X_{\text{train}}$, then transform both $X_{\text{train}}$ and $X_{\text{test}}$ to prevent data leakage.</li>
+        </ul>
+
+        <div class="interview-block">
+          <div class="interview-title">How to Explain to the Professor</div>
+          <ul>
+            <li><strong>Why drop='first' in OneHotEncoder?</strong> Prevents the <em>Dummy Variable Trap</em>. Keeping all $K$ dummy columns alongside an intercept creates linear dependence ($\sum \text{dummies} = 1 = \text{intercept}$), making $X^T X$ singular and non-invertible.</li>
+            <li><strong>Transformer vs. Estimator:</strong> Transformers preprocess feature matrices ($X \to X'$) via <code>transform</code>; Estimators learn predictive mappings ($X \to y$) via <code>predict</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- COLUMN 2: LECTURE 16 -->
+      <div class="column">
+        <div class="section-title">Lecture 16: Pipelines, Multicollinearity & Generalization</div>
+        
+        <div class="subhead">Pipelines & ColumnTransformers</div>
+        <ul>
+          <li><code>ColumnTransformer</code> applies specific transformers to specified column subsets (e.g. scaling numerics, one-hot encoding categoricals) and concatenates results.</li>
+          <li><code>FunctionTransformer(func)</code> wraps custom Python functions (e.g. <code>np.log</code>) into an sklearn transformer.</li>
+          <li><code>Pipeline</code> chains sequential transformers with a final model estimator. Calling <code>pl.fit(X_tr, y_tr)</code> fits all steps in order; <code>pl.predict(X_te)</code> transforms test data using training parameters and predicts, eliminating data leakage.</li>
+        </ul>
+
+        <div class="subhead">Multicollinearity & The Dummy Variable Trap</div>
+        <ul>
+          <li>Multicollinearity occurs when one feature is a linear combination of other features.</li>
+          <li>Height Example (Inches $x_1$ vs. CM $x_2 = 2.54 x_1$):
+            $$\hat{y} = w_0 + w_1 x_1 + w_2 (2.54 x_1) = w_0 + (w_1 + 2.54 w_2) x_1$$
+            Any pair where $w_1 + 2.54 w_2 = 3$ gives identical predictions and minimal error ($w_1 = 1000, w_2 = -392.5$). Columns of $X$ are linearly dependent $\implies \det(X^T X)=0 \implies (X^T X)^{-1}$ does not exist.</li>
+          <li><strong>Crucial Distinction:</strong> Multicollinearity <strong>does not hurt prediction accuracy or generalization</strong> on similar data; it completely <strong>destroys interpretability</strong> because coefficients become unstable and arbitrarily large.</li>
+        </ul>
+
+        <div class="subhead">Generalization & Bias-Variance Decomposition</div>
+        <ul>
+          <li>Generalization evaluates model performance on unseen population data.</li>
+          <li><strong>Underfitting (High Bias):</strong> Model too simple (e.g. line for cubic data); high train RMSE, high test RMSE.</li>
+          <li><strong>Overfitting (High Variance):</strong> Model overly complex (e.g. degree 25 poly); near-zero train RMSE, massive test RMSE (memorizes sample noise).</li>
+          <li><strong>The Bias-Variance Decomposition of Generalization Risk:</strong></li>
+        </ul>
+        <div class="formula-box">
+          $$\mathbb{E}[(y_{\text{new}} - H(x_{\text{new}}))^2] = \text{Model Bias}^2 + \text{Model Variance} + \text{Observation Error } \sigma^2$$
+        </div>
+        <ul>
+          <li><strong>Model Bias $(\mathbb{E}[H(x)] - f(x))^2$:</strong> Error from simplistic assumptions.</li>
+          <li><strong>Model Variance $\mathbb{E}[(H(x) - \mathbb{E}[H(x)])^2] \propto \frac{d}{n}$:</strong> Prediction sensitivity to training sample.</li>
+          <li><strong>Observation Error $\sigma^2$:</strong> Irreducible natural random measurement noise.</li>
+          <li>Sample size $n \uparrow \implies$ variance $\to 0$ (bias unchanged). Feature count $d \uparrow \implies$ bias $\downarrow$, variance $\uparrow$.</li>
+        </ul>
+
+        <div class="subhead">Train-Test Splits & Validation Diagnostics</div>
+        <ul>
+          <li>Training error reflects <em>only bias</em>; test error reflects <em>both bias and variance</em>.</li>
+          <li>$\text{RMSE}_{\text{train}} \approx \text{RMSE}_{\text{test}}$ (both low) $\implies$ well-calibrated, generalizes well.</li>
+          <li>$\text{RMSE}_{\text{train}} \ll \text{RMSE}_{\text{test}} \implies$ overfitting (high variance); collect more $n$, regularize, drop features.</li>
+          <li>$\text{RMSE}_{\text{train}} \approx \text{RMSE}_{\text{test}}$ (both high) $\implies$ underfitting (high bias); feature engineering, non-linear terms.</li>
+        </ul>
+
+        <div class="interview-block">
+          <div class="interview-title">How to Explain to the Professor</div>
+          <ul>
+            <li><strong>Why degree 25 polynomial fails on test data:</strong> Zero bias on training sample, but massive variance; interpolates sample noise rather than population signal.</li>
+            <li><strong>Variance formula intuition:</strong> In linear regression, model variance is proportional to $\frac{d}{n}$ ($d$ = features, $n$ = observations).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>DSC 80 — Principles of Data Science</span>
+    <span>Part 2: Feature Engineering (Lec 15) & Pipelines / Generalization (Lec 16)</span>
+    <span>Page 2 of 2</span>
+  </div>
+</div>
+
+</body>
+</html>
+"""
+
+import os, subprocess, re
+
+html_file = os.path.abspath('DSC80_2Page_Review_Cheatsheet.html')
+pdf_file = os.path.abspath('DSC80_2Page_Review_Cheatsheet.pdf')
+
+with open(html_file, 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print(f"Wrote HTML to {html_file}")
+
+edge_path = r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe'
+cmd = [
+    edge_path,
+    '--headless',
+    '--disable-gpu',
+    '--run-all-compositor-stages-before-draw',
+    '--virtual-time-budget=2500',
+    '--allow-file-access-from-files',
+    '--print-to-pdf-no-header',
+    f'--print-to-pdf={pdf_file}',
+    html_file
+]
+
+subprocess.run(cmd, check=True)
+print(f"Rendered clean PDF to {pdf_file}")
+
+if os.path.exists(pdf_file):
+    with open(pdf_file, 'rb') as f:
+        data = f.read()
+    page_matches = re.findall(rb'/Type\s*/Page\b', data)
+    print(f"=== VERIFIED PDF PAGE COUNT: {len(page_matches)} ===")
+
+    import fitz
+    doc = fitz.open(pdf_file)
+    for i, page in enumerate(doc):
+        pix = page.get_pixmap(dpi=150)
+        pix.save(f'scratch/2page/page_{i+1}.png')
+    print("Rendered 2-page PNGs")

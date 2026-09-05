@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #06080a;
+    color: #e6ede8;
+    font-family: 'EB Garamond', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+  }
+}
+
+.font-gothic {
+  font-family: 'UnifrakturCook', 'Pirata One', 'MedievalSharp', cursive;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-decorative {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+}
+
+/* Custom Magical Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090c0e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2e25;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Gold & Emerald Shimmer */
+.gold-shimmer {
+  background: linear-gradient(90deg, #ffd700 0%, #ffffff 50%, #d4af37 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 4s linear infinite;
+}
+
+.emerald-shimmer {
+  background: linear-gradient(90deg, #34d399 0%, #ffffff 50%, #10b981 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shine 5s linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Dark Cavern Vignette */
+.cavern-bg {
+  background-color: #050709;
+  background-image: 
+    radial-gradient(circle at 25% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, rgba(5, 46, 32, 0.15) 0%, transparent 70%),
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.4) 0%, #030507 100%);
+}
+
+/* Corner Crosshairs Card Helper */
+.crosshair-box {
+  position: relative;
+}
+
+.crosshair-box::before,
+.crosshair-box::after {
+  content: '+';
+  position: absolute;
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(52, 211, 153, 0.4);
+  pointer-events: none;
+}
+
+.crosshair-box::before {
+  top: 4px;
+  left: 6px;
+}
+
+.crosshair-box::after {
+  bottom: 4px;
+  right: 6px;
+}

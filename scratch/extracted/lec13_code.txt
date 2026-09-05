@@ -1,0 +1,1652 @@
+In [1]:
+
+
+from dsc80_utils import *
+
+# ====================
+
+In [1]:
+
+# ====================
+
+Lecture 13 – Text Features¶DSC 80, Summer 2026¶
+
+# ====================
+
+Agenda 📆¶
+Text features.
+Bag of words.
+Cosine similarity.
+TF-IDF.
+Example: Presidential inaugural addresses 🎤.
+
+# ====================
+
+Review: Regression and features¶
+
+# ====================
+
+After minimizing empirical risk to determine optimal parameters, $w_0^*, \dots, w_3^*$, we made predictions using:
+
+$$\text{predicted salary} = w_0^* + w_1^* \cdot \text{GPA} + w_2^* \cdot \text{experience} + w_3^* \cdot \text{education}$$
+
+# ====================
+
+GPA, years of experience, and years of education are features – they represent a data scientist as a vector of numbers.
+e.g. Your feature vector may be [3.5, 1, 7].
+
+# ====================
+
+This approach requires features to be numeric.
+
+# ====================
+
+Moving forward¶Suppose we'd like to predict the sentiment of a piece of text from 1 to 10.
+
+10: Very positive (happy).
+1: Very negative (sad, angry).
+
+Example:
+
+Input: "DSC 80 is a pretty good class."
+
+Output: 7.
+
+We can frame this as a regression problem, but we can't directly use what we learned in 40A, because here our inputs are text, not numbers.
+
+# ====================
+
+Big question: How do we represent a text document as a feature vector of numbers?
+
+# ====================
+
+If we can do this, we can:
+use a text document as input in a regression or classification model (in a few lectures).
+quantify the similarity of two text documents (today).
+
+# ====================
+
+Example: San Diego employee salaries¶
+Transparent California publishes the salaries of all City of San Diego employees.
+Let's look at the 2024 data (most recent available).
+
+# ====================
+
+In [2]:
+
+
+salaries = pd.read_csv('https://transcal.s3.amazonaws.com/public/export/san-diego-2024.csv')
+salaries['Employee Name'] = salaries['Employee Name'].str.split().str[0] + ' Xxxx'
+
+# ====================
+
+In [2]:
+
+# ====================
+
+In [3]:
+
+
+salaries.head()
+
+# ====================
+
+In [3]:
+
+# ====================
+
+Aside on privacy and ethics¶
+
+# ====================
+
+Even though the data we downloaded is publicly available, employee names still correspond to real people.
+
+# ====================
+
+Be careful when dealing with PII (personably identifiable information).
+Only work with the data that is needed for your analysis.
+Even when data is public, people have a reasonable right to privacy.
+
+# ====================
+
+Remember to think about the impacts of your work outside of your Jupyter Notebook.
+
+# ====================
+
+Goal: Quantifying similarity¶
+
+# ====================
+
+Our goal is to describe, numerically, how similar two job titles are.
+
+# ====================
+
+For instance, our similarity metric should tell us that 'Deputy Fire Chief' and 'Fire Battalion Chief' are more similar than 'Deputy Fire Chief' and 'City Attorney'.
+
+# ====================
+
+Idea: Two job titles are similar if they contain shared words, regardless of order. So, to measure the similarity between two job titles, we could count the number of words they share in common.
+
+# ====================
+
+Before we do this, we need to be confident that the job titles are clean and consistent – let's explore.
+
+# ====================
+
+Exploring job titles¶
+
+# ====================
+
+In [4]:
+
+
+jobtitles = salaries['Job Title']
+jobtitles.head()
+
+# ====================
+
+In [4]:
+
+# ====================
+
+How many employees are in the dataset? How many unique job titles are there?
+
+# ====================
+
+In [5]:
+
+
+jobtitles.shape[0], jobtitles.nunique()
+
+# ====================
+
+In [5]:
+
+# ====================
+
+What are the most common job titles?
+
+# ====================
+
+In [6]:
+
+
+jobtitles.value_counts().iloc[:10]
+
+# ====================
+
+In [6]:
+
+# ====================
+
+Are there any missing job titles?
+
+# ====================
+
+In [7]:
+
+
+jobtitles.isna().sum()
+
+# ====================
+
+In [7]:
+
+# ====================
+
+Fortunately, no.
+
+# ====================
+
+Canonicalization¶Remember, our goal is ultimately to count the number of shared words between job titles. But before we start counting the number of shared words, we need to consider the following:
+
+# ====================
+
+Some job titles may have punctuation, like '-' and '&', which may count as words when they shouldn't.
+'Assistant - Manager' and 'Assistant Manager' should count as the same job title.
+
+# ====================
+
+Some job titles may have "glue" words, like 'to' and 'the', which (we can argue) also shouldn't count as words.
+'Assistant To The Manager' and 'Assistant Manager' should count as the same job title.
+
+# ====================
+
+If we just want to focus on the titles themselves, then perhaps roman numerals should be removed: that is, 'Police Officer Ii' and 'Police Officer I' should count as the same job title.
+
+# ====================
+
+Let's address the above issues. The process of converting job titles so that they are always represented the same way is called canonicalization.
+
+# ====================
+
+Punctuation¶Are there job titles with unnecessary punctuation that we can remove?
+
+To find out, we can write a regular expression that looks for characters other than letters, numbers, and spaces.
+
+We can use regular expressions with the .str methods we learned earlier in the quarter just by using regex=True.
+
+# ====================
+
+In [8]:
+
+
+# Uses character class negation.
+jobtitles.str.contains(r'[^A-Za-z0-9 ]', regex=True).sum()
+
+# ====================
+
+In [8]:
+
+# ====================
+
+In [9]:
+
+
+jobtitles[jobtitles.str.contains(r'[^A-Za-z0-9 ]', regex=True)].head()
+
+# ====================
+
+In [9]:
+
+# ====================
+
+It seems like we should replace these pieces of punctuation with a single space.
+
+# ====================
+
+"Glue" words¶Are there job titles with "glue" words in the middle, such as 'Assistant To The Manager'?
+
+# ====================
+
+To figure out if any titles contain the word 'to', we can't just do the following, because it will evaluate to True for job titles that have 'to' anywhere in them, even if not as a standalone word.
+
+# ====================
+
+In [10]:
+
+
+# Why are we converting to lowercase?
+jobtitles.str.lower().str.contains('to').sum()
+
+# ====================
+
+In [10]:
+
+# ====================
+
+Instead, we need to look for 'to' separated by word boundaries.
+
+# ====================
+
+In [11]:
+
+
+jobtitles.str.lower().str.contains(r'\bto\b', regex=True).sum()
+
+# ====================
+
+In [11]:
+
+# ====================
+
+In [12]:
+
+
+jobtitles[jobtitles.str.lower().str.contains(r'\bto\b', regex=True)]
+
+# ====================
+
+In [12]:
+
+# ====================
+
+We can look for other filler words too, like 'the' and 'for'.
+
+# ====================
+
+In [13]:
+
+
+jobtitles[jobtitles.str.lower().str.contains(r'\bthe\b', regex=True)]
+
+# ====================
+
+In [13]:
+
+# ====================
+
+In [14]:
+
+
+jobtitles[jobtitles.str.lower().str.contains(r'\bfor\b', regex=True)]
+
+# ====================
+
+In [14]:
+
+# ====================
+
+We should probably remove these "glue" words.
+
+# ====================
+
+Roman numerals (e.g. "Ii")¶Lastly, let's try to identify job titles that have roman numerals at the end, like 'i' (1), 'ii' (2), 'iii' (3), or 'iv' (4). As before, we'll convert to lowercase first.
+
+# ====================
+
+In [15]:
+
+
+jobtitles[jobtitles.str.lower().str.contains(r'\bi+v?\b', regex=True)]
+
+# ====================
+
+In [15]:
+
+# ====================
+
+Let's get rid of those numbers, too.
+
+# ====================
+
+Fixing punctuation and removing "glue" words and roman numerals¶Let's put the preceeding three steps together and canonicalize job titles by:
+
+converting to lowercase,
+removing each occurrence of 'to', 'the', and 'for',
+replacing each character that is not a letter, digit, or space with a single space,
+replacing each sequence of roman numerals – either 'i', 'ii', 'iii', or 'iv' at the end with nothing, and
+replacing each sequence of multiple spaces with a single space.
+
+# ====================
+
+In [16]:
+
+
+jobtitles = (
+    jobtitles
+    .str.lower()
+    .str.replace(r'\bto\b|\bthe\b\|bfor\b', '', regex=True)
+    .str.replace(r'[^A-Za-z0-9 ]', ' ', regex=True)
+    .str.replace(r'\bi+v?\b', '', regex=True)
+    .str.replace(r' +', ' ', regex=True)               # ' +' matches 1 or more occurrences of a space.
+    .str.strip()                                       # Removes leading/trailing spaces if present.
+)
+
+# ====================
+
+In [16]:
+
+# ====================
+
+In [17]:
+
+
+jobtitles.sample(5)
+
+# ====================
+
+In [17]:
+
+# ====================
+
+In [18]:
+
+
+(jobtitles == 'police officer').sum()
+
+# ====================
+
+In [18]:
+
+# ====================
+
+Bag of words 💰¶
+
+# ====================
+
+Text similarity¶Recall, our idea is to measure the similarity of two job titles by counting the number of shared words between the job titles. How do we actually do that, for all of the job titles we have?
+
+# ====================
+
+A counts matrix¶Let's create a "counts" matrix, such that:
+
+there is 1 row per job title,
+there is 1 column per unique word that is used in job titles, and
+the value in row title and column word is the number of occurrences of word in title.
+
+# ====================
+
+Such a matrix might look like:
+
+
+
+
+senior
+lecturer
+teaching
+professor
+assistant
+associate
+
+
+
+
+senior lecturer
+1
+1
+0
+0
+0
+0
+
+
+assistant teaching professor
+0
+0
+1
+1
+1
+0
+
+
+associate professor
+0
+0
+0
+1
+0
+1
+
+
+senior assistant to the assistant professor
+1
+0
+0
+1
+2
+0
+
+
+
+Then, we can make statements like: "assistant teaching professor" is more similar to "associate professor" than to "senior lecturer".
+
+# ====================
+
+Creating a counts matrix¶First, we need to determine all words that are used across all job titles.
+
+# ====================
+
+In [19]:
+
+
+jobtitles.str.split()
+
+# ====================
+
+In [19]:
+
+# ====================
+
+In [20]:
+
+
+# The .explode method concatenates the lists together into a single Series.
+all_words = jobtitles.str.split().explode()
+all_words
+
+# ====================
+
+In [20]:
+
+# ====================
+
+Next, to determine the columns of our matrix, we need to find a list of all unique words used in titles. We can do this with np.unique, but value_counts shows us the distribution, which is interesting.
+
+# ====================
+
+In [21]:
+
+
+unique_words = all_words.value_counts()
+unique_words
+
+# ====================
+
+In [21]:
+
+# ====================
+
+Note that in unique_words.index, job titles are sorted by number of occurrences!
+
+# ====================
+
+For each of the unique words that are used in job titles, we can count the number of occurrences of the word in each job title.
+
+'deputy fire chief' contains the word 'deputy' once, the word 'fire' once, and the word 'chief' once.
+'assistant managers assistant' contains the word 'assistant' twice and the word 'managers' once.
+
+# ====================
+
+In [22]:
+
+
+# Created using a dictionary to avoid a "DataFrame is highly fragmented" warning.
+counts_dict = {}
+for word in unique_words.index:
+    re_pat = fr'\b{word}\b'   
+    counts_dict[word] = jobtitles.str.count(re_pat)
+    
+counts_df = pd.DataFrame(counts_dict).set_index(jobtitles)
+
+# ====================
+
+In [22]:
+
+# ====================
+
+In [23]:
+
+
+counts_df.head()
+
+# ====================
+
+In [23]:
+
+# ====================
+
+In [24]:
+
+
+counts_df.shape
+
+# ====================
+
+In [24]:
+
+# ====================
+
+counts_df has one row for each employee, and one column for each unique word that is used in a job title.
+
+# ====================
+
+Bag of words¶
+The bag of words model represents texts (e.g. job titles, sentences, documents) as vectors of word counts.
+The "counts" matrices we have worked with so far were created using the bag of words model.
+The bag of words model defines a vector space in $\mathbb{R}^{\text{number of unique words}}$.
+In the matrix on the previous slide, each row was a vector corresponding to a specific job title.
+
+
+It is called "bag of words" because it doesn't consider order.
+
+
+(source)
+
+# ====================
+
+Cosine similarity¶
+
+# ====================
+
+Question: Which job titles are most similar to 'deputy fire chief'?¶
+
+# ====================
+
+Remember, our idea was to count the number of shared words between two job titles.
+
+# ====================
+
+We now have access to counts_df, which contains a row vector for each job title.
+
+# ====================
+
+How can we use it to count the number of shared words between two job titles?
+
+# ====================
+
+Counting shared words¶To start, let's compare the row vectors for 'deputy fire chief' and 'fire battalion chief'.
+
+# ====================
+
+In [25]:
+
+
+dfc = counts_df.loc['deputy fire chief'].iloc[0]
+dfc
+
+# ====================
+
+In [25]:
+
+# ====================
+
+In [26]:
+
+
+fbc = counts_df.loc['fire battalion chief'].iloc[0]
+fbc
+
+# ====================
+
+In [26]:
+
+# ====================
+
+We can stack these two vectors horizontally.
+
+# ====================
+
+In [27]:
+
+
+pair_counts = (
+    pd.concat([dfc, fbc], axis=1)
+    .sort_values(by=['deputy fire chief', 'fire battalion chief'], ascending=False)
+    .head(10)
+    .T
+)
+
+pair_counts
+
+# ====================
+
+In [27]:
+
+# ====================
+
+'deputy fire chief' and 'fire battalion chief' have 2 shared words in common. One way to arrive at this result mathematically is by taking their dot product:
+
+# ====================
+
+In [28]:
+
+
+np.dot(pair_counts.iloc[0], pair_counts.iloc[1])
+
+# ====================
+
+In [28]:
+
+# ====================
+
+Recall: The dot product¶
+
+# ====================
+
+Recall, if $\vec{a} = \begin{bmatrix} a_1 & a_2 & ... & a_n \end{bmatrix}^T$ and $\vec{b} = \begin{bmatrix} b_1 & b_2 & ... & b_n \end{bmatrix}^T$ are two vectors, then their dot product $\vec{a} \cdot \vec{b}$ is defined as:
+
+$$\vec{a} \cdot \vec{b} = a_1b_1 + a_2b_2 + ... + a_nb_n$$
+
+# ====================
+
+The dot product also has a geometric interpretation. If $|\vec{a}|$ and $|\vec{b}|$ are the $L_2$ norms (lengths) of $\vec{a}$ and $\vec{b}$, and $\theta$ is the angle between $\vec{a}$ and $\vec{b}$, then:
+
+$$\vec{a} \cdot \vec{b} = |\vec{a}| |\vec{b}| \cos \theta$$
+(source)
+
+# ====================
+
+$\cos \theta$ is equal to its maximum value (1) when $\theta = 0$, i.e. when $\vec{a}$ and $\vec{b}$ point in the same direction.
+
+# ====================
+
+Cosine similarity and bag of words¶To measure the similarity between two word vectors, instead of just counting the number of shared words, we should compute their normalized dot product, also known as their cosine similarity.
+$$\cos \theta = \boxed{\frac{\vec{a} \cdot \vec{b}}{|\vec{a}| | \vec{b}|}}$$
+
+# ====================
+
+If all elements in $\vec{a}$ and $\vec{b}$ are non-negative, then $\cos \theta$ ranges from 0 to 1.
+
+# ====================
+
+🚨 Key idea: The larger $\cos \theta$ is, the more similar the two vectors are!
+
+# ====================
+
+It is important to normalize by the lengths of the vectors, otherwise texts with more words will have artificially high similarities with other texts.
+
+# ====================
+
+Normalizing¶$$\cos \theta = \boxed{\frac{\vec{a} \cdot \vec{b}}{|\vec{a}| | \vec{b}|}}$$
+
+# ====================
+
+Why can't we just use the dot product – that is, why must we divide by $|\vec{a}| | \vec{b}|$?
+
+# ====================
+
+Consider the following example:
+
+
+
+
+
+big
+data
+science
+
+
+
+
+big big big big data
+4
+1
+0
+
+
+big data science
+1
+1
+1
+
+
+science big data
+1
+1
+1
+
+# ====================
+
+Pair
+Dot Product
+Cosine Similarity
+
+
+
+
+big data science and big big big big data
+5
+0.7001
+
+
+big data science and science big data
+3
+1
+
+# ====================
+
+'big big big big data' has a large dot product with 'big data science' just because it has the word 'big' four times. But intuitively, 'big data science' and 'science big data' should be as similar as possible, since they're permutations of the same phrase.
+
+# ====================
+
+So, make sure to compute the cosine similarity – don't just use the dot product!
+
+# ====================
+
+Note: Sometimes, you will see the cosine distance being used. It is the complement of cosine similarity:
+$$\text{dist}(\vec{a}, \vec{b}) = 1 - \cos \theta$$
+If $\text{dist}(\vec{a}, \vec{b})$ is small, the two word vectors are similar.
+
+# ====================
+
+A recipe for computing similarities¶Given a set of documents, to find the most similar text to one document $d$ in particular:
+
+# ====================
+
+Use the bag of words model to create a counts matrix, in which:
+there is 1 row per document,
+there is 1 column per unique word that is used across documents, and
+the value in row doc and column word is the number of occurrences of word in doc.
+
+# ====================
+
+Compute the cosine similarity between $d$'s row vector and all other documents' row vectors.
+
+# ====================
+
+The other document with the greatest cosine similarity is the most similar, under the bag of words model.
+
+# ====================
+
+Example: Global warming 🌎¶Consider the following three documents.
+
+# ====================
+
+In [29]:
+
+
+sentences = pd.Series([
+    'I really really want global peace',
+    'I must enjoy global warming',
+    'We must solve climate change'
+])
+
+sentences
+
+# ====================
+
+In [29]:
+
+# ====================
+
+Let's represent each document using the bag of words model.
+
+# ====================
+
+In [30]:
+
+
+unique_words = sentences.str.split().explode().value_counts()
+unique_words
+
+# ====================
+
+In [30]:
+
+# ====================
+
+In [31]:
+
+
+counts_dict = {}
+for word in unique_words.index:
+    re_pat = fr'\b{word}\b'
+    counts_dict[word] = sentences.str.count(re_pat)
+    
+counts_df = pd.DataFrame(counts_dict).set_index(sentences)
+
+# ====================
+
+In [31]:
+
+# ====================
+
+In [32]:
+
+
+counts_df
+
+# ====================
+
+In [32]:
+
+# ====================
+
+Let's now find the cosine similarity between each pair of documents.
+
+# ====================
+
+In [33]:
+
+
+counts_df
+
+# ====================
+
+In [33]:
+
+# ====================
+
+In [34]:
+
+
+def sim_pair(s1, s2):
+    return np.dot(s1, s2) / (np.linalg.norm(s1) * np.linalg.norm(s2))
+
+# ====================
+
+In [34]:
+
+# ====================
+
+In [35]:
+
+
+# Look at the documentation of the .corr method to see how this works!
+counts_df.T.corr(sim_pair)
+
+# ====================
+
+In [35]:
+
+# ====================
+
+Issue: Bag of words only encodes the words that each document uses, not their meanings.
+
+"I really really want global peace" and "We must solve climate change" have similar meanings, but have no shared words, and thus a low cosine similarity.
+"I really really want global peace" and "I must enjoy global warming" have very different meanings, but a relatively high cosine similarity.
+
+# ====================
+
+Pitfalls of the bag of words model¶Remember, the key assumption underlying the bag of words model is that two documents are similar if they share many words in common.
+
+# ====================
+
+The bag of words model doesn't consider order.
+The job titles 'deputy fire chief' and 'chief fire deputy' are treated as the same.
+
+# ====================
+
+The bag of words model doesn't consider the meaning of words.
+'I love data science' and 'I hate data science' share 75% of their words, but have very different meanings.
+
+# ====================
+
+The bag of words model treats all words as being equally important.
+'deputy' and 'fire' have the same importance, even though 'fire' is probably more important in describing someone's job title.
+Let's address this point.
+
+# ====================
+
+TF-IDF¶
+
+# ====================
+
+The importance of words¶Issue: The bag of words model doesn't know which words are "important" in a document. Consider the following document:
+"at the last game, the team scored basket after basket"
+How do we determine which words are important?
+
+Repetition of words indicates importance, but
+the most common words ("the", "of", "at") often don't have much meaning!
+
+Goal: Find a way of quantifying the importance of a word in a document by balancing the above two factors, i.e. find the word that best summarizes a document.
+
+# ====================
+
+Term frequency¶
+
+# ====================
+
+The term frequency of a word (term) $t$ in a document $d$, denoted $\text{tf}(t, d)$ is the proportion of words in document $d$ that are equal to $t$.
+
+$$
+\text{tf}(t, d)= \frac{\text{\# of occurrences of $t$ in $d$}}{\text{total \# of words in $d$}}
+$$
+
+# ====================
+
+Example: What is the term frequency of "basket" in the following document?
+
+"at the last game, the team scored basket after basket"
+
+Answer: $\frac{2}{10} = \frac15$.
+
+Intuition: Words that occur often within a document are important to the document's meaning.
+
+If $\text{tf}(t, d)$ is large, then word $t$ occurs often in $d$.
+If $\text{tf}(t, d)$ is small, then word $t$ does not occur often $d$.
+
+# ====================
+
+Issue: "the" also has a TF of $\frac15$, but it seems less important than "basket".
+
+# ====================
+
+Inverse document frequency¶
+
+# ====================
+
+The inverse document frequency of a word $t$ in a set of documents $d_1, d_2, ...$ is
+
+$$\text{idf}(t) = \log \left(\frac{\text{total \# of documents}}{\text{\# of documents in which $t$ appears}} \right)$$
+
+# ====================
+
+Example: What is the inverse document frequency of "basket" in the following three documents?
+"at the last game, the team scored basket after basket"
+"our team is on fire"
+"they only missed one basket"
+
+# ====================
+
+Answer: $\log \left(\frac{3}{2}\right) \approx 0.4055$.
+
+# ====================
+
+Intuition: If a word appears in every document (like "the", "of", "at"), it is probably not a good summary of any one document.
+If $\text{idf}(t)$ is large, then $t$ is rarely found in documents.
+If $\text{idf}(t)$ is small, then $t$ is commonly found in documents.
+Think of $\text{idf}(t)$ as the "rarity factor" of $t$ across documents – the larger $\text{idf}(t)$ is, the more rare $t$ is.
+
+# ====================
+
+Intuition¶$$\text{tf}(t, d) = \frac{\text{\# of occurrences of $t$ in $d$}}{\text{total \# of words in $d$}}$$
+$$\text{idf}(t) = \log \left(\frac{\text{total \# of documents}}{\text{\# of documents in which $t$ appears}} \right)$$
+Goal: Quantify how well word $t$ summarizes document $d$.
+
+# ====================
+
+If $\text{tf}(t, d)$ is small, then $t$ doesn't occur very often in $d$, so $t$ can't be a good summary of $d$.
+
+# ====================
+
+If $\text{idf}(t)$ is small, then $t$ occurs often amongst all documents, and so it is not a good summary of any one document.
+
+# ====================
+
+If $\text{tf}(t, d)$ and $\text{idf}(t)$ are both large, then $t$ occurs often in $d$ but rarely overall. This makes $t$ a good summary of document $d$.
+
+# ====================
+
+Term frequency-inverse document frequency¶The term frequency-inverse document frequency (TF-IDF) of word $t$ in document $d$ is the product:
+$$
+\begin{align*}
+\text{tfidf}(t, d) &=
+    \text{tf}(t, d) \cdot \text{idf}(t) \\\
+    &= \frac{\text{\# of occurrences of $t$ in $d$}}{\text{total \# of words in $d$}}
+        \cdot \log \left(\frac{\text{total \# of documents}}{\text{\# of documents in which $t$ appears}} \right)
+\end{align*}
+$$
+
+# ====================
+
+If $\text{tfidf}(t, d)$ is large, then $t$ is a good summary of $d$, because $t$ occurs often in $d$ but rarely across all documents.
+
+# ====================
+
+TF-IDF is a heuristic – it has no probabilistic justification.
+
+# ====================
+
+To know if $\text{tfidf}(t, d)$ is large for one particular word $t$, we need to compare it to $\text{tfidf}(t_i, d)$, for several different words $t_i$.
+
+# ====================
+
+Computing TF-IDF¶Question: What is the TF-IDF of "global" in the second sentence?
+
+# ====================
+
+In [36]:
+
+
+sentences
+
+# ====================
+
+In [36]:
+
+# ====================
+
+Answer:
+
+# ====================
+
+In [37]:
+
+
+tf = sentences.iloc[1].count('global') / len(sentences.iloc[1].split())
+tf
+
+# ====================
+
+In [37]:
+
+# ====================
+
+In [38]:
+
+
+idf = np.log(len(sentences) / sentences.str.contains('global').sum())
+idf
+
+# ====================
+
+In [38]:
+
+# ====================
+
+In [39]:
+
+
+tf * idf
+
+# ====================
+
+In [39]:
+
+# ====================
+
+Question: Is this big or small? Is "global" the best summary of the second sentence?
+
+# ====================
+
+TF-IDF of all words in all documents¶On its own, the TF-IDF of a word in a document doesn't really tell us anything; we must compare it to TF-IDFs of other words in that same document.
+
+# ====================
+
+In [40]:
+
+
+sentences
+
+# ====================
+
+In [40]:
+
+# ====================
+
+In [41]:
+
+
+unique_words = np.unique(sentences.str.split().explode())
+unique_words
+
+# ====================
+
+In [41]:
+
+# ====================
+
+In [42]:
+
+
+tfidf_dict = {}
+
+for word in unique_words:
+    re_pat = fr'\b{word}\b'
+    tf = sentences.str.count(re_pat) / sentences.str.split().str.len()
+    idf = np.log(len(sentences) / sentences.str.contains(re_pat).sum())
+    tfidf_dict[word] = tf * idf
+    
+tfidf = pd.DataFrame(tfidf_dict).set_index(sentences)
+
+# ====================
+
+In [42]:
+
+# ====================
+
+In [43]:
+
+
+tfidf
+
+# ====================
+
+In [43]:
+
+# ====================
+
+Interpreting TF-IDFs¶
+
+# ====================
+
+In [44]:
+
+
+display_df(tfidf, cols=12)
+
+# ====================
+
+In [44]:
+
+# ====================
+
+The above DataFrame tells us that:
+
+the TF-IDF of 'really' in the first sentence is $\approx$ 0.37,
+the TF-IDF of 'climate' in the second sentence is 0.
+
+# ====================
+
+Note that there are two ways that $\text{tfidf}(t, d) = \text{tf}(t, d) \cdot \text{idf}(t)$ can be 0:
+
+If $t$ appears in every document, because then $\text{idf}(t) = \log (\frac{\text{\# documents}}{\text{\# documents}}) = \log(1) = 0$.
+If $t$ does not appear in document $d$, because then $\text{tf}(t, d) = \frac{0}{\text{len}(d)} = 0$.
+
+# ====================
+
+The word that best summarizes a document is the word with the highest TF-IDF for that document:
+
+# ====================
+
+In [45]:
+
+
+display_df(tfidf, cols=12)
+
+# ====================
+
+In [45]:
+
+# ====================
+
+In [46]:
+
+
+tfidf.idxmax(axis=1)
+
+# ====================
+
+In [46]:
+
+# ====================
+
+Look closely at the rows of tfidf – in documents 2 and 3, the max TF-IDF is not unique!
+
+# ====================
+
+Example: Presidential inaugural addresses 🎤¶
+
+# ====================
+
+Presidential inaugural addresses¶Every four years, on January 20th, the incoming (or re-elected) President delivers an inaugural address just after taking the oath of office, in which they often share their vision for the country.
+
+# ====================
+
+The data¶
+
+# ====================
+
+In [47]:
+
+
+from pathlib import Path
+inaug_txt = Path('data') / 'inaugural_addresses.txt'
+inaug = inaug_txt.read_text(encoding='utf-8')
+
+# ====================
+
+In [47]:
+
+# ====================
+
+In [48]:
+
+
+len(inaug)
+
+# ====================
+
+In [48]:
+
+# ====================
+
+The entire corpus (another word for "set of documents") is nearly 1 million characters long... let's not display it in our notebook.
+
+# ====================
+
+In [49]:
+
+
+print(inaug[:1500])
+
+# ====================
+
+In [49]:
+
+# ====================
+
+Each speech is separated by '***'.
+
+# ====================
+
+In [50]:
+
+
+speeches = inaug.split('\n***\n')[1:]
+
+# ====================
+
+In [50]:
+
+# ====================
+
+In [51]:
+
+
+len(speeches)
+
+# ====================
+
+In [51]:
+
+# ====================
+
+Note that each "speech" currently contains other information, like the name of the president and the year of the address.
+
+# ====================
+
+In [52]:
+
+
+print(speeches[-1])
+
+# ====================
+
+In [52]:
+
+# ====================
+
+Let's extract just the speech text.
+
+# ====================
+
+In [53]:
+
+
+import re
+def extract_struct(speech):
+    L = speech.strip().split('\n', maxsplit=3)
+    L[3] = L[3].replace('’', "'").replace('‘', "'")   # standardize curly vs straight apostrophes
+    L[3] = re.sub(r"[^A-Za-z' ]", ' ', L[3]).lower()
+    return dict(zip(['speech', 'president', 'year', 'contents'], L))
+
+# ====================
+
+In [53]:
+
+# ====================
+
+In [54]:
+
+
+speeches_df = pd.DataFrame(list(map(extract_struct, speeches)))
+speeches_df
+
+# ====================
+
+In [54]:
+
+# ====================
+
+Finding the most important words in each speech¶Here, a "document" is a speech. We have 60 documents.
+
+# ====================
+
+In [55]:
+
+
+speeches_df
+
+# ====================
+
+In [55]:
+
+# ====================
+
+A rough sketch of what we'll compute:
+for each word t:
+    for each speech d:
+        compute tfidf(t, d)
+
+# ====================
+
+In [56]:
+
+
+unique_words = speeches_df['contents'].str.split().explode().value_counts().index
+unique_words
+
+# ====================
+
+In [56]:
+
+# ====================
+
+💡 Pro-Tip: Using tqdm¶This code takes a while to run, so we'll use the tqdm package to track its progress. (Install with mamba install tqdm if needed).
+
+# ====================
+
+In [57]:
+
+
+from tqdm.notebook import tqdm
+
+tfidf_dict = {}
+tf_denom = speeches_df['contents'].str.split().str.len()
+
+# Wrap the sequence with `tqdm()` to display a progress bar
+for word in tqdm(unique_words):
+    re_pat = fr' {word} ' # Imperfect pattern for speed.
+    tf = speeches_df['contents'].str.count(re_pat) / tf_denom
+    idf = np.log(len(speeches_df) / speeches_df['contents'].str.contains(re_pat).sum())
+    tfidf_dict[word] =  tf * idf
+
+# ====================
+
+In [57]:
+
+# ====================
+
+In [58]:
+
+
+tfidf = pd.DataFrame(tfidf_dict)
+tfidf.sample(6, axis=0)
+
+# ====================
+
+In [58]:
+
+# ====================
+
+Note that the TF-IDFs of many common words are all 0!
+
+# ====================
+
+Summarizing speeches¶By using idxmax, we can find the word with the highest TF-IDF in each speech.
+
+# ====================
+
+In [59]:
+
+
+summaries = tfidf.idxmax(axis=1)
+summaries
+
+# ====================
+
+In [59]:
+
+# ====================
+
+What if we want to see the 10 words with the highest TF-IDFs, for each speech?
+
+# ====================
+
+In [60]:
+
+
+def ten_largest(row):
+    return ', '.join(row.index[row.argsort()][-10:])
+
+# ====================
+
+In [60]:
+
+# ====================
+
+In [61]:
+
+
+keywords = tfidf.apply(ten_largest, axis=1)
+keywords_df = pd.concat([
+    speeches_df['president'],
+    speeches_df['year'],
+    keywords
+], axis=1)
+
+# ====================
+
+In [61]:
+
+# ====================
+
+In [62]:
+
+
+display_df(keywords_df, rows=60)
+
+# ====================
+
+In [62]:
+
+# ====================
+
+Aside: What if we remove the $\log$ from $\text{idf}(t)$?¶Let's try it and see what happens.
+
+# ====================
+
+In [63]:
+
+
+tfidf_nl_dict = {}
+tf_denom = speeches_df['contents'].str.split().str.len()
+
+for word in tqdm(unique_words):
+    re_pat = fr' {word} ' # Imperfect pattern for speed.
+    tf = speeches_df['contents'].str.count(re_pat) / tf_denom
+    idf_nl = len(speeches_df) / speeches_df['contents'].str.contains(re_pat).sum()
+    tfidf_nl_dict[word] =  tf * idf_nl
+
+# ====================
+
+In [63]:
+
+# ====================
+
+In [64]:
+
+
+tfidf_nl = pd.DataFrame(tfidf_nl_dict)
+tfidf_nl.head()
+
+# ====================
+
+In [64]:
+
+# ====================
+
+In [65]:
+
+
+keywords_nl = tfidf_nl.apply(ten_largest, axis=1)
+keywords_nl_df = pd.concat([
+    speeches_df['president'],
+    speeches_df['year'],
+    keywords_nl
+], axis=1)
+display_df(keywords_nl_df, rows=60)
+
+# ====================
+
+In [65]:
+
+# ====================
+
+The role of $\log$ in $\text{idf}(t)$¶$$
+\begin{align*}
+\text{tfidf}(t, d) &=
+    \text{tf}(t, d) \cdot \text{idf}(t) \\\
+    &= \frac{\text{\# of occurrences of $t$ in $d$}}{\text{total \# of words in $d$}}
+        \cdot \log \left(\frac{\text{total \# of documents}}{\text{\# of documents in which $t$ appears}} \right)
+\end{align*}
+$$
+
+Remember, for any positive input $x$, $\log(x)$ is (much) smaller than $x$.
+In $\text{idf}(t)$, the $\log$ "dampens" the impact of the ratio $\frac{\text{\# documents}}{\text{\# documents with $t$}}$.
+
+# ====================
+
+If a word is very common, the ratio will be close to 1. The log of the ratio will be close to 0.
+
+# ====================
+
+In [66]:
+
+
+(1000 / 999)
+
+# ====================
+
+In [66]:
+
+# ====================
+
+In [67]:
+
+
+np.log(1000 / 999)
+
+# ====================
+
+In [67]:
+
+# ====================
+
+If a word is very common (e.g. 'the'), removing the log multiplies the statistic by a large factor.
+If a word is very rare, the ratio will be very large. However, for instance, a word being seen in 2 out of 50 documents is not very different than being seen in 2 out of 500 documents (it is very rare in both cases), and so $\text{idf}(t)$ should be similar in both cases.
+
+# ====================
+
+In [68]:
+
+
+(50 / 2)
+
+# ====================
+
+In [68]:
+
+# ====================
+
+In [69]:
+
+
+(500 / 2)
+
+# ====================
+
+In [69]:
+
+# ====================
+
+In [70]:
+
+
+np.log(50 / 2)
+
+# ====================
+
+In [70]:
+
+# ====================
+
+In [71]:
+
+
+np.log(500 / 2)
+
+# ====================
+
+In [71]:
+
+# ====================
+
+Question 🤔
+
+From the Fall 23 final:
+Consider the following corpus:
+Document number Content
+1               yesterday rainy today sunny
+2               yesterday sunny today sunny
+3               today rainy yesterday today
+4               yesterday yesterday today today
+
+    
+
+Using a bag-of-words representation, which two documents have the largest dot product?
+Using a bag-of-words representation, what is the cosine similarity between documents 2 and 3?
+Which words have a TF-IDF score of 0 for all four documents?
+
+# ====================
+
+Summary, next time¶
+
+# ====================
+
+Summary¶
+One way to turn documents, like 'deputy fire chief', into feature vectors, is to count the number of occurrences of each word in the document, ignoring order. This is done using the bag of words model.
+To measure the similarity of two documents under the bag of words model, compute the cosine similarity of their two word vectors.
+Term frequency-inverse document frequency (TF-IDF) is a statistic that tries to quantify how important a word (term) is to a document. It balances:
+how often a word appears in a particular document, $\text{tf}(t, d)$, with
+how often a word appears across documents, $\text{idf}(t)$.
+
+
+For a given document, the word with the highest TF-IDF is thought to "best summarize" that document.
+
+# ====================
+
+Next time¶Modeling and feature engineering.

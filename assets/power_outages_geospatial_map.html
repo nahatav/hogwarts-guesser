@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_54695579b059e1dd3421eef93e12fa94 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_54695579b059e1dd3421eef93e12fa94" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_54695579b059e1dd3421eef93e12fa94 = L.map(
+                "map_54695579b059e1dd3421eef93e12fa94",
+                {
+                    center: [38.5, -96.5],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 4,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_97b2763b9177564afcfc8b3bf4cff48c = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_97b2763b9177564afcfc8b3bf4cff48c.addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+            var circle_marker_1cd6483296d52e231ea1ce7850d8c496 = L.circleMarker(
+                [32.806671, -86.79113],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.573214099741122, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_57824b79a218743d7d1dafdc69e41f04 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_6052395475f52ce523493254edfc9b72 = $(`<div id="html_6052395475f52ce523493254edfc9b72" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: AL</b></h4>             <b>Total Outages:</b> 6<br>             <b>Mean Duration:</b> 19.2 hrs<br>             <b>Total Customers Affected:</b> 471,644<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_57824b79a218743d7d1dafdc69e41f04.setContent(html_6052395475f52ce523493254edfc9b72);
+            
+        
+
+        circle_marker_1cd6483296d52e231ea1ce7850d8c496.bindPopup(popup_57824b79a218743d7d1dafdc69e41f04)
+        ;
+
+        
+    
+    
+            circle_marker_1cd6483296d52e231ea1ce7850d8c496.bindTooltip(
+                `<div>
+                     AL: 6 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8adc1de53c1646f51f94c7548be0ece6 = L.circleMarker(
+                [34.969704, -92.373123],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 17.5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_b8e8d32c5293bc2b0140265c67e51e7a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_dbd1b937e973b71b6cbc23ed0f41a1ad = $(`<div id="html_dbd1b937e973b71b6cbc23ed0f41a1ad" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: AR</b></h4>             <b>Total Outages:</b> 25<br>             <b>Mean Duration:</b> 25.2 hrs<br>             <b>Total Customers Affected:</b> 619,760<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_b8e8d32c5293bc2b0140265c67e51e7a.setContent(html_dbd1b937e973b71b6cbc23ed0f41a1ad);
+            
+        
+
+        circle_marker_8adc1de53c1646f51f94c7548be0ece6.bindPopup(popup_b8e8d32c5293bc2b0140265c67e51e7a)
+        ;
+
+        
+    
+    
+            circle_marker_8adc1de53c1646f51f94c7548be0ece6.bindTooltip(
+                `<div>
+                     AR: 25 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_45a9dc5b6c836d89fa8cc5acc801618b = L.circleMarker(
+                [33.729759, -111.431221],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 18.520259177452136, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_a42d4ac719bb5be8a7d9d432e4cbf272 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7dd69fd5dccd790c06d0a96dc3d6fd81 = $(`<div id="html_7dd69fd5dccd790c06d0a96dc3d6fd81" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: AZ</b></h4>             <b>Total Outages:</b> 28<br>             <b>Mean Duration:</b> 75.9 hrs<br>             <b>Total Customers Affected:</b> 579,624<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_a42d4ac719bb5be8a7d9d432e4cbf272.setContent(html_7dd69fd5dccd790c06d0a96dc3d6fd81);
+            
+        
+
+        circle_marker_45a9dc5b6c836d89fa8cc5acc801618b.bindPopup(popup_a42d4ac719bb5be8a7d9d432e4cbf272)
+        ;
+
+        
+    
+    
+            circle_marker_45a9dc5b6c836d89fa8cc5acc801618b.bindTooltip(
+                `<div>
+                     AZ: 28 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3164633b5698e8f72883d246a5ce76bd = L.circleMarker(
+                [36.116203, -119.681564],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 50.71981861166303, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_bf4bbaaa029d40eb66fa40f31f0c6ce7 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4f1a79897af849dab3e0e0580aa9fd2b = $(`<div id="html_4f1a79897af849dab3e0e0580aa9fd2b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: CA</b></h4>             <b>Total Outages:</b> 210<br>             <b>Mean Duration:</b> 27.8 hrs<br>             <b>Total Customers Affected:</b> 25,573,446<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_bf4bbaaa029d40eb66fa40f31f0c6ce7.setContent(html_4f1a79897af849dab3e0e0580aa9fd2b);
+            
+        
+
+        circle_marker_3164633b5698e8f72883d246a5ce76bd.bindPopup(popup_bf4bbaaa029d40eb66fa40f31f0c6ce7)
+        ;
+
+        
+    
+    
+            circle_marker_3164633b5698e8f72883d246a5ce76bd.bindTooltip(
+                `<div>
+                     CA: 210 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f5c7941429bd4a670132dc2778c1f0f8 = L.circleMarker(
+                [39.059811, -105.311104],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.55544171172596, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_ba104868350ab99f27c5e1480df7afca = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d82d0bb42336adcb58df131891209224 = $(`<div id="html_d82d0bb42336adcb58df131891209224" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: CO</b></h4>             <b>Total Outages:</b> 15<br>             <b>Mean Duration:</b> 15.0 hrs<br>             <b>Total Customers Affected:</b> 451,667<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_ba104868350ab99f27c5e1480df7afca.setContent(html_d82d0bb42336adcb58df131891209224);
+            
+        
+
+        circle_marker_f5c7941429bd4a670132dc2778c1f0f8.bindPopup(popup_ba104868350ab99f27c5e1480df7afca)
+        ;
+
+        
+    
+    
+            circle_marker_f5c7941429bd4a670132dc2778c1f0f8.bindTooltip(
+                `<div>
+                     CO: 15 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7a825ec5c6cf58114f5b7cd6c6b6171 = L.circleMarker(
+                [41.597782, -72.755371],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.849242404917497, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_5687c136b9c7048bcdfaa53dbda189cb = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_40ef8efbff8f3644b929043959384728 = $(`<div id="html_40ef8efbff8f3644b929043959384728" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: CT</b></h4>             <b>Total Outages:</b> 18<br>             <b>Mean Duration:</b> 21.3 hrs<br>             <b>Total Customers Affected:</b> 784,410<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_5687c136b9c7048bcdfaa53dbda189cb.setContent(html_40ef8efbff8f3644b929043959384728);
+            
+        
+
+        circle_marker_d7a825ec5c6cf58114f5b7cd6c6b6171.bindPopup(popup_5687c136b9c7048bcdfaa53dbda189cb)
+        ;
+
+        
+    
+    
+            circle_marker_d7a825ec5c6cf58114f5b7cd6c6b6171.bindTooltip(
+                `<div>
+                     CT: 18 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_007ee0855f6ba4a4200f28a5946878cc = L.circleMarker(
+                [39.318523, -75.507141],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.41093483101497, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_8ab5a28fc87cbebfdffd99c2eb03bb7e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_8ddbe3695aa344989660cb52f573aae8 = $(`<div id="html_8ddbe3695aa344989660cb52f573aae8" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: DE</b></h4>             <b>Total Outages:</b> 41<br>             <b>Mean Duration:</b> 2.4 hrs<br>             <b>Total Customers Affected:</b> 83,400<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_8ab5a28fc87cbebfdffd99c2eb03bb7e.setContent(html_8ddbe3695aa344989660cb52f573aae8);
+            
+        
+
+        circle_marker_007ee0855f6ba4a4200f28a5946878cc.bindPopup(popup_8ab5a28fc87cbebfdffd99c2eb03bb7e)
+        ;
+
+        
+    
+    
+            circle_marker_007ee0855f6ba4a4200f28a5946878cc.bindTooltip(
+                `<div>
+                     DE: 41 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5b2101b5ab33050551f59e483fa14d19 = L.circleMarker(
+                [27.766279, -81.686783],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 23.47871376374779, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_50de8fe9331c037cbdc9604b6b3ff1cc = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d3cc13e9e4da80d890e9b5c87e116d6f = $(`<div id="html_d3cc13e9e4da80d890e9b5c87e116d6f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: FL</b></h4>             <b>Total Outages:</b> 45<br>             <b>Mean Duration:</b> 68.2 hrs<br>             <b>Total Customers Affected:</b> 12,732,240<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_50de8fe9331c037cbdc9604b6b3ff1cc.setContent(html_d3cc13e9e4da80d890e9b5c87e116d6f);
+            
+        
+
+        circle_marker_5b2101b5ab33050551f59e483fa14d19.bindPopup(popup_50de8fe9331c037cbdc9604b6b3ff1cc)
+        ;
+
+        
+    
+    
+            circle_marker_5b2101b5ab33050551f59e483fa14d19.bindTooltip(
+                `<div>
+                     FL: 45 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dff53c5d2eff63481542344ecee6bcb5 = L.circleMarker(
+                [33.040619, -83.643074],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.430869689661812, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_b59b14e4f9da7cf2c33fc5595eaeff78 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_fbb61ebd4ceb79578afa40d07b26751a = $(`<div id="html_fbb61ebd4ceb79578afa40d07b26751a" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: GA</b></h4>             <b>Total Outages:</b> 17<br>             <b>Mean Duration:</b> 22.4 hrs<br>             <b>Total Customers Affected:</b> 1,930,883<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_b59b14e4f9da7cf2c33fc5595eaeff78.setContent(html_fbb61ebd4ceb79578afa40d07b26751a);
+            
+        
+
+        circle_marker_dff53c5d2eff63481542344ecee6bcb5.bindPopup(popup_b59b14e4f9da7cf2c33fc5595eaeff78)
+        ;
+
+        
+    
+    
+            circle_marker_dff53c5d2eff63481542344ecee6bcb5.bindTooltip(
+                `<div>
+                     GA: 17 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1e01a4dd4facf36aadbc2eb49bc9f4a6 = L.circleMarker(
+                [42.011539, -93.210526],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.899494936611665, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_ef8a25bfa0bec7d31c8f1d879711857d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4622181050a9dad5bd42fbcebc059dc9 = $(`<div id="html_4622181050a9dad5bd42fbcebc059dc9" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: IA</b></h4>             <b>Total Outages:</b> 8<br>             <b>Mean Duration:</b> 79.9 hrs<br>             <b>Total Customers Affected:</b> 376,000<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_ef8a25bfa0bec7d31c8f1d879711857d.setContent(html_4622181050a9dad5bd42fbcebc059dc9);
+            
+        
+
+        circle_marker_1e01a4dd4facf36aadbc2eb49bc9f4a6.bindPopup(popup_ef8a25bfa0bec7d31c8f1d879711857d)
+        ;
+
+        
+    
+    
+            circle_marker_1e01a4dd4facf36aadbc2eb49bc9f4a6.bindTooltip(
+                `<div>
+                     IA: 8 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b89a20be7dd88037f995e82a05fd69c3 = L.circleMarker(
+                [44.240459, -114.478828],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_2269457a1b1211aae117c3a7204650d9 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_76e81a24e744a44c967bc8c1932e583f = $(`<div id="html_76e81a24e744a44c967bc8c1932e583f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: ID</b></h4>             <b>Total Outages:</b> 9<br>             <b>Mean Duration:</b> 6.9 hrs<br>             <b>Total Customers Affected:</b> 35,000<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_2269457a1b1211aae117c3a7204650d9.setContent(html_76e81a24e744a44c967bc8c1932e583f);
+            
+        
+
+        circle_marker_b89a20be7dd88037f995e82a05fd69c3.bindPopup(popup_2269457a1b1211aae117c3a7204650d9)
+        ;
+
+        
+    
+    
+            circle_marker_b89a20be7dd88037f995e82a05fd69c3.bindTooltip(
+                `<div>
+                     ID: 9 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8efcae208a49bc36ffce9da870b04494 = L.circleMarker(
+                [40.349457, -88.986137],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 23.73815494093844, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_b71b58a0188e8752f6754fc10656a1dd = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e23b17fdf2e50db4e52d3cdabef4d4bc = $(`<div id="html_e23b17fdf2e50db4e52d3cdabef4d4bc" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: IL</b></h4>             <b>Total Outages:</b> 46<br>             <b>Mean Duration:</b> 26.7 hrs<br>             <b>Total Customers Affected:</b> 9,109,195<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_b71b58a0188e8752f6754fc10656a1dd.setContent(html_e23b17fdf2e50db4e52d3cdabef4d4bc);
+            
+        
+
+        circle_marker_8efcae208a49bc36ffce9da870b04494.bindPopup(popup_b71b58a0188e8752f6754fc10656a1dd)
+        ;
+
+        
+    
+    
+            circle_marker_8efcae208a49bc36ffce9da870b04494.bindTooltip(
+                `<div>
+                     IL: 46 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fb7022432ee2cf85f6487d5a5853c650 = L.circleMarker(
+                [39.849426, -86.258278],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.951034835057, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_06e073be3ebf27e2a12cbff8051ff384 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_deabc0129696c07e21561fc4b577dc69 = $(`<div id="html_deabc0129696c07e21561fc4b577dc69" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: IN</b></h4>             <b>Total Outages:</b> 43<br>             <b>Mean Duration:</b> 58.7 hrs<br>             <b>Total Customers Affected:</b> 2,364,749<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_06e073be3ebf27e2a12cbff8051ff384.setContent(html_deabc0129696c07e21561fc4b577dc69);
+            
+        
+
+        circle_marker_fb7022432ee2cf85f6487d5a5853c650.bindPopup(popup_06e073be3ebf27e2a12cbff8051ff384)
+        ;
+
+        
+    
+    
+            circle_marker_fb7022432ee2cf85f6487d5a5853c650.bindTooltip(
+                `<div>
+                     IN: 43 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9a0ec0dbc5d1d0b94b809bcdf010a00b = L.circleMarker(
+                [38.5266, -96.726486],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_a3e908bdf77669d49d1389bdaefe092c = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e776d9a766af4394c2433fd41118e372 = $(`<div id="html_e776d9a766af4394c2433fd41118e372" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: KS</b></h4>             <b>Total Outages:</b> 9<br>             <b>Mean Duration:</b> 72.9 hrs<br>             <b>Total Customers Affected:</b> 756,000<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_a3e908bdf77669d49d1389bdaefe092c.setContent(html_e776d9a766af4394c2433fd41118e372);
+            
+        
+
+        circle_marker_9a0ec0dbc5d1d0b94b809bcdf010a00b.bindPopup(popup_a3e908bdf77669d49d1389bdaefe092c)
+        ;
+
+        
+    
+    
+            circle_marker_9a0ec0dbc5d1d0b94b809bcdf010a00b.bindTooltip(
+                `<div>
+                     KS: 9 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c138fe9ce1694b5b066d6cade9dcbefb = L.circleMarker(
+                [37.66814, -84.670067],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 12.619429464123963, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_7313c7b02246cf21b1f347d0fa192052 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_84976e9108439ceeac603b8886ff4232 = $(`<div id="html_84976e9108439ceeac603b8886ff4232" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: KY</b></h4>             <b>Total Outages:</b> 13<br>             <b>Mean Duration:</b> 84.9 hrs<br>             <b>Total Customers Affected:</b> 1,305,310<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_7313c7b02246cf21b1f347d0fa192052.setContent(html_84976e9108439ceeac603b8886ff4232);
+            
+        
+
+        circle_marker_c138fe9ce1694b5b066d6cade9dcbefb.bindPopup(popup_7313c7b02246cf21b1f347d0fa192052)
+        ;
+
+        
+    
+    
+            circle_marker_c138fe9ce1694b5b066d6cade9dcbefb.bindTooltip(
+                `<div>
+                     KY: 13 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_77070abf1ad70f8fe96d8257bef2b3e7 = L.circleMarker(
+                [31.169546, -91.867805],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.135943621178658, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_5ddb8ed5e3670cf9512c36fdf59a5016 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_36a28a61caa369e1d0f50b117fc1e997 = $(`<div id="html_36a28a61caa369e1d0f50b117fc1e997" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: LA</b></h4>             <b>Total Outages:</b> 40<br>             <b>Mean Duration:</b> 68.1 hrs<br>             <b>Total Customers Affected:</b> 3,020,062<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_5ddb8ed5e3670cf9512c36fdf59a5016.setContent(html_36a28a61caa369e1d0f50b117fc1e997);
+            
+        
+
+        circle_marker_77070abf1ad70f8fe96d8257bef2b3e7.bindPopup(popup_5ddb8ed5e3670cf9512c36fdf59a5016)
+        ;
+
+        
+    
+    
+            circle_marker_77070abf1ad70f8fe96d8257bef2b3e7.bindTooltip(
+                `<div>
+                     LA: 40 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6de5a918480d07df5770ee2911a517a0 = L.circleMarker(
+                [42.230171, -71.530106],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.849242404917497, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_141848760718d4fcb34d0f94c4bc231c = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e80a78aa223120c89e79bc0029d79bea = $(`<div id="html_e80a78aa223120c89e79bc0029d79bea" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MA</b></h4>             <b>Total Outages:</b> 18<br>             <b>Mean Duration:</b> 15.7 hrs<br>             <b>Total Customers Affected:</b> 1,169,751<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_141848760718d4fcb34d0f94c4bc231c.setContent(html_e80a78aa223120c89e79bc0029d79bea);
+            
+        
+
+        circle_marker_6de5a918480d07df5770ee2911a517a0.bindPopup(popup_141848760718d4fcb34d0f94c4bc231c)
+        ;
+
+        
+    
+    
+            circle_marker_6de5a918480d07df5770ee2911a517a0.bindTooltip(
+                `<div>
+                     MA: 18 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f0b8fe069641225ceeece89a38be99d4 = L.circleMarker(
+                [39.063946, -76.802101],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 26.65520587052368, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_aeb907940496e11bd61d8e771f36b01e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_a138e079db2772605e54f3ebb03ebdb3 = $(`<div id="html_a138e079db2772605e54f3ebb03ebdb3" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MD</b></h4>             <b>Total Outages:</b> 58<br>             <b>Mean Duration:</b> 38.6 hrs<br>             <b>Total Customers Affected:</b> 5,424,069<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_aeb907940496e11bd61d8e771f36b01e.setContent(html_a138e079db2772605e54f3ebb03ebdb3);
+            
+        
+
+        circle_marker_f0b8fe069641225ceeece89a38be99d4.bindPopup(popup_aeb907940496e11bd61d8e771f36b01e)
+        ;
+
+        
+    
+    
+            circle_marker_f0b8fe069641225ceeece89a38be99d4.bindTooltip(
+                `<div>
+                     MD: 58 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_19f89a4c9caec6b8c4ec02f293334f3e = L.circleMarker(
+                [44.693947, -69.381927],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15.25614630239236, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_da601d7aa75e8895a14e38d4d39afaa2 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7bbf517811025e502772285d15600def = $(`<div id="html_7bbf517811025e502772285d15600def" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: ME</b></h4>             <b>Total Outages:</b> 19<br>             <b>Mean Duration:</b> 18.3 hrs<br>             <b>Total Customers Affected:</b> 932,269<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_da601d7aa75e8895a14e38d4d39afaa2.setContent(html_7bbf517811025e502772285d15600def);
+            
+        
+
+        circle_marker_19f89a4c9caec6b8c4ec02f293334f3e.bindPopup(popup_da601d7aa75e8895a14e38d4d39afaa2)
+        ;
+
+        
+    
+    
+            circle_marker_19f89a4c9caec6b8c4ec02f293334f3e.bindTooltip(
+                `<div>
+                     ME: 19 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_89e7e3ea8282078fda9a7d932002fde0 = L.circleMarker(
+                [43.326618, -84.536095],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 34.11378020683137, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_11212def8b84ed13a5ab6c319c6cd84a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_232994c34a44dcff878b5e89c8359b4f = $(`<div id="html_232994c34a44dcff878b5e89c8359b4f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MI</b></h4>             <b>Total Outages:</b> 95<br>             <b>Mean Duration:</b> 88.4 hrs<br>             <b>Total Customers Affected:</b> 13,759,042<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_11212def8b84ed13a5ab6c319c6cd84a.setContent(html_232994c34a44dcff878b5e89c8359b4f);
+            
+        
+
+        circle_marker_89e7e3ea8282078fda9a7d932002fde0.bindPopup(popup_11212def8b84ed13a5ab6c319c6cd84a)
+        ;
+
+        
+    
+    
+            circle_marker_89e7e3ea8282078fda9a7d932002fde0.bindTooltip(
+                `<div>
+                     MI: 95 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d6d501de282b70b517ce737493eeaa6e = L.circleMarker(
+                [45.694454, -93.900192],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.55544171172596, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_45b97c6cad3260740202d94ce2e5817e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_1856161ccf6d9158f76eeb2b5a2c4384 = $(`<div id="html_1856161ccf6d9158f76eeb2b5a2c4384" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MN</b></h4>             <b>Total Outages:</b> 15<br>             <b>Mean Duration:</b> 45.5 hrs<br>             <b>Total Customers Affected:</b> 1,736,092<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_45b97c6cad3260740202d94ce2e5817e.setContent(html_1856161ccf6d9158f76eeb2b5a2c4384);
+            
+        
+
+        circle_marker_d6d501de282b70b517ce737493eeaa6e.bindPopup(popup_45b97c6cad3260740202d94ce2e5817e)
+        ;
+
+        
+    
+    
+            circle_marker_d6d501de282b70b517ce737493eeaa6e.bindTooltip(
+                `<div>
+                     MN: 15 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5048275b71c1ec8e6cfd761a6f8c1dfc = L.circleMarker(
+                [38.456085, -92.288368],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14.430869689661812, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_740c96af13330dfa2e320b6966180f88 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_50f1eeff19737136479bd9c63f7fe9cf = $(`<div id="html_50f1eeff19737136479bd9c63f7fe9cf" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MO</b></h4>             <b>Total Outages:</b> 17<br>             <b>Mean Duration:</b> 56.2 hrs<br>             <b>Total Customers Affected:</b> 657,944<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_740c96af13330dfa2e320b6966180f88.setContent(html_50f1eeff19737136479bd9c63f7fe9cf);
+            
+        
+
+        circle_marker_5048275b71c1ec8e6cfd761a6f8c1dfc.bindPopup(popup_740c96af13330dfa2e320b6966180f88)
+        ;
+
+        
+    
+    
+            circle_marker_5048275b71c1ec8e6cfd761a6f8c1dfc.bindTooltip(
+                `<div>
+                     MO: 17 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a1110dc8803a152aa2a20653582487a4 = L.circleMarker(
+                [32.741646, -89.678696],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.0, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_886e9e7997118b9d00fd585d36666099 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_262f0ddc4e2c6b5c791f973b8ed323f8 = $(`<div id="html_262f0ddc4e2c6b5c791f973b8ed323f8" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MS</b></h4>             <b>Total Outages:</b> 4<br>             <b>Mean Duration:</b> 1.4 hrs<br>             <b>Total Customers Affected:</b> 10,000<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_886e9e7997118b9d00fd585d36666099.setContent(html_262f0ddc4e2c6b5c791f973b8ed323f8);
+            
+        
+
+        circle_marker_a1110dc8803a152aa2a20653582487a4.bindPopup(popup_886e9e7997118b9d00fd585d36666099)
+        ;
+
+        
+    
+    
+            circle_marker_a1110dc8803a152aa2a20653582487a4.bindTooltip(
+                `<div>
+                     MS: 4 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4ba8c22ba21ac96268bc9eeb950efca3 = L.circleMarker(
+                [46.921925, -110.454353],
+                {"bubblingMouseEvents": true, "color": "#e377c2", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e377c2", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6.06217782649107, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_ab871517ce5523bea9c8d83142696c51 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_01a5656c331039695499f6b726986f31 = $(`<div id="html_01a5656c331039695499f6b726986f31" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: MT</b></h4>             <b>Total Outages:</b> 3<br>             <b>Mean Duration:</b> 0.9 hrs<br>             <b>Total Customers Affected:</b> 0<br>             <b>Top Cause:</b> <span style="color:#e377c2;"><b>islanding</b></span>         </div>         </div>`)[0];
+                popup_ab871517ce5523bea9c8d83142696c51.setContent(html_01a5656c331039695499f6b726986f31);
+            
+        
+
+        circle_marker_4ba8c22ba21ac96268bc9eeb950efca3.bindPopup(popup_ab871517ce5523bea9c8d83142696c51)
+        ;
+
+        
+    
+    
+            circle_marker_4ba8c22ba21ac96268bc9eeb950efca3.bindTooltip(
+                `<div>
+                     MT: 3 outages (Top: islanding)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a9f7d45b5d1b0f5afd65749216fa299e = L.circleMarker(
+                [35.630066, -79.806419],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.135943621178658, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_b74e44ea5ce3ca32802986a7157f4ff9 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_24f904dddd516f5b4afaec5d95a2da77 = $(`<div id="html_24f904dddd516f5b4afaec5d95a2da77" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NC</b></h4>             <b>Total Outages:</b> 40<br>             <b>Mean Duration:</b> 24.3 hrs<br>             <b>Total Customers Affected:</b> 3,586,494<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_b74e44ea5ce3ca32802986a7157f4ff9.setContent(html_24f904dddd516f5b4afaec5d95a2da77);
+            
+        
+
+        circle_marker_a9f7d45b5d1b0f5afd65749216fa299e.bindPopup(popup_b74e44ea5ce3ca32802986a7157f4ff9)
+        ;
+
+        
+    
+    
+            circle_marker_a9f7d45b5d1b0f5afd65749216fa299e.bindTooltip(
+                `<div>
+                     NC: 40 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a8705907b0c3b9db19b86a52291b115 = L.circleMarker(
+                [47.528912, -99.784012],
+                {"bubblingMouseEvents": true, "color": "#8c564b", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#8c564b", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_acfba652918fd79f4874807fd0c5cfad = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_3af9f3c307321639dbf4d549ef58d8a6 = $(`<div id="html_3af9f3c307321639dbf4d549ef58d8a6" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: ND</b></h4>             <b>Total Outages:</b> 2<br>             <b>Mean Duration:</b> 12.0 hrs<br>             <b>Total Customers Affected:</b> 34,500<br>             <b>Top Cause:</b> <span style="color:#8c564b;"><b>fuel supply emergency</b></span>         </div>         </div>`)[0];
+                popup_acfba652918fd79f4874807fd0c5cfad.setContent(html_3af9f3c307321639dbf4d549ef58d8a6);
+            
+        
+
+        circle_marker_3a8705907b0c3b9db19b86a52291b115.bindPopup(popup_acfba652918fd79f4874807fd0c5cfad)
+        ;
+
+        
+    
+    
+            circle_marker_3a8705907b0c3b9db19b86a52291b115.bindTooltip(
+                `<div>
+                     ND: 2 outages (Top: fuel supply emergency)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f21f25b94e1d2630bb9e5d5d6157084 = L.circleMarker(
+                [41.12537, -98.268082],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.0, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_27d2f2cd96de11d9b2cf6f12f39f637f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_97fb367bda8a77177a2415c4011a5191 = $(`<div id="html_97fb367bda8a77177a2415c4011a5191" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NE</b></h4>             <b>Total Outages:</b> 4<br>             <b>Mean Duration:</b> 40.9 hrs<br>             <b>Total Customers Affected:</b> 261,212<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_27d2f2cd96de11d9b2cf6f12f39f637f.setContent(html_97fb367bda8a77177a2415c4011a5191);
+            
+        
+
+        circle_marker_9f21f25b94e1d2630bb9e5d5d6157084.bindPopup(popup_27d2f2cd96de11d9b2cf6f12f39f637f)
+        ;
+
+        
+    
+    
+            circle_marker_9f21f25b94e1d2630bb9e5d5d6157084.bindTooltip(
+                `<div>
+                     NE: 4 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7557de422e09224fbf4e6ddfaec62b99 = L.circleMarker(
+                [43.452492, -71.563896],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 13.095800853708795, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_6f7d376f6d8f6679f1154e547354f33e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_28541b3ec2865814506af36cc51da071 = $(`<div id="html_28541b3ec2865814506af36cc51da071" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NH</b></h4>             <b>Total Outages:</b> 14<br>             <b>Mean Duration:</b> 4.7 hrs<br>             <b>Total Customers Affected:</b> 152,568<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_6f7d376f6d8f6679f1154e547354f33e.setContent(html_28541b3ec2865814506af36cc51da071);
+            
+        
+
+        circle_marker_7557de422e09224fbf4e6ddfaec62b99.bindPopup(popup_6f7d376f6d8f6679f1154e547354f33e)
+        ;
+
+        
+    
+    
+            circle_marker_7557de422e09224fbf4e6ddfaec62b99.bindTooltip(
+                `<div>
+                     NH: 14 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_664fcb05770c94b5672aa6017332427b = L.circleMarker(
+                [40.298904, -74.521011],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.706279240848655, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_1b788fe3d602a9e943fdbf168c428ef4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_bf7f7818640ff928d9debf5560f12ce8 = $(`<div id="html_bf7f7818640ff928d9debf5560f12ce8" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NJ</b></h4>             <b>Total Outages:</b> 35<br>             <b>Mean Duration:</b> 74.2 hrs<br>             <b>Total Customers Affected:</b> 4,966,721<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_1b788fe3d602a9e943fdbf168c428ef4.setContent(html_bf7f7818640ff928d9debf5560f12ce8);
+            
+        
+
+        circle_marker_664fcb05770c94b5672aa6017332427b.bindPopup(popup_1b788fe3d602a9e943fdbf168c428ef4)
+        ;
+
+        
+    
+    
+            circle_marker_664fcb05770c94b5672aa6017332427b.bindTooltip(
+                `<div>
+                     NJ: 35 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_97eac086d1a3e06eb3111f4e38d3fd52 = L.circleMarker(
+                [34.840515, -106.248482],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.899494936611665, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_e5e7938c1fe605e629cfd802e9aa4102 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d81b5dd4d5f06d4cfe41fa713d4973e5 = $(`<div id="html_d81b5dd4d5f06d4cfe41fa713d4973e5" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NM</b></h4>             <b>Total Outages:</b> 8<br>             <b>Mean Duration:</b> 2.3 hrs<br>             <b>Total Customers Affected:</b> 500,000<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_e5e7938c1fe605e629cfd802e9aa4102.setContent(html_d81b5dd4d5f06d4cfe41fa713d4973e5);
+            
+        
+
+        circle_marker_97eac086d1a3e06eb3111f4e38d3fd52.bindPopup(popup_e5e7938c1fe605e629cfd802e9aa4102)
+        ;
+
+        
+    
+    
+            circle_marker_97eac086d1a3e06eb3111f4e38d3fd52.bindTooltip(
+                `<div>
+                     NM: 8 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d02f0e7ca9fa4fbe7051dfcacd4535ef = L.circleMarker(
+                [38.313515, -117.055374],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.260129588726068, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_50356fc8a059387f3d769e9af952d747 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_6a1e971a35017ddfc16fd77d2c4b0bd6 = $(`<div id="html_6a1e971a35017ddfc16fd77d2c4b0bd6" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NV</b></h4>             <b>Total Outages:</b> 7<br>             <b>Mean Duration:</b> 9.2 hrs<br>             <b>Total Customers Affected:</b> 111,100<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_50356fc8a059387f3d769e9af952d747.setContent(html_6a1e971a35017ddfc16fd77d2c4b0bd6);
+            
+        
+
+        circle_marker_d02f0e7ca9fa4fbe7051dfcacd4535ef.bindPopup(popup_50356fc8a059387f3d769e9af952d747)
+        ;
+
+        
+    
+    
+            circle_marker_d02f0e7ca9fa4fbe7051dfcacd4535ef.bindTooltip(
+                `<div>
+                     NV: 7 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e034274a289019ea3cf1ced990971e28 = L.circleMarker(
+                [42.165726, -74.948051],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 29.491524206117255, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_c3ee800fdb2fae8aea63ba627c330bed = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_39279b0b5b084dbbc5093b7af3b2a29e = $(`<div id="html_39279b0b5b084dbbc5093b7af3b2a29e" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: NY</b></h4>             <b>Total Outages:</b> 71<br>             <b>Mean Duration:</b> 100.6 hrs<br>             <b>Total Customers Affected:</b> 8,580,414<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_c3ee800fdb2fae8aea63ba627c330bed.setContent(html_39279b0b5b084dbbc5093b7af3b2a29e);
+            
+        
+
+        circle_marker_e034274a289019ea3cf1ced990971e28.bindPopup(popup_c3ee800fdb2fae8aea63ba627c330bed)
+        ;
+
+        
+    
+    
+            circle_marker_e034274a289019ea3cf1ced990971e28.bindTooltip(
+                `<div>
+                     NY: 71 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c00c254a4fae962b94d1a8f86f8f65b = L.circleMarker(
+                [40.388783, -82.764915],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.951034835057, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_5998ee38dba94b8149aaedd903228715 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_a0bf4c0c946b78fa351e14a3bdd95766 = $(`<div id="html_a0bf4c0c946b78fa351e14a3bdd95766" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: OH</b></h4>             <b>Total Outages:</b> 43<br>             <b>Mean Duration:</b> 47.8 hrs<br>             <b>Total Customers Affected:</b> 4,924,174<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_5998ee38dba94b8149aaedd903228715.setContent(html_a0bf4c0c946b78fa351e14a3bdd95766);
+            
+        
+
+        circle_marker_1c00c254a4fae962b94d1a8f86f8f65b.bindPopup(popup_5998ee38dba94b8149aaedd903228715)
+        ;
+
+        
+    
+    
+            circle_marker_1c00c254a4fae962b94d1a8f86f8f65b.bindTooltip(
+                `<div>
+                     OH: 43 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5af77aa72c3685778455401d60599b7d = L.circleMarker(
+                [35.565342, -96.928917],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 17.146428199482244, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_23b869ccfdb9e69dd7bc3032f35786f4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_f15e57227cf4c3af4fdb59ebadd0d2e0 = $(`<div id="html_f15e57227cf4c3af4fdb59ebadd0d2e0" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: OK</b></h4>             <b>Total Outages:</b> 24<br>             <b>Mean Duration:</b> 50.3 hrs<br>             <b>Total Customers Affected:</b> 3,052,981<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_23b869ccfdb9e69dd7bc3032f35786f4.setContent(html_f15e57227cf4c3af4fdb59ebadd0d2e0);
+            
+        
+
+        circle_marker_5af77aa72c3685778455401d60599b7d.bindPopup(popup_23b869ccfdb9e69dd7bc3032f35786f4)
+        ;
+
+        
+    
+    
+            circle_marker_5af77aa72c3685778455401d60599b7d.bindTooltip(
+                `<div>
+                     OK: 24 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b534eceb1aeaba7016880cb0ccba224a = L.circleMarker(
+                [44.572021, -122.070938],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 17.846568297574745, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_5f4d21492c2a561233774604670d5ab6 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_804cb0c0d0f0af91c0f3a2fd93f2b46d = $(`<div id="html_804cb0c0d0f0af91c0f3a2fd93f2b46d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: OR</b></h4>             <b>Total Outages:</b> 26<br>             <b>Mean Duration:</b> 12.8 hrs<br>             <b>Total Customers Affected:</b> 527,503<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_5f4d21492c2a561233774604670d5ab6.setContent(html_804cb0c0d0f0af91c0f3a2fd93f2b46d);
+            
+        
+
+        circle_marker_b534eceb1aeaba7016880cb0ccba224a.bindPopup(popup_5f4d21492c2a561233774604670d5ab6)
+        ;
+
+        
+    
+    
+            circle_marker_b534eceb1aeaba7016880cb0ccba224a.bindTooltip(
+                `<div>
+                     OR: 26 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed11b06cee4a5a08babf3b3cdca00e55 = L.circleMarker(
+                [40.590752, -77.209755],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 26.424420523447623, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_c1b1a9447bca5fc69f47b356bee3cef5 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_79c732629df47a54d42fc104dadfe8bd = $(`<div id="html_79c732629df47a54d42fc104dadfe8bd" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: PA</b></h4>             <b>Total Outages:</b> 57<br>             <b>Mean Duration:</b> 63.5 hrs<br>             <b>Total Customers Affected:</b> 8,595,378<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_c1b1a9447bca5fc69f47b356bee3cef5.setContent(html_79c732629df47a54d42fc104dadfe8bd);
+            
+        
+
+        circle_marker_ed11b06cee4a5a08babf3b3cdca00e55.bindPopup(popup_c1b1a9447bca5fc69f47b356bee3cef5)
+        ;
+
+        
+    
+    
+            circle_marker_ed11b06cee4a5a08babf3b3cdca00e55.bindTooltip(
+                `<div>
+                     PA: 57 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3707aa90cea0af289ca03823676ed6f2 = L.circleMarker(
+                [33.856892, -80.945007],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9.899494936611665, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_41abd7b58da67c1b7ff79850c8771bda = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9e49f4557acac321ee8903af57a55d20 = $(`<div id="html_9e49f4557acac321ee8903af57a55d20" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: SC</b></h4>             <b>Total Outages:</b> 8<br>             <b>Mean Duration:</b> 52.2 hrs<br>             <b>Total Customers Affected:</b> 2,015,305<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_41abd7b58da67c1b7ff79850c8771bda.setContent(html_9e49f4557acac321ee8903af57a55d20);
+            
+        
+
+        circle_marker_3707aa90cea0af289ca03823676ed6f2.bindPopup(popup_41abd7b58da67c1b7ff79850c8771bda)
+        ;
+
+        
+    
+    
+            circle_marker_3707aa90cea0af289ca03823676ed6f2.bindTooltip(
+                `<div>
+                     SC: 8 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_86646be58b99db367285fa18fb3e0315 = L.circleMarker(
+                [44.299782, -99.438828],
+                {"bubblingMouseEvents": true, "color": "#e377c2", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e377c2", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_68c10d9b6f28a2ee2af7ddb8198fa02e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_c1df08cb0885ad5bbd93438b92ea5d23 = $(`<div id="html_c1df08cb0885ad5bbd93438b92ea5d23" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: SD</b></h4>             <b>Total Outages:</b> 2<br>             <b>Mean Duration:</b> 2.0 hrs<br>             <b>Total Customers Affected:</b> 0<br>             <b>Top Cause:</b> <span style="color:#e377c2;"><b>islanding</b></span>         </div>         </div>`)[0];
+                popup_68c10d9b6f28a2ee2af7ddb8198fa02e.setContent(html_c1df08cb0885ad5bbd93438b92ea5d23);
+            
+        
+
+        circle_marker_86646be58b99db367285fa18fb3e0315.bindPopup(popup_68c10d9b6f28a2ee2af7ddb8198fa02e)
+        ;
+
+        
+    
+    
+            circle_marker_86646be58b99db367285fa18fb3e0315.bindTooltip(
+                `<div>
+                     SD: 2 outages (Top: islanding)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9c4f666550097e6a06ceae2c95aa028a = L.circleMarker(
+                [35.747845, -86.692345],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20.408331631958553, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_5fd3188198037ff4395276825fe9eac8 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_3891266f56636d97c623693f8c1858dd = $(`<div id="html_3891266f56636d97c623693f8c1858dd" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: TN</b></h4>             <b>Total Outages:</b> 34<br>             <b>Mean Duration:</b> 17.4 hrs<br>             <b>Total Customers Affected:</b> 1,008,395<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_5fd3188198037ff4395276825fe9eac8.setContent(html_3891266f56636d97c623693f8c1858dd);
+            
+        
+
+        circle_marker_9c4f666550097e6a06ceae2c95aa028a.bindPopup(popup_5fd3188198037ff4395276825fe9eac8)
+        ;
+
+        
+    
+    
+            circle_marker_9c4f666550097e6a06ceae2c95aa028a.bindTooltip(
+                `<div>
+                     TN: 34 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4800ea2239cba75df487263e16dfb377 = L.circleMarker(
+                [31.054487, -97.563461],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 39.442996843546254, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_9b4fc25a09204cc058460ad8c088e58a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_6300ce34a45ddf7925cc0c637d5c4131 = $(`<div id="html_6300ce34a45ddf7925cc0c637d5c4131" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: TX</b></h4>             <b>Total Outages:</b> 127<br>             <b>Mean Duration:</b> 45.1 hrs<br>             <b>Total Customers Affected:</b> 20,983,817<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_9b4fc25a09204cc058460ad8c088e58a.setContent(html_6300ce34a45ddf7925cc0c637d5c4131);
+            
+        
+
+        circle_marker_4800ea2239cba75df487263e16dfb377.bindPopup(popup_9b4fc25a09204cc058460ad8c088e58a)
+        ;
+
+        
+    
+    
+            circle_marker_4800ea2239cba75df487263e16dfb377.bindTooltip(
+                `<div>
+                     TX: 127 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5c5c0b721a875f462ca41fc660df0742 = L.circleMarker(
+                [40.150032, -111.862434],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 22.41093483101497, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_0d0bee4e6685f1754c735ae52ca1a964 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_a721d1500bdc13cd66a9cad317d2c160 = $(`<div id="html_a721d1500bdc13cd66a9cad317d2c160" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: UT</b></h4>             <b>Total Outages:</b> 41<br>             <b>Mean Duration:</b> 4.2 hrs<br>             <b>Total Customers Affected:</b> 225,010<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_0d0bee4e6685f1754c735ae52ca1a964.setContent(html_a721d1500bdc13cd66a9cad317d2c160);
+            
+        
+
+        circle_marker_5c5c0b721a875f462ca41fc660df0742.bindPopup(popup_0d0bee4e6685f1754c735ae52ca1a964)
+        ;
+
+        
+    
+    
+            circle_marker_5c5c0b721a875f462ca41fc660df0742.bindTooltip(
+                `<div>
+                     UT: 41 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8d0a8ebf0364cb40e895ee83088cd40f = L.circleMarker(
+                [37.769337, -78.169968],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 21.289668856043768, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_82dd6beaaff778aaab1630145569a7a8 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ab5e8c81052bbd6cd0e35fe821d1d18f = $(`<div id="html_ab5e8c81052bbd6cd0e35fe821d1d18f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: VA</b></h4>             <b>Total Outages:</b> 37<br>             <b>Mean Duration:</b> 17.5 hrs<br>             <b>Total Customers Affected:</b> 5,080,588<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_82dd6beaaff778aaab1630145569a7a8.setContent(html_ab5e8c81052bbd6cd0e35fe821d1d18f);
+            
+        
+
+        circle_marker_8d0a8ebf0364cb40e895ee83088cd40f.bindPopup(popup_82dd6beaaff778aaab1630145569a7a8)
+        ;
+
+        
+    
+    
+            circle_marker_8d0a8ebf0364cb40e895ee83088cd40f.bindTooltip(
+                `<div>
+                     VA: 37 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_744190eba97fc93df3dfdeaa5300281f = L.circleMarker(
+                [44.045876, -72.710686],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10.5, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_56641ec1910d596752066339e098e36e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_a46a18bece0730628d7f2dedca484d1e = $(`<div id="html_a46a18bece0730628d7f2dedca484d1e" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: VT</b></h4>             <b>Total Outages:</b> 9<br>             <b>Mean Duration:</b> 0.6 hrs<br>             <b>Total Customers Affected:</b> 0<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_56641ec1910d596752066339e098e36e.setContent(html_a46a18bece0730628d7f2dedca484d1e);
+            
+        
+
+        circle_marker_744190eba97fc93df3dfdeaa5300281f.bindPopup(popup_56641ec1910d596752066339e098e36e)
+        ;
+
+        
+    
+    
+            circle_marker_744190eba97fc93df3dfdeaa5300281f.bindTooltip(
+                `<div>
+                     VT: 9 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_acb23a307db8c5ba98ea71085c59b425 = L.circleMarker(
+                [47.400902, -121.490494],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 34.471002306286366, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_0ff36371f195e2247c7b9f9c389f1e4e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_b12b643d40ee352a133c66a35a4970e2 = $(`<div id="html_b12b643d40ee352a133c66a35a4970e2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: WA</b></h4>             <b>Total Outages:</b> 97<br>             <b>Mean Duration:</b> 25.1 hrs<br>             <b>Total Customers Affected:</b> 4,485,537<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_0ff36371f195e2247c7b9f9c389f1e4e.setContent(html_b12b643d40ee352a133c66a35a4970e2);
+            
+        
+
+        circle_marker_acb23a307db8c5ba98ea71085c59b425.bindPopup(popup_0ff36371f195e2247c7b9f9c389f1e4e)
+        ;
+
+        
+    
+    
+            circle_marker_acb23a307db8c5ba98ea71085c59b425.bindTooltip(
+                `<div>
+                     WA: 97 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3d928c0901fa3c24c33df36bd70a40c8 = L.circleMarker(
+                [44.268543, -89.616508],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 15.652475842498529, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_0c0a309544f7fa2b1b9bf1d793118d2f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_948d36d9504f279c14ee00ee455e91e7 = $(`<div id="html_948d36d9504f279c14ee00ee455e91e7" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: WI</b></h4>             <b>Total Outages:</b> 20<br>             <b>Mean Duration:</b> 131.7 hrs<br>             <b>Total Customers Affected:</b> 458,760<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_0c0a309544f7fa2b1b9bf1d793118d2f.setContent(html_948d36d9504f279c14ee00ee455e91e7);
+            
+        
+
+        circle_marker_3d928c0901fa3c24c33df36bd70a40c8.bindPopup(popup_0c0a309544f7fa2b1b9bf1d793118d2f)
+        ;
+
+        
+    
+    
+            circle_marker_3d928c0901fa3c24c33df36bd70a40c8.bindTooltip(
+                `<div>
+                     WI: 20 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d23e52a088bb034d9f1365431a4f4195 = L.circleMarker(
+                [38.491226, -80.954453],
+                {"bubblingMouseEvents": true, "color": "#d62728", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d62728", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7.0, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_eeab24ebb301ec7fe90ffc60c472186e = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_9d0fbd0053762b16597ad69ad859fe50 = $(`<div id="html_9d0fbd0053762b16597ad69ad859fe50" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: WV</b></h4>             <b>Total Outages:</b> 4<br>             <b>Mean Duration:</b> 116.3 hrs<br>             <b>Total Customers Affected:</b> 539,383<br>             <b>Top Cause:</b> <span style="color:#d62728;"><b>severe weather</b></span>         </div>         </div>`)[0];
+                popup_eeab24ebb301ec7fe90ffc60c472186e.setContent(html_9d0fbd0053762b16597ad69ad859fe50);
+            
+        
+
+        circle_marker_d23e52a088bb034d9f1365431a4f4195.bindPopup(popup_eeab24ebb301ec7fe90ffc60c472186e)
+        ;
+
+        
+    
+    
+            circle_marker_d23e52a088bb034d9f1365431a4f4195.bindTooltip(
+                `<div>
+                     WV: 4 outages (Top: severe weather)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_428dffa349bb98eb48dbb0291138f7a4 = L.circleMarker(
+                [42.755966, -107.30249],
+                {"bubblingMouseEvents": true, "color": "#ff7f0e", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#ff7f0e", "fillOpacity": 0.6, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8.573214099741122, "stroke": true, "weight": 3}
+            ).addTo(map_54695579b059e1dd3421eef93e12fa94);
+        
+    
+        var popup_03d98900287a7d9b993607c6eb7beec6 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_fb0101f64fc02f668243231b012ed3ba = $(`<div id="html_fb0101f64fc02f668243231b012ed3ba" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; font-size: 12px; width: 200px;">             <h4 style="margin: 0 0 5px 0; color: #111;"><b>State: WY</b></h4>             <b>Total Outages:</b> 6<br>             <b>Mean Duration:</b> 0.6 hrs<br>             <b>Total Customers Affected:</b> 35,500<br>             <b>Top Cause:</b> <span style="color:#ff7f0e;"><b>intentional attack</b></span>         </div>         </div>`)[0];
+                popup_03d98900287a7d9b993607c6eb7beec6.setContent(html_fb0101f64fc02f668243231b012ed3ba);
+            
+        
+
+        circle_marker_428dffa349bb98eb48dbb0291138f7a4.bindPopup(popup_03d98900287a7d9b993607c6eb7beec6)
+        ;
+
+        
+    
+    
+            circle_marker_428dffa349bb98eb48dbb0291138f7a4.bindTooltip(
+                `<div>
+                     WY: 6 outages (Top: intentional attack)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

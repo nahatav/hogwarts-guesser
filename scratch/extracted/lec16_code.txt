@@ -1,0 +1,1904 @@
+In [1]:
+
+
+import plotly.io as pio
+pio.renderers.default = "png"
+
+# ====================
+
+In [1]:
+
+# ====================
+
+In [2]:
+
+
+from dsc80_utils import *
+import lec16_util as util
+
+# ====================
+
+In [2]:
+
+# ====================
+
+Lecture 16 – Pipelines, Multicollinearity, and Generalization¶DSC 80, Summer 2026¶
+
+# ====================
+
+Agenda 📆¶
+Review: transformers.
+Pipelines.
+Multicollinearity.
+Generalization.
+Bias and variance.
+Train-test splits.
+
+# ====================
+
+Review: transformers¶
+
+# ====================
+
+Transformer classes¶
+
+# ====================
+
+Transformers take in "raw" data and output "processed" data. They are used for creating features.
+
+# ====================
+
+The input to a transformer should be a multi-dimensional numpy array.
+Inputs can be DataFrames, but sklearn only looks at the values (i.e. it calls to_numpy() on input DataFrames).
+
+# ====================
+
+The output of a transformer is a numpy array (never a DataFrame or Series).
+
+# ====================
+
+Transformers, like most relevant features of sklearn, are classes, not functions, meaning you need to instantiate them and call their methods.
+
+# ====================
+
+Example: Predicting tips 🧑‍🍳¶Let's return to our trusty tips dataset.
+
+# ====================
+
+In [3]:
+
+
+tips = px.data.tips()
+tips.head()
+
+# ====================
+
+In [3]:
+
+# ====================
+
+Example transformer: Binarizer¶The Binarizer transformer allows us to map a quantitative sequence to a sequence of 1s and 0s, depending on whether values are above or below a threshold.
+
+
+
+Property
+Example
+Description
+
+
+
+
+Initialize with parameters
+binar = Binarizer(thresh)
+Set x=1 if x > thresh, else set x=0
+
+
+Transform data in a dataset
+feat = binar.transform(data)
+Binarize all columns in data
+
+# ====================
+
+In [4]:
+
+
+from sklearn.preprocessing import Binarizer
+bi = Binarizer(threshold=20)
+
+# ====================
+
+In [4]:
+
+# ====================
+
+In [5]:
+
+
+transformed_bills = bi.transform(tips[['total_bill']].to_numpy()) 
+transformed_bills[:5]
+
+# ====================
+
+In [5]:
+
+# ====================
+
+Example transformer: StandardScaler¶
+
+# ====================
+
+StandardScaler standardizes data using the mean and standard deviation of the data.
+
+$$z(x_i) = \frac{x_i - \text{mean of } x}{\text{SD of } x}$$
+
+# ====================
+
+Unlike Binarizer, StandardScaler requires some knowledge (mean and SD) of the dataset before transforming.
+
+# ====================
+
+As such, we need to fit a StandardScaler transformer before we can use the transform method.
+
+# ====================
+
+Typical usage: fit transformer on a sample, use that fit transformer to transform future data.
+
+# ====================
+
+Example transformer: StandardScaler¶It only makes sense to standardize the already-quantitative features of tips, so let's select just those.
+
+# ====================
+
+In [6]:
+
+
+tips_quant = tips[['total_bill', 'size']]
+tips_quant.head()
+
+# ====================
+
+In [6]:
+
+# ====================
+
+In [7]:
+
+
+from sklearn.preprocessing import StandardScaler
+stdscaler = StandardScaler()
+
+# ====================
+
+In [7]:
+
+# ====================
+
+In [8]:
+
+
+# This is like saying "determine the mean and SD of each column in tips_quant".
+stdscaler.fit(tips_quant)
+
+# ====================
+
+In [8]:
+
+# ====================
+
+In [9]:
+
+
+# First column is 'total_bill', second column is 'size'.
+tips_quant_z = stdscaler.transform(tips_quant)
+tips_quant_z[:5]
+
+# ====================
+
+In [9]:
+
+# ====================
+
+We can also access the mean and variance that stdscaler computed for each column:
+
+# ====================
+
+In [10]:
+
+
+stdscaler.mean_
+
+# ====================
+
+In [10]:
+
+# ====================
+
+In [11]:
+
+
+stdscaler.var_
+
+# ====================
+
+In [11]:
+
+# ====================
+
+Note that we can call transform on DataFrames other than tips_quant. We will do this often – fit a transformer on one dataset (training data) and use it to transform other datasets (test data).
+
+# ====================
+
+In [12]:
+
+
+stdscaler.transform(tips_quant.sample(5))
+
+# ====================
+
+In [12]:
+
+# ====================
+
+💡 Pro-Tip: Using .fit_transform¶The .fit_transform method will fit the transformer and then transform the data in one go.
+
+# ====================
+
+In [13]:
+
+
+stdscaler.fit_transform(tips_quant)
+
+# ====================
+
+In [13]:
+
+# ====================
+
+StandardScaler summary¶
+
+
+Property
+Example
+Description
+
+
+
+
+Initialize with parameters
+stdscaler = StandardScaler()
+z-score the data (no parameters)
+
+
+Fit the transformer
+stdscaler.fit(X)
+Compute the mean and SD of X
+
+
+Transform data in a dataset
+feat = stdscaler.transform(X_new)
+z-score X_new using mean and SD of X
+
+
+Fit and transform
+stdscaler.fit_transform(X)
+Compute the mean and SD of X, then z-score X
+
+# ====================
+
+Example transformer: OneHotEncoder¶Let's keep just the categorical columns in tips.
+
+# ====================
+
+In [14]:
+
+
+tips_cat = tips[['sex', 'smoker', 'day', 'time']]
+tips_cat.head()
+
+# ====================
+
+In [14]:
+
+# ====================
+
+Like StandardScaler, we will need to fit our OneHotEncoder transformer before it can transform anything.
+
+# ====================
+
+In [15]:
+
+
+from sklearn.preprocessing import OneHotEncoder
+ohe = OneHotEncoder()
+ohe.fit(tips_cat)
+
+# ====================
+
+In [15]:
+
+# ====================
+
+When we try to transform, we get a result we might not expect.
+
+# ====================
+
+In [16]:
+
+
+ohe.transform(tips_cat)
+
+# ====================
+
+In [16]:
+
+# ====================
+
+Since the resulting matrix is sparse – most of its elements are 0 – sklearn uses a more efficient representation than a regular numpy array. We can convert to a regular (dense) array:
+
+# ====================
+
+In [17]:
+
+
+ohe.transform(tips_cat).toarray()
+
+# ====================
+
+In [17]:
+
+# ====================
+
+Notice that the column names from tips_cat are no longer stored anywhere (remember, fit converts the input to a numpy array before proceeding). This makes it hard to interpret the meaning of the 1's and 0's in the array.
+We can use the get_feature_names_out method on ohe to access the names of the one-hot-encoded columns:
+
+# ====================
+
+In [18]:
+
+
+ohe.get_feature_names_out()
+
+# ====================
+
+In [18]:
+
+# ====================
+
+In [19]:
+
+
+pd.DataFrame(ohe.transform(tips_cat).toarray(), 
+             columns=ohe.get_feature_names_out())
+
+# ====================
+
+In [19]:
+
+# ====================
+
+Example transformer: FunctionTransformer¶A FunctionTransformer enables you to use your own functions on entire columns. Think of it as the sklearn equivalent of apply.
+
+# ====================
+
+In [20]:
+
+
+from sklearn.preprocessing import FunctionTransformer
+f = FunctionTransformer(np.sqrt)
+f.transform([1, 2, 3])
+
+# ====================
+
+In [20]:
+
+# ====================
+
+In [21]:
+
+
+# Same result, using numpy only.
+np.sqrt([1, 2, 3])
+
+# ====================
+
+In [21]:
+
+# ====================
+
+We didn't really need sklearn for that! But using FunctionTransformer allows us to easily incorporate this step with other sklearn encoding steps.
+
+# ====================
+
+Pipelines¶
+
+# ====================
+
+So far, we've used transformers for feature engineering and models for prediction. We can combine these steps into a single Pipeline.
+
+# ====================
+
+Pipelines in sklearn¶
+
+# ====================
+
+Pipeline allows you to sequentially apply a list of transformers to preprocess the data and, if desired, conclude the sequence with a final predictor for predictive modeling.
+
+# ====================
+
+General template: pl = Pipeline([trans_1, trans_2, ..., model])
+Note that the model is optional.
+
+# ====================
+
+Once a Pipeline is instantiated, you can fit all steps (transformers and model) using pl.fit(X, y).
+
+# ====================
+
+To make predictions using raw, untransformed data, use pl.predict(X).
+
+# ====================
+
+Pipeline takes as input a list of 2-tuples, where:
+The first element is a "name" that we choose for the step. It can be anything!
+The second element is an instance of a transformer or estimator (model) class.
+
+# ====================
+
+Our first Pipeline¶Let's build a Pipeline that:
+
+One hot encodes the categorical features in tips.
+Fits a regression model on the one hot encoded data.
+
+# ====================
+
+In [22]:
+
+
+# Start with categorical features only.
+tips_cat.head()
+
+# ====================
+
+In [22]:
+
+# ====================
+
+In [23]:
+
+
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LinearRegression
+
+pl = Pipeline([
+    ('one-hot', OneHotEncoder()),
+    ('lin-reg', LinearRegression())
+])
+
+# ====================
+
+In [23]:
+
+# ====================
+
+Now that pl is instantiated, we fit it the same way we would fit the individual steps.
+
+# ====================
+
+In [24]:
+
+
+pl.fit(tips_cat, tips['tip'])
+
+# ====================
+
+In [24]:
+
+# ====================
+
+Now, to make predictions using raw data, all we need to do is use pl.predict:
+
+# ====================
+
+In [25]:
+
+
+pl.predict(tips_cat.iloc[:5])
+
+# ====================
+
+In [25]:
+
+# ====================
+
+pl performs both feature transformation and prediction with just a single call to predict!
+
+# ====================
+
+We can access individual "steps" of a Pipeline through the named_steps attribute:
+
+# ====================
+
+In [26]:
+
+
+pl.named_steps
+
+# ====================
+
+In [26]:
+
+# ====================
+
+In [27]:
+
+
+pl.named_steps['one-hot'].transform(tips_cat).toarray()
+
+# ====================
+
+In [27]:
+
+# ====================
+
+In [28]:
+
+
+pl.named_steps['one-hot'].get_feature_names_out()
+
+# ====================
+
+In [28]:
+
+# ====================
+
+In [29]:
+
+
+pl.named_steps['lin-reg'].coef_
+
+# ====================
+
+In [29]:
+
+# ====================
+
+pl also has a score method, the same way a fit LinearRegression instance does:
+
+# ====================
+
+In [30]:
+
+
+# Why is this so low?
+pl.score(tips_cat, tips['tip'])
+
+# ====================
+
+In [30]:
+
+# ====================
+
+More sophisticated Pipelines¶
+
+# ====================
+
+In the previous example, we one hot encoded every input column. What if we want to perform different transformations on different columns?
+
+# ====================
+
+Solution: Use a ColumnTransformer.
+Instantiate a ColumnTransformer using a list of 3-tuples, where:
+The first element is a "name" that we choose for the transformer. It can be anything!
+The second element is a transformer instance (e.g. OneHotEncoder()).
+The third element is a list of relevant column names.
+
+# ====================
+
+Planning our first ColumnTransformer¶
+
+# ====================
+
+In [31]:
+
+
+from sklearn.compose import ColumnTransformer
+
+# ====================
+
+In [31]:
+
+# ====================
+
+Let's perform different transformations on the quantitative and categorical features of tips (note that we are not transforming the response variable, 'tip').
+
+# ====================
+
+In [32]:
+
+
+tips_features = tips.drop('tip', axis=1)
+tips_features.head()
+
+# ====================
+
+In [32]:
+
+# ====================
+
+We will leave the 'total_bill' column untouched.
+
+# ====================
+
+To the 'size' column, we will apply the Binarizer transformer with a threshold of 2 (big tables vs. small tables).
+
+# ====================
+
+To the categorical columns, we will apply the OneHotEncoder transformer.
+
+# ====================
+
+In essence, we will create a transformer that reproduces the following DataFrame:
+
+
+
+
+
+size
+sex_Female
+sex_Male
+smoker_No
+smoker_Yes
+day_Fri
+day_Sat
+day_Sun
+day_Thur
+time_Dinner
+time_Lunch
+total_bill
+
+
+
+
+0
+0
+1.0
+0.0
+1.0
+0.0
+0.0
+0.0
+1.0
+0.0
+1.0
+0.0
+16.99
+
+
+1
+1
+0.0
+1.0
+1.0
+0.0
+0.0
+0.0
+1.0
+0.0
+1.0
+0.0
+10.34
+
+
+2
+1
+0.0
+1.0
+1.0
+0.0
+0.0
+0.0
+1.0
+0.0
+1.0
+0.0
+21.01
+
+
+3
+0
+0.0
+1.0
+1.0
+0.0
+0.0
+0.0
+1.0
+0.0
+1.0
+0.0
+23.68
+
+
+4
+1
+1.0
+0.0
+1.0
+0.0
+0.0
+0.0
+1.0
+0.0
+1.0
+0.0
+24.59
+
+# ====================
+
+Building a Pipeline using a ColumnTransformer¶Let's start by creating our ColumnTransformer.
+
+# ====================
+
+In [33]:
+
+
+preproc = ColumnTransformer(
+    transformers=[
+        ('size', Binarizer(threshold=2), ['size']),
+        ('categorical_cols', OneHotEncoder(), ['sex', 'smoker', 'day', 'time'])
+    ],
+    # Specify what to do with all other columns ('total_bill' here).
+    # Options are 'drop' or 'passthrough'.
+    remainder='passthrough',
+    # Keep original data types for remaining columns.
+    force_int_remainder_cols=False
+)
+
+# ====================
+
+In [33]:
+
+# ====================
+
+Now, let's create a Pipeline using preproc as a transformer, and fit it:
+
+# ====================
+
+In [34]:
+
+
+pl = Pipeline([
+    ('preprocessor', preproc), 
+    ('lin-reg', LinearRegression())
+])
+
+# ====================
+
+In [34]:
+
+# ====================
+
+In [35]:
+
+
+pl.fit(tips_features, tips['tip'])
+
+# ====================
+
+In [35]:
+
+# ====================
+
+Prediction is as easy as calling predict:
+
+# ====================
+
+In [36]:
+
+
+tips_features.head()
+
+# ====================
+
+In [36]:
+
+# ====================
+
+In [37]:
+
+
+# Note that we fit the Pipeline using tips_features, not tips_features.head()!
+pl.predict(tips_features.head())
+
+# ====================
+
+In [37]:
+
+# ====================
+
+💡 Pro-Tip: Using make_pipeline and make_column_transformer¶Instead of using Pipeline and ColumnTransformer classes directly, sklearn provides shortcut methods make_pipeline and make_column_transformer. These methods are less verbose than using the constructors, as they determine the names of steps for you automatically.
+
+# ====================
+
+In [38]:
+
+
+# Old code
+
+preproc = ColumnTransformer(
+    transformers=[
+        ('size', Binarizer(threshold=2), ['size']),
+        ('categorical_cols', OneHotEncoder(), ['sex', 'smoker', 'day', 'time'])
+    ],
+    remainder='passthrough',
+    force_int_remainder_cols=False
+)
+
+pl = Pipeline([
+    ('preprocessor', preproc), 
+    ('lin-reg', LinearRegression())
+])
+pl
+
+# ====================
+
+In [38]:
+
+# ====================
+
+In [39]:
+
+
+# New code
+
+from sklearn.pipeline import make_pipeline
+from sklearn.compose import make_column_transformer
+
+preproc = make_column_transformer(
+    (Binarizer(threshold=2), ['size']),
+    (OneHotEncoder(), ['sex', 'smoker', 'day', 'time']),
+    remainder='passthrough',
+)
+
+pl = make_pipeline(preproc, LinearRegression())
+# Notice that the steps are automatically named
+pl
+
+# ====================
+
+In [39]:
+
+# ====================
+
+An example Pipeline¶Let's build a Pipeline that:
+
+Takes in the 'total_bill' and 'size' features of tips.
+Standardizes those features.
+Uses the resulting standardized features to fit a linear model that predicts 'tip'.
+
+# ====================
+
+In [40]:
+
+
+# Let's define these once, since we'll use them repeatedly.
+X = tips[['total_bill', 'size']]
+y = tips['tip']
+
+# ====================
+
+In [40]:
+
+# ====================
+
+In [41]:
+
+
+from sklearn.preprocessing import StandardScaler
+
+model_su = make_pipeline(
+    StandardScaler(),
+    LinearRegression(),
+)
+
+model_su.fit(X, y)
+
+# ====================
+
+In [41]:
+
+# ====================
+
+How well does our model do? We can compute its $R^2$ and RMSE.
+
+# ====================
+
+In [42]:
+
+
+model_su.score(X, y)
+
+# ====================
+
+In [42]:
+
+# ====================
+
+In [43]:
+
+
+from sklearn.metrics import root_mean_squared_error
+
+root_mean_squared_error(y, model_su.predict(X))
+
+# ====================
+
+In [43]:
+
+# ====================
+
+Does this model perform any better than one that doesn't standardize its features? Let's find out.
+
+# ====================
+
+In [44]:
+
+
+model_orig = LinearRegression()
+model_orig.fit(X, y)
+
+# ====================
+
+In [44]:
+
+# ====================
+
+In [45]:
+
+
+model_orig.score(X, y)
+
+# ====================
+
+In [45]:
+
+# ====================
+
+In [46]:
+
+
+root_mean_squared_error(y, model_orig.predict(X))
+
+# ====================
+
+In [46]:
+
+# ====================
+
+The purpose of standardizing features¶
+For linear regression, standardizing your features will not change your model's error.
+
+# ====================
+
+There are other models where standardizing your features will improve performance, or where the model requires features to be standardized.
+Regularized linear regression (see DSC 140A).
+PCA (assumes centered data, not necessarily standardized: see DSC 140B).
+Clustering algorithms, e.g. $k$-means clustering (saw in DSC 40A).
+
+# ====================
+
+There is a benefit to standardizing features when performing linear regression, as we saw in DSC 40A: the features are brought to the same scale, so the coefficients can be compared directly.
+
+# ====================
+
+In [47]:
+
+
+# Total bill, table size.
+model_orig.coef_
+
+# ====================
+
+In [47]:
+
+# ====================
+
+In [48]:
+
+
+# Standardized total bill, standardized table size.
+model_su.named_steps['linearregression'].coef_
+
+# ====================
+
+In [48]:
+
+# ====================
+
+Multicollinearity¶
+
+# ====================
+
+Heights and weights¶We have a dataset containing the weights and heights of 25,000 18 year olds.
+
+# ====================
+
+In [49]:
+
+
+people_path = Path('data') / 'SOCR-HeightWeight.csv'
+people = pd.read_csv(people_path).drop(columns=['Index'])
+people.head()
+
+# ====================
+
+In [49]:
+
+# ====================
+
+In [50]:
+
+
+people.plot(kind='scatter', x='Height (Inches)', y='Weight (Pounds)', 
+            title='Weight vs. Height for 25,000 18 Year Olds')
+
+# ====================
+
+In [50]:
+
+# ====================
+
+Motivating example¶Suppose we fit a simple linear regression model that uses height in inches to predict weight in pounds.
+$$\text{predicted weight (pounds)} = w_0 + w_1 \cdot \text{height (inches)}$$
+
+# ====================
+
+In [51]:
+
+
+X = people[['Height (Inches)']]
+y = people['Weight (Pounds)']
+
+# ====================
+
+In [51]:
+
+# ====================
+
+In [52]:
+
+
+lr_one_feat = LinearRegression()
+lr_one_feat.fit(X, y)
+
+# ====================
+
+In [52]:
+
+# ====================
+
+$w_0^*$ and $w_1^*$ are shown below, along with the model's training set RMSE.
+
+# ====================
+
+In [53]:
+
+
+lr_one_feat.intercept_, lr_one_feat.coef_
+
+# ====================
+
+In [53]:
+
+# ====================
+
+In [54]:
+
+
+root_mean_squared_error(y, lr_one_feat.predict(X))
+
+# ====================
+
+In [54]:
+
+# ====================
+
+Now, suppose we fit another regression model, that uses height in inches AND height in centimeters to predict weight.
+$$\text{predicted weight (pounds)} = w_0 + w_1 \cdot \text{height (inches)} + w_2 \cdot \text{height (cm)}$$
+
+# ====================
+
+In [55]:
+
+
+people['Height (cm)'] = people['Height (Inches)'] * 2.54 # 1 inch = 2.54 cm
+
+# ====================
+
+In [55]:
+
+# ====================
+
+In [56]:
+
+
+X2 = people[['Height (Inches)', 'Height (cm)']]
+
+# ====================
+
+In [56]:
+
+# ====================
+
+In [57]:
+
+
+lr_two_feat = LinearRegression()
+lr_two_feat.fit(X2, y)
+
+# ====================
+
+In [57]:
+
+# ====================
+
+What are $w_0^*$, $w_1^*$, $w_2^*$, and the model's test RMSE?
+
+# ====================
+
+In [58]:
+
+
+lr_two_feat.intercept_, lr_two_feat.coef_
+
+# ====================
+
+In [58]:
+
+# ====================
+
+In [59]:
+
+
+root_mean_squared_error(y, lr_two_feat.predict(X2))
+
+# ====================
+
+In [59]:
+
+# ====================
+
+Observation: The intercept is about the same as before, as is the RMSE. However, the coefficients on 'Height (Inches)' and 'Height (cm)' are massive in size!
+What's going on?
+
+# ====================
+
+Redundant features¶Let's use simpler numbers for illustration. Suppose in the first model, $w_0^* = -82$ and $w_1^* = 3$.
+
+# ====================
+
+$$\text{predicted weight (pounds)} = -82 + 3 \cdot \text{height (inches)}$$
+
+# ====================
+
+In the second model, we have:
+$$\begin{align*}\text{predicted weight (pounds)} &= w_0^* + w_1^* \cdot \text{height (inches)} + w_2^* \cdot \text{height (cm)} \\ &= w_0^* + w_1^* \cdot \text{height (inches)} + w_2^* \cdot \big( 2.54 \cdot \text{height (inches)} \big) \\ &= w_0^* + \left(w_1^* + 2.54 \cdot w_2^* \right) \cdot \text{height (inches)} \end{align*}$$
+
+# ====================
+
+In the first model, we already found the "best" intercept ($-82$) and slope ($3$) in a linear model that uses height in inches to predict weight.
+
+# ====================
+
+So, as long as $w_1^* + 2.54 \cdot w_2^* = 3$ in the second model, the second model's training predictions will be the same as the first, and hence they will also minimize RMSE.
+
+# ====================
+
+Infinitely many parameter choices¶
+
+# ====================
+
+Issue: There are an infinite number of $w_1^*$ and $w_2^*$ that satisfy $w_1^* + 2.54 \cdot w_2^* = 3$!
+
+# ====================
+
+$$\text{predicted weight} = -82 - 10 \cdot \text{height (inches)} + \frac{13}{2.54} \cdot \text{height (cm)}$$
+
+# ====================
+
+$$\text{predicted weight} = -82 + 10 \cdot \text{height (inches)} - \frac{7}{2.54} \cdot \text{height (cm)}$$
+
+# ====================
+
+In [60]:
+
+
+(-82 - 10 * people.iloc[:, 0] + (13 / 2.54) * people.iloc[:, 2]).head()
+
+# ====================
+
+In [60]:
+
+# ====================
+
+In [61]:
+
+
+(-82 + 10 * people.iloc[:, 0] - (7 / 2.54) * people.iloc[:, 2]).head()
+
+# ====================
+
+In [61]:
+
+# ====================
+
+Both prediction rules look very different, but actually make the same predictions.
+
+# ====================
+
+We might get either set of coefficients, or any other of the infinitely many options.
+
+# ====================
+
+But neither set of coefficients has any meaning!
+
+# ====================
+
+Multicollinearity occurs when features in a regression model are highly correlated with one another.
+In other words, multicollinearity occurs when a feature can be predicted using a linear combination of other features, fairly accurately.
+
+# ====================
+
+When multicollinearity is present in the features, the coefficients in the model are uninterpretable – they have no meaning.
+A "slope" represents "the rate of change of $y$ with respect to a feature", when all other features are held constant – but if there's multicollinearity, you can't hold other features constant.
+
+# ====================
+
+Note: Multicollinearity doesn't impact a model's predictions!
+It doesn't impact a model's ability to generalize to unseen data.
+If features are multicollinear in the training data, they will probably be multicollinear in the test data too.
+
+# ====================
+
+Solutions:
+Manually remove highly correlated features.
+Use a dimensionality reduction technique (such as PCA) to automatically reduce dimensions.
+
+# ====================
+
+Example: One hot encoding¶A one hot encoding will result in multicollinearity unless you drop one of the one hot encoded features.
+
+# ====================
+
+Suppose we have the following fitted model:
+$$
+\begin{aligned}
+H(x) = 1 + 2 \cdot (\text{smoker==Yes}) - 2 \cdot (\text{smoker==No})
+\end{aligned}
+$$
+
+# ====================
+
+This is equivalent to:
+$$
+\begin{aligned}
+H(x) = 10 - 7 \cdot (\text{smoker==Yes}) - 11 \cdot (\text{smoker==No})
+\end{aligned}
+$$
+
+# ====================
+
+Solution: Drop one of the one hot encoded columns. The OneHotEncoder transformer has an option to do this.
+
+# ====================
+
+Example: Pipelines within Pipelines¶Suppose we want to:
+
+One hot encode the 'day' column, but as either 'Weekday', 'Sat', or 'Sun'.
+One hot encode the 'sex', 'smoker', and 'time' columns.
+Binarize the 'size' column with a threshold of 2.
+Leave the 'total_bill' column alone.
+Fit a linear regression model using only non-redundant features.
+
+Here's how we might do that:
+
+# ====================
+
+In [62]:
+
+
+tips
+
+# ====================
+
+In [62]:
+
+# ====================
+
+If you want to apply multiple transformations to the same column in a dataset, you can create a Pipeline just for that column.
+
+# ====================
+
+In [63]:
+
+
+def is_weekend(s):
+    # The input to is_weekend is a Series!
+    return s.replace({'Thur': 'Weekday', 'Fri': 'Weekday'})
+
+# ====================
+
+In [63]:
+
+# ====================
+
+In [64]:
+
+
+pl_day = make_pipeline(
+    FunctionTransformer(is_weekend),
+    OneHotEncoder(drop='first'),
+)
+
+# ====================
+
+In [64]:
+
+# ====================
+
+To do separate transformations for different columns, we use a ColumnTransformer. For the 'day' column, instead of specifying a transformer class, we use pl_day, the Pipeline we just created.
+
+# ====================
+
+In [65]:
+
+
+col_trans = make_column_transformer(
+    (pl_day, ['day']),
+    (OneHotEncoder(drop='first'), ['sex', 'smoker', 'time']),
+    (Binarizer(threshold=2), ['size']),
+    remainder='passthrough',
+    force_int_remainder_cols=False
+)
+
+# ====================
+
+In [65]:
+
+# ====================
+
+In [66]:
+
+
+pl = make_pipeline(
+    col_trans,
+    LinearRegression(),
+)
+
+pl.fit(tips.drop('tip', axis=1), tips['tip'])
+
+# ====================
+
+In [66]:
+
+# ====================
+
+Question
+
+How many weights does this linear model have?
+
+# ====================
+
+In [67]:
+
+
+# pl.named_steps['linearregression'].coef_.shape[0]
+
+# ====================
+
+In [67]:
+
+# ====================
+
+Key takeaways¶
+
+# ====================
+
+Multicollinearity is present in a linear model when one feature can be accurately predicted using one or more other features.
+In other words, it is present when a feature is redundant.
+
+# ====================
+
+Multicollinearity doesn't pose an issue for prediction; it doesn't hinder a model's ability to generalize. Instead, it renders the coefficients of a linear model meaningless.
+
+# ====================
+
+Generalization¶
+
+# ====================
+
+Motivation¶
+
+# ====================
+
+You and your friend are studying for an upcoming exam. You both decide to test your understanding by taking a practice exam.
+Your logic: If you do well on the practice exam, you should do well on the real exam.
+
+# ====================
+
+You each take the practice exam once and look at the solutions afterwards.
+
+# ====================
+
+Your strategy: Memorize the answers to all practice exam questions, e.g. "Question 1: A; Question 2: C; Question 3: A."
+
+# ====================
+
+Your friend's strategy: Learn high-level concepts from the solutions, e.g. "data are MNAR if the likelihood of missingness depends on the missing values themselves."
+
+# ====================
+
+Who will do better on the practice exam? Who will probably do better on the real exam? 🧐
+
+# ====================
+
+Evaluating the quality of a model¶
+
+# ====================
+
+So far, we've computed the RMSE (and $R^2$) of our fit regression models on the data that we used to fit them, i.e. the training data.
+
+# ====================
+
+We've said that Model A is better than Model B if Model A's RMSE is lower than Model B's RMSE.
+Remember, our training data is a sample from some population.
+Just because a model fits the training data well doesn't mean it will generalize and work well on similar, unseen samples from the same population!
+
+# ====================
+
+Example: Overfitting and underfitting¶Let's collect two samples $\{(x_i, y_i)\}$ from the same population.
+
+# ====================
+
+In [68]:
+
+
+np.random.seed(23) # For reproducibility.
+
+def sample_from_pop(n=100):
+    x = np.linspace(-2, 3, n)
+    y = x ** 3 + (np.random.normal(0, 3, size=n))
+    return pd.DataFrame({'x': x, 'y': y})
+
+sample_1 = sample_from_pop()
+sample_2 = sample_from_pop()
+
+# ====================
+
+In [68]:
+
+# ====================
+
+For now, let's just look at Sample 1. The relationship between $x$ and $y$ is roughly cubic; that is, $y \approx x^3$ (remember, in reality, you won't get to see the population).
+
+# ====================
+
+In [69]:
+
+
+px.scatter(sample_1, x='x', y='y', title='Sample 1')
+
+# ====================
+
+In [69]:
+
+# ====================
+
+Polynomial regression¶Let's fit three polynomial models on Sample 1:
+
+Degree 1.
+Degree 3.
+Degree 25.
+
+The PolynomialFeatures transformer will be helpful here.
+
+# ====================
+
+In [70]:
+
+
+from sklearn.preprocessing import PolynomialFeatures
+d2 = PolynomialFeatures(3)
+d2.fit_transform(np.array([1, 2, 3, 4, -2]).reshape(5, 1))
+
+# ====================
+
+In [70]:
+
+# ====================
+
+Below, we look at our three models' predictions on Sample 1 (which they were trained on).
+
+# ====================
+
+In [71]:
+
+
+# Look at the definition of train_and_plot in lec15_util.py if you're curious as to how the plotting works.
+fig = util.train_and_plot(train_sample=sample_1, test_sample=sample_1, degs=[1, 3, 25], data_name='Sample 1')
+fig.update_layout(title='Trained on Sample 1, Performance on Sample 1')
+
+# ====================
+
+In [71]:
+
+# ====================
+
+The degree 25 polynomial has the lowest RMSE on Sample 1.
+
+# ====================
+
+How do the same fit polynomials look on Sample 2?
+
+# ====================
+
+In [72]:
+
+
+fig = util.train_and_plot(train_sample=sample_1, test_sample=sample_2, degs=[1, 3, 25], data_name='Sample 2')
+fig.update_layout(title='Trained on Sample 1, Performance on Sample 2')
+
+# ====================
+
+In [72]:
+
+# ====================
+
+The degree 3 polynomial has the lowest RMSE on Sample 2.
+
+# ====================
+
+Note that we didn't get to see Sample 2 when fitting our models!
+
+# ====================
+
+As such, it seems that the degree 3 polynomial generalizes better to unseen data than the degree 25 polynomial does.
+
+# ====================
+
+What if we fit a degree 1, degree 3, and degree 25 polynomial on Sample 2 as well?
+
+# ====================
+
+In [73]:
+
+
+util.plot_multiple_models(sample_1, sample_2, degs=[1, 3, 25])
+
+# ====================
+
+In [73]:
+
+# ====================
+
+Key idea: Degree 25 polynomials seem to vary more when trained on different samples than degree 3 and 1 polynomials do.
+
+# ====================
+
+Bias and variance¶The training data we have access to is a sample from the population. We are concerned with our model's ability to generalize and work well on different datasets drawn from the same population.
+Suppose we fit a model $H$ (e.g. a degree 3 polynomial) on several different datasets from the same population. There are three sources of error that arise:
+
+# ====================
+
+⭐️ Bias: The expected deviation between a predicted value and an actual value.
+In other words, for a given $x_i$, how far is $H(x_i)$ from the true $y_i$, on average?
+Low bias is good! ✅
+High bias is a sign of underfitting, i.e. that our model is too basic to capture the relationship between our features and response.
+
+# ====================
+
+⭐️ Model variance ("variance"): The variance of a model's predictions.
+In other words, for a given $x_i$, how much does $H(x_i)$ vary across all datasets?
+Low model variance is good! ✅
+High model variance is a sign of overfitting, i.e. that our model is too complicated and is prone to fitting to the noise in our training data.
+
+# ====================
+
+Observation error: The error due to the random noise in the process we are trying to model (e.g. measurement error). We can't control this, without collecting more data!
+
+# ====================
+
+Here, suppose:
+
+The red bulls-eye represents an actual tip 💲.
+The dark blue darts represent predictions of the tip using different models that were fit on samples from the same data generating process.
+
+
+
+We'd like our models to be in the top left, but in practice that's hard to achieve!
+
+# ====================
+
+Risk vs. empirical risk¶
+
+# ====================
+
+Key idea: A model that works well on past data should work well on future data, if future data looks like past data.
+
+# ====================
+
+What we really want is for the expected loss for a new data point $(x_{\text{new}}, y_{\text{new}})$, drawn from the same population as the training set, to be small. That is, we want
+$$\mathbb{E}[y_{\text{new}} - H(x_{\text{new}})]^2$$
+to be minimized. The quantity above is called risk.
+
+# ====================
+
+$\mathbb{E}$ is the expectation operator of a random variable: it computes the average value of the random variable across its entire distribution.
+
+# ====================
+
+In general, we don't know the entire population distribution of $x$s and $y$s, so we can't compute risk exactly. That's why we compute empirical risk!
+
+$$\mathbb{E}[y_{\text{new}} - H(x_{\text{new}})]^2 \approx \frac{1}{n} \sum_{i = 1}^n \left( y_i - H(x_i) \right)^2$$
+
+# ====================
+
+The bias-variance decomposition¶Risk can be decomposed as follows:
+$$\mathbb{E}[y_{\text{new}} - H(x_{\text{new}})]^2 = \text{model bias}^2 + \text{model variance} + \text{observation error}$$
+
+# ====================
+
+Remember, this expectation $\mathbb{E}$ is over the entire population of $x$s and $y$s: in real life, we don't know what this population distribution is, so we can't put actual numbers to this.
+
+# ====================
+
+If $H$ is too simple to capture the relationship between $x$s and $y$s in the population, $H$ will underfit to training sets and have high bias.
+
+# ====================
+
+If $H$ is overly complex, $H$ will overfit to training sets and have high variance, meaning it will change significantly from one training set to the next.
+
+# ====================
+
+Generally:
+Training error reflects bias, not variance.
+Test error reflects both bias and variance.
+
+# ====================
+
+Navigating the bias-variance tradeoff¶$$\mathbb{E}[y_{\text{new}} - H(x_{\text{new}})]^2 = \text{model bias}^2 + \text{model variance} + \text{observation error}$$
+
+# ====================
+
+As we collect more data points (i.e. as $n$ increases):
+Model variance decreases.
+If $H$ can exactly model the true population relationship between $x$ and $y$ (e.g. cubic), then model bias also decreases.
+If $H$ can't exactly model the true population relationship between $x$ and $y$, then model bias will remain large.
+
+# ====================
+
+As we add more features (i.e. as $d$ increases):
+Model variance increases, whether or not the feature was useful.
+Adding a useful feature decreases model bias.
+Adding a useless feature doesn't change model bias.
+
+# ====================
+
+Example: suppose the actual relationship between $x$ and $y$ in the population is linear, and we fit $H$ using simple linear regression.
+Model bias = 0.
+Model variance is proportional to $\frac{d}{n}$.
+As $d$ increases, model variance increases.
+As $n$ increases, model variance decreases.
+
+# ====================
+
+Read more here.
+
+# ====================
+
+Train-test splits¶
+
+# ====================
+
+Avoiding overfitting¶
+
+# ====================
+
+We won't know whether our model has overfit to our sample (training data) unless we get to see how well it performs on a new sample from the same population.
+
+# ====================
+
+💡Idea: Split our sample into a training set and test set.
+
+# ====================
+
+Use only the training set to fit the model (i.e. find $w^*$).
+
+# ====================
+
+Use the test set to evaluate the model's error (RMSE, $R^2$).
+
+# ====================
+
+The test set is like a new sample of data from the same population as the training data!
+
+# ====================
+
+Train-test split 🚆¶sklearn.model_selection.train_test_split implements a train-test split for us! 🙏🏼
+
+# ====================
+
+If X is an array/DataFrame of features and y is an array/Series of responses,
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+randomly splits the features and responses into training and test sets, such that the test set contains 0.25 of the full dataset.
+
+# ====================
+
+In [74]:
+
+
+from sklearn.model_selection import train_test_split
+
+# ====================
+
+In [74]:
+
+# ====================
+
+In [75]:
+
+
+# Read the documentation!
+train_test_split?
+
+# ====================
+
+In [75]:
+
+# ====================
+
+Let's perform a train/test split on our tips dataset.
+
+# ====================
+
+In [76]:
+
+
+X = tips.drop('tip', axis=1)
+y = tips['tip']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2) # We don't have to choose 0.25.
+X
+
+# ====================
+
+In [76]:
+
+# ====================
+
+Before proceeding, let's check the sizes of X_train and X_test.
+
+# ====================
+
+In [77]:
+
+
+print('Rows in X_train:', X_train.shape[0])
+display(X_train.head())
+print('Rows in X_test:', X_test.shape[0])
+display(X_test.head())
+
+# ====================
+
+In [77]:
+
+# ====================
+
+In [78]:
+
+
+X_train.shape[0] / tips.shape[0]
+
+# ====================
+
+In [78]:
+
+# ====================
+
+Example train-test split¶Steps:
+
+Fit a model on the training set.
+Evaluate the model on the test set.
+
+# ====================
+
+In [79]:
+
+
+tips.head()
+
+# ====================
+
+In [79]:
+
+# ====================
+
+In [80]:
+
+
+X = tips[['total_bill', 'size']] # For this example, we'll use just the already-quantitative columns in tips.
+y = tips['tip']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1) # random_state is like np.random.seed.
+
+# ====================
+
+In [80]:
+
+# ====================
+
+Here, we'll use a stand-alone LinearRegression model without a Pipeline, but this process would work the same if we were using a Pipeline.
+
+# ====================
+
+In [81]:
+
+
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+
+# ====================
+
+In [81]:
+
+# ====================
+
+Let's check our model's performance on the training set first.
+
+# ====================
+
+In [82]:
+
+
+pred_train = lr.predict(X_train)
+rmse_train = root_mean_squared_error(y_train, pred_train)
+rmse_train
+
+# ====================
+
+In [82]:
+
+# ====================
+
+And the test set:
+
+# ====================
+
+In [83]:
+
+
+pred_test = lr.predict(X_test)
+rmse_test = root_mean_squared_error(y_test, pred_test)
+rmse_test
+
+# ====================
+
+In [83]:
+
+# ====================
+
+Since rmse_train and rmse_test are similar, it doesn't seem like our model is overfitting to the training data. If rmse_test was much larger than rmse_train, it would be evidence that our model is unable to generalize well.
+
+# ====================
+
+Summary, next time¶
+
+# ====================
+
+Summary¶
+We want to build models that generalize well to unseen data.
+Models that have high bias are too simple to represent complex relationships in data, and underfit.
+Models that have high variance are overly complex for the relationships in the data, and vary a lot when fit on different datasets. Such models overfit to the training data.
+
+# ====================
+
+Next time¶What are hyperparameters and how do we choose them?
