@@ -24,7 +24,7 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
       <div
         className="absolute inset-0 w-full h-full bg-cover bg-center"
         style={{
-          backgroundImage: `url('/images/hogwarts-loading.jpg')`,
+          backgroundImage: `url('${import.meta.env.BASE_URL}images/hogwarts-loading.jpg')`,
           filter: 'brightness(0.88) contrast(1.06) saturate(0.9)',
         }}
       />

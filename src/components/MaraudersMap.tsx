@@ -157,7 +157,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           {currentLevel === 'world' && (
             <div className="relative w-full h-full flex items-center justify-center">
               <img
-                src="/maps/wizarding-world-map.jpg"
+                src={`${import.meta.env.BASE_URL}maps/wizarding-world-map.jpg`}
                 alt="Wizarding World of Great Britain & Ireland"
                 className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
               />
@@ -189,7 +189,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           {currentLevel === 'castle' && (
             <div className="relative w-full h-full flex items-center justify-center animate-in zoom-in-95 duration-200">
               <img
-                src="/maps/hogwarts-castle-map.jpg"
+                src={`${import.meta.env.BASE_URL}maps/hogwarts-castle-map.jpg`}
                 alt="Hogwarts Castle Floor Map"
                 className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
               />

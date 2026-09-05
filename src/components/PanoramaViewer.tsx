@@ -75,7 +75,9 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
   };
 
   const loadLocationTexture = (loc: Location3D) => {
-    const realImagePath = `/panoramas/${loc.id}.jpg`;
+    // Strip leading slash if BASE_URL has a trailing slash, or just ensure correct concatenation.
+    const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL.slice(0, -1) : import.meta.env.BASE_URL;
+    const realImagePath = `${baseUrl}/panoramas/${loc.id}.jpg`;
     textureLoaderRef.current.load(
       realImagePath,
       (loadedTexture) => applyTexture(loadedTexture),
@@ -149,9 +151,9 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
       const phi = THREE.MathUtils.degToRad(90 - latRef.current);
       const theta = THREE.MathUtils.degToRad(lonRef.current);
 
-      const targetX = 500 * Math.sin(phi) * Math.cos(theta);
+      const targetX = 500 * Math.sin(phi) * Math.sin(theta);
       const targetY = 500 * Math.cos(phi);
-      const targetZ = 500 * Math.sin(phi) * Math.sin(theta);
+      const targetZ = 500 * Math.sin(phi) * Math.cos(theta);
 
       camera.lookAt(targetX, targetY, targetZ);
       
@@ -196,8 +198,8 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     if (!isUserInteractingRef.current) return;
     const deltaX = e.clientX - onPointerDownPointerXRef.current;
     const deltaY = e.clientY - onPointerDownPointerYRef.current;
-    lonRef.current = onPointerDownLonRef.current - deltaX * 0.12;
-    latRef.current = onPointerDownLatRef.current + deltaY * 0.12;
+    lonRef.current = onPointerDownLonRef.current + deltaX * 0.12;
+    latRef.current = onPointerDownLatRef.current - deltaY * 0.12;
   };
 
   const onPointerUp = () => {
