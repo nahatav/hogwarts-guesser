@@ -30,14 +30,14 @@ export const ScoreModal: React.FC<ScoreModalProps> = ({
     }
   }, [result.score]);
 
-  const { location, score, distanceMeters, floorDelta, regionMatched } = result;
+  const { location, score, distanceMeters, regionMatched } = result;
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="w-full max-w-sm sm:max-w-md bg-[#0d0b08] border border-[#c9a84c]/40 p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.95)] max-h-[90dvh] overflow-y-auto">
+    <div className="fixed inset-x-2 top-2 sm:inset-x-auto sm:top-5 sm:left-5 z-40 pointer-events-none animate-in fade-in duration-300">
+      <div className="w-full sm:w-[380px] bg-[#0d0b08]/95 border border-[#c9a84c]/50 p-3.5 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.9)] pointer-events-auto backdrop-blur-md">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#c9a84c]/20 pb-2 mb-3">
+        <div className="flex items-center justify-between border-b border-[#c9a84c]/20 pb-2 mb-2.5">
           <div className="flex items-center gap-1.5">
             <Award className="w-3.5 h-3.5 text-[#c9a84c]" />
             <span className="font-cinzel text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-[#e8dcc8]">
@@ -50,43 +50,41 @@ export const ScoreModal: React.FC<ScoreModalProps> = ({
         </div>
 
         {/* Location Name */}
-        <div className="mb-4">
-          <h2 className="font-cinzel text-lg sm:text-xl text-[#e8dcc8] tracking-wide leading-tight uppercase">
+        <div className="mb-3">
+          <h2 className="font-cinzel text-base sm:text-lg text-[#e8dcc8] tracking-wide leading-tight uppercase truncate">
             {location.name}
           </h2>
-          <p className="text-[10px] font-cinzel tracking-wider text-[#a09278] mt-1 flex items-center gap-1 uppercase">
-            <Compass className="w-3 h-3 text-[#c9a84c]" />
-            <span>{formatRegionName(location.region)} • {location.floorName}</span>
+          <p className="text-[10px] font-cinzel tracking-wider text-[#a09278] mt-0.5 flex items-center gap-1 uppercase truncate">
+            <Compass className="w-3 h-3 text-[#c9a84c] shrink-0" />
+            <span className="truncate">{formatRegionName(location.region)} • {location.floorName}</span>
           </p>
         </div>
 
         {/* Score Grid */}
-        <div className="grid grid-cols-2 gap-px bg-[#c9a84c]/20 border border-[#c9a84c]/20 mb-4">
-          <div className="bg-[#0d0b08] p-3 flex flex-col justify-center">
+        <div className="grid grid-cols-2 gap-px bg-[#c9a84c]/20 border border-[#c9a84c]/20 mb-3">
+          <div className="bg-[#0d0b08] p-2.5 flex flex-col justify-center">
             <span className="text-[8px] font-cinzel text-[#a09278] uppercase tracking-widest mb-0.5">Score</span>
-            <span className="font-cinzel text-xl sm:text-2xl font-bold text-[#c9a84c] tracking-wider leading-none">
+            <span className="font-cinzel text-lg sm:text-xl font-bold text-[#c9a84c] tracking-wider leading-none">
               +{score.toLocaleString()}
             </span>
             <span className="text-[8px] font-cinzel text-[#5a4f3a] tracking-widest mt-1">/ 5,000</span>
           </div>
 
-          <div className="bg-[#0d0b08] p-3 flex flex-col justify-center">
+          <div className="bg-[#0d0b08] p-2.5 flex flex-col justify-center">
             <span className="text-[8px] font-cinzel text-[#a09278] uppercase tracking-widest mb-0.5">Distance</span>
-            <span className="font-cinzel text-base sm:text-lg text-[#e8dcc8] tracking-wide leading-none">
-              {regionMatched ? `${distanceMeters}m` : 'Wrong Realm'}
+            <span className="font-cinzel text-sm sm:text-base text-[#e8dcc8] tracking-wide leading-none truncate">
+              {regionMatched ? `${distanceMeters}m off` : 'Wrong Realm'}
             </span>
-            {floorDelta > 0 && (
-              <span className="text-[8px] font-cinzel text-[#a09278] tracking-widest mt-1">
-                ({floorDelta} floor{floorDelta > 1 ? 's' : ''} off)
-              </span>
-            )}
+            <span className="text-[8px] font-cinzel text-[#c9a84c] tracking-widest mt-1 truncate">
+              {score >= 4850 ? '✦ Perfect' : score >= 3500 ? 'Close Match' : 'Far'}
+            </span>
           </div>
         </div>
 
         {/* CTA */}
         <button
           onClick={onNextRound}
-          className="w-full py-2.5 sm:py-3 bg-[#0c0a08] hover:bg-[#181410] border border-[#c9a84c]/50 hover:border-[#c9a84c] text-[#e8dcc8] font-cinzel font-semibold text-xs tracking-widest uppercase transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]"
+          className="w-full py-2 sm:py-2.5 bg-[#0c0a08] hover:bg-[#181410] border border-[#c9a84c]/60 hover:border-[#c9a84c] text-[#e8dcc8] font-cinzel font-semibold text-xs tracking-widest uppercase transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98] shadow-md"
         >
           <span>{isLastRound ? 'View Final Results' : 'Next Chamber'}</span>
           <ArrowRight className="w-3.5 h-3.5 text-[#c9a84c]" />

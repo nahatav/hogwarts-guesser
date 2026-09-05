@@ -297,26 +297,39 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
       reqIdRef.current = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      const t = elapsed * 0.85;
-      const radiusX = 11.5;
-      const radiusY = 5.8;
-      const radiusZ = 3.2;
+      // Calculate visible frustum bounds at z = 0 based on camera FOV & aspect ratio
+      const aspect = camera.aspect || (window.innerWidth / window.innerHeight);
+      const vHalfHeight = 24 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const vHalfWidth = vHalfHeight * aspect;
 
-      let targetX = Math.sin(t * 0.7) * radiusX + Math.sin(t * 1.7) * 2.2;
-      let targetY = Math.cos(t * 0.9) * radiusY + Math.sin(t * 2.1) * 1.3;
+      // Safe boundaries that keep the snitch body and wings well inside the screen frame
+      const maxBoundX = Math.max(2.4, vHalfWidth - 1.8);
+      const maxBoundY = Math.max(3.0, vHalfHeight - 2.5);
+
+      const t = elapsed * 0.85;
+      const radiusX = maxBoundX * 0.75;
+      const radiusY = maxBoundY * 0.75;
+      const radiusZ = 2.4;
+
+      let targetX = Math.sin(t * 0.7) * radiusX + Math.sin(t * 1.7) * (radiusX * 0.22);
+      let targetY = Math.cos(t * 0.9) * radiusY + Math.sin(t * 2.1) * (radiusY * 0.22);
       let targetZ = Math.sin(t * 1.3) * radiusZ;
 
       if (mousePosRef.current.active && cameraRef.current) {
-        const mouseWorldX = mousePosRef.current.x * radiusX * 1.1;
-        const mouseWorldY = mousePosRef.current.y * radiusY * 1.1;
+        const mouseWorldX = mousePosRef.current.x * maxBoundX;
+        const mouseWorldY = mousePosRef.current.y * maxBoundY;
         const dist = Math.hypot(targetX - mouseWorldX, targetY - mouseWorldY);
 
-        if (dist < 3.2) {
+        if (dist < 2.5) {
           const angle = Math.atan2(targetY - mouseWorldY, targetX - mouseWorldX);
-          targetX += Math.cos(angle) * 3.4;
-          targetY += Math.sin(angle) * 3.4;
+          targetX += Math.cos(angle) * 2.5;
+          targetY += Math.sin(angle) * 2.5;
         }
       }
+
+      // Strictly clamp target within frame boundaries
+      targetX = Math.max(-maxBoundX, Math.min(maxBoundX, targetX));
+      targetY = Math.max(-maxBoundY, Math.min(maxBoundY, targetY));
 
       const currentPos = snitchGroup.position;
 
@@ -341,6 +354,9 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
         currentPos.x += (targetX - currentPos.x) * 0.08;
         currentPos.y += (targetY - currentPos.y) * 0.08;
         currentPos.z += (targetZ - currentPos.z) * 0.08;
+
+        currentPos.x = Math.max(-maxBoundX, Math.min(maxBoundX, currentPos.x));
+        currentPos.y = Math.max(-maxBoundY, Math.min(maxBoundY, currentPos.y));
       }
 
       snitchPointLight.position.copy(currentPos);

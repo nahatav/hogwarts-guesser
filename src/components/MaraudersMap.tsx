@@ -24,16 +24,60 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
 
   useEffect(() => {
     if (isRoundComplete && lastRoundResult) {
+      // If location is in Hogwarts, show castle map.
+      // If location is outside Hogwarts, go back to world map ("main page").
       if (lastRoundResult.location.region === 'castle') {
         setCurrentLevel('castle');
       } else {
         setCurrentLevel('world');
       }
-      setIsExpanded(true);
     } else {
+      // Reset map size, level, and active guess for the new turn
+      setIsExpanded(false);
       setActiveGuess(null);
+      setCurrentLevel('world');
     }
   }, [isRoundComplete, lastRoundResult]);
+
+  // Compute player guess coordinates on the currently active map level
+  const guessOnCurrentLevel = React.useMemo(() => {
+    const g = lastRoundResult?.guess || activeGuess;
+    if (!g) return null;
+
+    if (currentLevel === 'castle') {
+      if (g.mapLevel === 'castle') {
+        return { x: g.x, y: g.y };
+      } else {
+        return { x: 550, y: 205 }; // Default to Entrance Hall in castle
+      }
+    } else {
+      // Current level is 'world'
+      if (g.mapLevel === 'world') {
+        return { x: g.x, y: g.y };
+      } else {
+        // Player guessed inside Hogwarts Castle -> pin on Hogwarts on the world map!
+        return { x: 600, y: 240 };
+      }
+    }
+  }, [currentLevel, lastRoundResult, activeGuess]);
+
+  // Compute actual location coordinates on the currently active map level
+  const actualOnCurrentLevel = React.useMemo(() => {
+    if (!lastRoundResult) return null;
+    const loc = lastRoundResult.location;
+
+    if (currentLevel === 'castle') {
+      if (loc.region === 'castle') {
+        return { x: loc.x, y: loc.y, name: loc.name };
+      }
+      return null;
+    } else {
+      // Current level is 'world'
+      const wx = loc.worldX ?? 600;
+      const wy = loc.worldY ?? 240;
+      return { x: wx, y: wy, name: loc.name };
+    }
+  }, [currentLevel, lastRoundResult]);
 
   const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isRoundComplete || disabled) return;
@@ -181,65 +225,54 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
             />
           )}
 
-          {/* Active Guess Marker */}
-          {activeGuess && activeGuess.mapLevel === currentLevel && (
+          {/* Player Guess Marker (Shown during active guess & during result review) */}
+          {guessOnCurrentLevel && (
             <div
               className="absolute pointer-events-none transition-transform duration-150 z-20"
               style={{
-                left: `${(activeGuess.x / 1000) * 100}%`,
-                top: `${(activeGuess.y / 1000) * 100}%`,
+                left: `${(guessOnCurrentLevel.x / 1000) * 100}%`,
+                top: `${(guessOnCurrentLevel.y / 1000) * 100}%`,
                 transform: 'translate(-50%, -100%)'
               }}
             >
               <div className="flex flex-col items-center">
-                <div className="w-3 h-3 rounded-full bg-[#c9a84c] border border-black shadow-sm" />
+                <div className="w-3.5 h-3.5 rounded-full bg-[#c9a84c] border border-black shadow-md" />
                 <div className="w-[1px] h-3 bg-[#c9a84c]" />
-                <span className="mt-1 text-[8px] font-cinzel font-bold text-[#e8dcc8] bg-black/80 px-1.5 py-0.5 rounded-sm border border-[#c9a84c]/30 whitespace-nowrap">
-                  Your Guess
+                <span className="mt-1 text-[8px] font-cinzel font-bold text-[#e8dcc8] bg-black/90 px-1.5 py-0.5 rounded-sm border border-[#c9a84c]/40 whitespace-nowrap shadow-sm">
+                  {isRoundComplete ? 'Your Guess' : 'Selected Pin'}
                 </span>
               </div>
             </div>
           )}
 
-          {/* Reveal Markers */}
-          {isRoundComplete && lastRoundResult && (
+          {/* Actual Place Marker & Connecting Trail */}
+          {isRoundComplete && actualOnCurrentLevel && (
             <>
-              {((currentLevel === 'castle' && lastRoundResult.location.region === 'castle') ||
-                (currentLevel === 'world')) && (
-                <div
-                  className="absolute pointer-events-none z-20"
-                  style={{
-                    left: currentLevel === 'castle'
-                      ? `${(lastRoundResult.location.x / 1000) * 100}%`
-                      : `${((lastRoundResult.location.worldX ?? lastRoundResult.location.x) / 1000) * 100}%`,
-                    top: currentLevel === 'castle'
-                      ? `${(lastRoundResult.location.y / 1000) * 100}%`
-                      : `${((lastRoundResult.location.worldY ?? lastRoundResult.location.y) / 1000) * 100}%`,
-                    transform: 'translate(-50%, -100%)'
-                  }}
-                >
-                  <div className="flex flex-col items-center animate-in zoom-in duration-300">
-                    <div className="w-5 h-5 rounded-full bg-[#e8dcc8] border border-black shadow-sm flex items-center justify-center">
-                      <Check className="w-3 h-3 text-black" />
-                    </div>
-                    <div className="w-[1px] h-3 bg-[#e8dcc8]" />
-                    <span className="mt-1 text-[8px] font-cinzel font-bold text-black bg-[#e8dcc8] px-1.5 py-0.5 rounded-sm border border-black whitespace-nowrap">
-                      {lastRoundResult.location.name}
-                    </span>
+              <div
+                className="absolute pointer-events-none z-20"
+                style={{
+                  left: `${(actualOnCurrentLevel.x / 1000) * 100}%`,
+                  top: `${(actualOnCurrentLevel.y / 1000) * 100}%`,
+                  transform: 'translate(-50%, -100%)'
+                }}
+              >
+                <div className="flex flex-col items-center animate-in zoom-in duration-300">
+                  <div className="w-5 h-5 rounded-full bg-[#e8dcc8] border border-black shadow-md flex items-center justify-center">
+                    <Check className="w-3 h-3 text-black" />
                   </div>
+                  <div className="w-[1px] h-3 bg-[#e8dcc8]" />
+                  <span className="mt-1 text-[8px] font-cinzel font-bold text-black bg-[#e8dcc8] px-1.5 py-0.5 rounded-sm border border-black whitespace-nowrap shadow-sm">
+                    {actualOnCurrentLevel.name}
+                  </span>
                 </div>
-              )}
+              </div>
 
-              {lastRoundResult.guess && lastRoundResult.guess.mapLevel === currentLevel && (
+              {guessOnCurrentLevel && (
                 <FootprintsTrail
-                  startX={(lastRoundResult.guess.x / 1000) * 100}
-                  startY={(lastRoundResult.guess.y / 1000) * 100}
-                  endX={currentLevel === 'castle'
-                    ? (lastRoundResult.location.x / 1000) * 100
-                    : ((lastRoundResult.location.worldX ?? lastRoundResult.location.x) / 1000) * 100}
-                  endY={currentLevel === 'castle'
-                    ? (lastRoundResult.location.y / 1000) * 100
-                    : ((lastRoundResult.location.worldY ?? lastRoundResult.location.y) / 1000) * 100}
+                  startX={(guessOnCurrentLevel.x / 1000) * 100}
+                  startY={(guessOnCurrentLevel.y / 1000) * 100}
+                  endX={(actualOnCurrentLevel.x / 1000) * 100}
+                  endY={(actualOnCurrentLevel.y / 1000) * 100}
                 />
               )}
             </>

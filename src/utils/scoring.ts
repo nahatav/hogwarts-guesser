@@ -29,35 +29,52 @@ export function calculateWizardingScore(
   // Case 1: Player guessed inside the zoomed-in castle map
   if (guess.mapLevel === 'castle') {
     if (!isCastleActual) {
+      // Player guessed Hogwarts Castle, but location was outside in the wider world
+      const hogwartsWorldX = 600;
+      const hogwartsWorldY = 240;
+      const targetX = actual.worldX ?? hogwartsWorldX;
+      const targetY = actual.worldY ?? hogwartsWorldY;
+      const dx = hogwartsWorldX - targetX;
+      const dy = hogwartsWorldY - targetY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const distanceMeters = Math.round(dist * 1.5);
+      const score = Math.max(0, Math.min(3500, Math.round(5000 * Math.exp(-dist / 100))));
+
       return {
-        score: 0,
-        distanceMeters: 5000,
+        score,
+        distanceMeters,
         floorDelta: 0,
         regionMatched: false,
-        owlGrade: 'D (Dreadful)',
-        feedback: `You searched inside Hogwarts Castle, but this scene was actually in ${formatRegionName(actual.region)} (${actual.name})!`,
+        owlGrade: getOwlGrade(score),
+        feedback: `You guessed inside Hogwarts Castle, but this location was in ${formatRegionName(actual.region)} (${actual.name})!`,
       };
     }
 
+    // Both guess and actual are inside Hogwarts Castle
     const dx = guess.x - actual.x;
     const dy = guess.y - actual.y;
-    const dist2DMeters = Math.sqrt(dx * dx + dy * dy) * 0.35;
-    const floorDelta = Math.abs(guess.floorLevel - actual.floorLevel);
-    const totalEffectiveDistance = dist2DMeters + (floorDelta * 28);
+    const rawDist = Math.sqrt(dx * dx + dy * dy);
 
-    const tolerance = 15;
+    // Preset room tolerance: Each room on the cross-section map has ~50 units radius
+    const roomTolerance = 52;
     let score = 0;
-    if (totalEffectiveDistance <= tolerance) {
+    let distanceMeters = 0;
+
+    if (rawDist <= roomTolerance) {
+      // Pinpoint hit inside the room!
       score = 5000;
+      distanceMeters = Math.round(rawDist * 0.08); // 0m - 4m
     } else {
-      score = Math.round(5000 * Math.exp(-(totalEffectiveDistance - tolerance) / 60));
+      const excessDist = rawDist - roomTolerance;
+      distanceMeters = Math.max(5, Math.round(excessDist * 0.45));
+      score = Math.round(5000 * Math.exp(-excessDist / 60));
     }
     score = Math.max(0, Math.min(5000, score));
 
     return {
       score,
-      distanceMeters: Math.round(totalEffectiveDistance),
-      floorDelta,
+      distanceMeters,
+      floorDelta: 0,
       regionMatched: true,
       owlGrade: getOwlGrade(score),
       feedback: getFeedback(score, actual.name),
@@ -65,29 +82,35 @@ export function calculateWizardingScore(
   }
 
   // Case 2: Player guessed on the Great Britain & World Map
-  const targetX = actual.worldX ?? actual.x;
-  const targetY = actual.worldY ?? actual.y;
+  const targetX = actual.worldX ?? (isCastleActual ? 600 : actual.x);
+  const targetY = actual.worldY ?? (isCastleActual ? 240 : actual.y);
   const dx = guess.x - targetX;
   const dy = guess.y - targetY;
-  const dist2DMeters = Math.sqrt(dx * dx + dy * dy) * 1.2;
+  const rawDist = Math.sqrt(dx * dx + dy * dy);
 
+  // Preset regional tolerance for landmarks on the overworld map
+  const worldTolerance = 25;
   let score = 0;
-  if (dist2DMeters <= 25) {
-    // If it's a castle location and they clicked the castle inset on the world map
-    score = isCastleActual ? 4650 : 5000;
+  let distanceMeters = 0;
+
+  if (rawDist <= worldTolerance) {
+    score = isCastleActual ? 4750 : 5000;
+    distanceMeters = Math.round(rawDist * 0.2);
   } else {
-    score = Math.round(5000 * Math.exp(-dist2DMeters / 120));
+    const excessDist = rawDist - worldTolerance;
+    distanceMeters = Math.max(5, Math.round(excessDist * 1.2));
+    score = Math.round(5000 * Math.exp(-excessDist / 90));
   }
   score = Math.max(0, Math.min(5000, score));
 
   return {
     score,
-    distanceMeters: Math.round(dist2DMeters),
+    distanceMeters,
     floorDelta: 0,
-    regionMatched: guess.region === actual.region || (isCastleActual && dist2DMeters < 50),
+    regionMatched: guess.region === actual.region || (isCastleActual && rawDist < 50),
     owlGrade: getOwlGrade(score),
-    feedback: isCastleActual && score > 4000
-      ? `Great instinct finding Hogwarts on the world map! Zoom in to the castle for a perfect 5,000 pt room guess.`
+    feedback: isCastleActual && score >= 4500
+      ? `Great job pinpointing Hogwarts on the world map! You can zoom into the castle next time for a perfect 5,000 pt room guess.`
       : getFeedback(score, actual.name),
   };
 }
