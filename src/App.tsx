@@ -10,12 +10,13 @@ import { ScoreModal } from './components/ScoreModal';
 import { GameOverModal } from './components/GameOverModal';
 import { HousePickerModal } from './components/HousePickerModal';
 import { RulesModal } from './components/RulesModal';
-import { SplashScreen } from './components/SplashScreen';
 import { NewspaperLandingPage } from './components/NewspaperLandingPage';
+import { HogwartsLoadingScreen } from './components/HogwartsLoadingScreen';
 
 export function App() {
   const [deck, setDeck] = useState<Location3D[]>([]);
-  const [showSplash, setShowSplash] = useState<boolean>(true);
+  const [isLoadingGame, setIsLoadingGame] = useState<boolean>(true);
+  const [loadingLabel, setLoadingLabel] = useState<string>("Summoning Hogwarts Castle");
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
   const [showHousePicker, setShowHousePicker] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
@@ -53,6 +54,12 @@ export function App() {
     setLastResult(null);
     setShowHousePicker(false);
     setShowLandingPage(false);
+    setLoadingLabel(
+      mode === 'castle_only' 
+        ? 'Approaching Hogwarts Castle Chambers...' 
+        : 'Departing for Hogwarts & Great Britain...'
+    );
+    setIsLoadingGame(true);
 
     setGameState({
       mode,
@@ -142,8 +149,14 @@ export function App() {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black font-serif select-none">
-      {/* Splash / Intro Loading Screen */}
-      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      {/* Cinematic Full-Screen Hogwarts Castle Loading Screen with 0-100 Progress Bar & Hedwig's Theme */}
+      {isLoadingGame && (
+        <HogwartsLoadingScreen
+          onComplete={() => setIsLoadingGame(false)}
+          durationMs={4500}
+          destinationLabel={loadingLabel}
+        />
+      )}
 
       {/* Retro Newspaper Landing Page ("The Harry Potter" / Daily Prophet) with 3D Flying Quidditch Snitch */}
       {showLandingPage ? (
