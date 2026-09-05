@@ -9,13 +9,13 @@ class WizardSoundEngine {
   constructor() {
     if (typeof window !== 'undefined') {
       try {
-        this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
+        const domAudio = (typeof document !== 'undefined') 
+          ? (document.getElementById('harry-potter-theme') as HTMLAudioElement) 
+          : null;
+        this.bgAudio = domAudio || new Audio('/audio/hedwigs-theme.mp3');
         this.bgAudio.loop = true;
         this.bgAudio.preload = 'auto';
-        this.bgAudio.volume = 0.65;
-        this.bgAudio.load();
-
-        // Attempt immediate playback on load
+        this.bgAudio.volume = 0.7;
         this.bgAudio.play().then(() => {
           this.isMusicPlaying = true;
         }).catch(() => {

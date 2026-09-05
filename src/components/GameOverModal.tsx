@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import type { GameState } from '../types/game';
 import { sound } from '../utils/audio';
-import { RotateCcw, Award, BookOpen, Newspaper } from 'lucide-react';
+import { RotateCcw, Award, BookOpen, Home } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface GameOverModalProps {
@@ -74,7 +74,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             O.W.L. Examination Report
           </h1>
           <p className="text-xs font-cinzel text-[#444] mt-1 uppercase tracking-widest">
-            Cartographic Diploma Conferred for <strong>{house}</strong>
+            Cartographic Diploma Conferred upon <strong>{gameState.playerName || 'The Chosen One'}</strong>
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons matching RETURN TO HOGWARTS */}
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={onPlayAgain}
@@ -163,8 +163,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             onClick={onChangeHouse}
             className="py-3 px-6 bg-[#ded6c4] hover:bg-[#181818] hover:text-[#ded6c4] text-[#121212] border-2 border-[#181818] font-cinzel font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm"
           >
-            <Newspaper className="w-4 h-4" />
-            <span>Front Page</span>
+            <Home className="w-4 h-4" />
+            <span>Home</span>
           </button>
         </div>
       </div>

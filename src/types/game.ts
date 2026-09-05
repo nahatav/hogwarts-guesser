@@ -59,6 +59,7 @@ export type HogwartsHouse = 'Gryffindor' | 'Slytherin' | 'Ravenclaw' | 'Hufflepu
 export type GameMode = 'classic_5' | 'castle_only' | 'owl_streak' | 'lumos_challenge';
 
 export interface GameState {
+  playerName: string;
   mode: GameMode;
   house: HogwartsHouse;
   currentRound: number;

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { GameState, HogwartsHouse, GameMode, PlayerGuess, RoundResult, Location3D } from './types/game';
+import type { GameState, PlayerGuess, RoundResult, Location3D } from './types/game';
 import { LOCATIONS } from './data/locations';
 import { calculateWizardingScore } from './utils/scoring';
 import { sound } from './utils/audio';
@@ -8,20 +8,32 @@ import { MaraudersMap } from './components/MaraudersMap';
 import { GameHeader } from './components/GameHeader';
 import { ScoreModal } from './components/ScoreModal';
 import { GameOverModal } from './components/GameOverModal';
-import { HousePickerModal } from './components/HousePickerModal';
 import { RulesModal } from './components/RulesModal';
-import { NewspaperLandingPage } from './components/NewspaperLandingPage';
-import { HogwartsLoadingScreen } from './components/HogwartsLoadingScreen';
+import { HogwartsHomePage } from './components/HogwartsHomePage';
 
 export function App() {
   const [deck, setDeck] = useState<Location3D[]>([]);
-  const [isLoadingGame, setIsLoadingGame] = useState<boolean>(true);
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
-  const [showHousePicker, setShowHousePicker] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<RoundResult | null>(null);
 
+  const [playerName, setPlayerName] = useState<string>(() => {
+    try {
+      return localStorage.getItem('hogwarts_player_name') || 'The Chosen One';
+    } catch {
+      return 'The Chosen One';
+    }
+  });
+
+  const handleSetPlayerName = (name: string) => {
+    setPlayerName(name);
+    try {
+      localStorage.setItem('hogwarts_player_name', name);
+    } catch {}
+  };
+
   const [gameState, setGameState] = useState<GameState>({
+    playerName: playerName,
     mode: 'classic_5',
     house: 'Gryffindor',
     currentRound: 1,
@@ -37,29 +49,23 @@ export function App() {
     timeRemaining: 0,
   });
 
-  // Start / Reset Game with selected House & Mode
-  const startNewGame = useCallback((house: HogwartsHouse, mode: GameMode) => {
-    let pool = [...LOCATIONS];
-    if (mode === 'castle_only') {
-      pool = pool.filter(l => l.region === 'castle');
-    }
-
+  // Start / Reset Game
+  const startNewGame = useCallback(() => {
+    const pool = [...LOCATIONS];
     // Shuffle pool
     const shuffled = pool.sort(() => Math.random() - 0.5);
-    const totalRounds = mode === 'owl_streak' ? 99 : 5;
     const initialLocation = shuffled[0] || LOCATIONS[0];
 
     setDeck(shuffled);
     setLastResult(null);
-    setShowHousePicker(false);
     setShowLandingPage(false);
-    setIsLoadingGame(true);
 
     setGameState({
-      mode,
-      house,
+      playerName,
+      mode: 'classic_5',
+      house: 'Gryffindor',
       currentRound: 1,
-      totalRounds,
+      totalRounds: 5,
       totalScore: 0,
       currentLocation: initialLocation,
       roundResults: [],
@@ -67,10 +73,10 @@ export function App() {
       isRoundComplete: false,
       isGameOver: false,
       streakCount: 0,
-      lumosActive: mode === 'lumos_challenge',
+      lumosActive: false,
       timeRemaining: 0,
     });
-  }, []);
+  }, [playerName]);
 
   // Handle Guess Submission from Marauder's Map
   const handleGuessSubmit = (guess: PlayerGuess) => {
@@ -93,20 +99,7 @@ export function App() {
 
     const newScore = gameState.totalScore + breakdown.score;
     const newResults = [...gameState.roundResults, result];
-
-    // Streak Mode Check
-    let newStreak = gameState.streakCount;
-    let isOver = false;
-
-    if (gameState.mode === 'owl_streak') {
-      if (breakdown.score >= 3500) {
-        newStreak += 1;
-      } else {
-        isOver = true; // Failed streak
-      }
-    } else if (gameState.currentRound >= gameState.totalRounds) {
-      isOver = true;
-    }
+    const isOver = gameState.currentRound >= gameState.totalRounds;
 
     setGameState(prev => ({
       ...prev,
@@ -114,7 +107,6 @@ export function App() {
       roundResults: newResults,
       isGuessing: false,
       isRoundComplete: true,
-      streakCount: newStreak,
       isGameOver: isOver,
     }));
   };
@@ -137,28 +129,20 @@ export function App() {
       currentLocation: nextLocation,
       isGuessing: true,
       isRoundComplete: false,
-      lumosActive: prev.mode === 'lumos_challenge',
+      lumosActive: false,
     }));
   };
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black font-serif select-none">
-      {/* Cinematic Full-Screen Hogwarts Castle Loading Screen with 0-100 Progress Bar & Hedwig's Theme */}
-      {isLoadingGame && (
-        <HogwartsLoadingScreen
-          onComplete={() => setIsLoadingGame(false)}
-          durationMs={4200}
-        />
-      )}
-
-      {/* Retro Newspaper Landing Page ("The Harry Potter" / Daily Prophet) with 3D Flying Quidditch Snitch */}
+      {/* Main Home Page with Cinematic Hogwarts Night, Floating Navbar & Large Hogwarts Guesser Title */}
       {showLandingPage ? (
-        <div className="w-full h-full overflow-y-auto">
-          <NewspaperLandingPage
-            onStartGame={startNewGame}
-            onOpenRules={() => setShowRules(true)}
-          />
-        </div>
+        <HogwartsHomePage
+          playerName={playerName}
+          onSetPlayerName={handleSetPlayerName}
+          onStartGame={startNewGame}
+          onOpenRules={() => setShowRules(true)}
+        />
       ) : (
         <>
           {/* Top HUD Game Header */}
@@ -198,20 +182,14 @@ export function App() {
           {gameState.isGameOver && (
             <GameOverModal
               gameState={gameState}
-              onPlayAgain={() => startNewGame(gameState.house, gameState.mode)}
+              onPlayAgain={startNewGame}
               onChangeHouse={() => setShowLandingPage(true)}
             />
           )}
         </>
       )}
 
-      {/* House Sorting Ceremony & Mode Selector Modal (if triggered manually) */}
-      <HousePickerModal
-        isOpen={showHousePicker}
-        onStartGame={startNewGame}
-      />
-
-      {/* Rules & Guide Modal */}
+      {/* Field Guide & Rules Modal */}
       <RulesModal
         isOpen={showRules}
         onClose={() => setShowRules(false)}
