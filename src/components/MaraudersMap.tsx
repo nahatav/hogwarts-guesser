@@ -451,14 +451,12 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       <div className="absolute bottom-0 left-0 right-0 h-12 bg-[#ead6b6] border-t border-[#8c6b45]/50 px-4 flex items-center justify-between rounded-b-2xl">
         <div className="text-xs font-serif text-[#4a260e] truncate mr-2">
           {activeGuess ? (
-            <span>
-              ✦ Pin placed on <strong className="text-[#301604]">{activeGuess.mapLevel === 'castle' ? 'Hogwarts Castle Specific Chamber' : 'Great Britain & Ireland Map'}</strong>
-            </span>
+            <span>✦ Pin dropped — ready to cast</span>
           ) : (
             <span className="italic text-[#6b4221]">
-              {currentLevel === 'world' 
-                ? 'Click anywhere on Great Britain, or click the Hogwarts Inset to zoom into the Castle' 
-                : 'Click any room or chamber on Hogwarts Castle to drop your guess pin'}
+              {currentLevel === 'world'
+                ? 'Click the map to place your guess. Click the Hogwarts inset to zoom in.'
+                : 'Click a room on the castle map to drop your pin.'}
             </span>
           )}
         </div>

@@ -10,10 +10,14 @@ import { ScoreModal } from './components/ScoreModal';
 import { GameOverModal } from './components/GameOverModal';
 import { HousePickerModal } from './components/HousePickerModal';
 import { RulesModal } from './components/RulesModal';
+import { SplashScreen } from './components/SplashScreen';
+import { NewspaperLandingPage } from './components/NewspaperLandingPage';
 
 export function App() {
   const [deck, setDeck] = useState<Location3D[]>([]);
-  const [showHousePicker, setShowHousePicker] = useState<boolean>(true);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+  const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
+  const [showHousePicker, setShowHousePicker] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<RoundResult | null>(null);
 
@@ -48,6 +52,7 @@ export function App() {
     setDeck(shuffled);
     setLastResult(null);
     setShowHousePicker(false);
+    setShowLandingPage(false);
 
     setGameState({
       mode,
@@ -137,49 +142,64 @@ export function App() {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-black font-serif select-none">
-      {/* Top HUD Game Header */}
-      <GameHeader
-        gameState={gameState}
-        onNewGame={() => setShowHousePicker(true)}
-        onOpenRules={() => setShowRules(true)}
-      />
+      {/* Splash / Intro Loading Screen */}
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
 
-      {/* Main 360° Photosphere Panorama Viewport */}
-      <div className="w-full h-full">
-        <PanoramaViewer
-          location={gameState.currentLocation}
-          lumosActive={gameState.lumosActive}
-          onLumosToggle={() => setGameState(prev => ({ ...prev, lumosActive: !prev.lumosActive }))}
-        />
-      </div>
+      {/* Retro Newspaper Landing Page ("The Harry Potter" / Daily Prophet) with 3D Flying Quidditch Snitch */}
+      {showLandingPage ? (
+        <div className="w-full h-full overflow-y-auto">
+          <NewspaperLandingPage
+            onStartGame={startNewGame}
+            onOpenRules={() => setShowRules(true)}
+          />
+        </div>
+      ) : (
+        <>
+          {/* Top HUD Game Header */}
+          <GameHeader
+            gameState={gameState}
+            onNewGame={() => setShowLandingPage(true)}
+            onOpenRules={() => setShowRules(true)}
+          />
 
-      {/* Interactive Marauder's Map Drawer */}
-      <MaraudersMap
-        isRoundComplete={gameState.isRoundComplete}
-        lastRoundResult={lastResult}
-        onGuessSubmit={handleGuessSubmit}
-        disabled={gameState.isRoundComplete || gameState.isGameOver}
-      />
+          {/* Main 360° Photosphere Panorama Viewport */}
+          <div className="w-full h-full">
+            <PanoramaViewer
+              location={gameState.currentLocation}
+              lumosActive={gameState.lumosActive}
+              onLumosToggle={() => setGameState(prev => ({ ...prev, lumosActive: !prev.lumosActive }))}
+            />
+          </div>
 
-      {/* Post-Round Score & Lore Reveal Modal */}
-      {gameState.isRoundComplete && lastResult && !gameState.isGameOver && (
-        <ScoreModal
-          result={lastResult}
-          isLastRound={gameState.currentRound >= gameState.totalRounds}
-          onNextRound={handleNextRound}
-        />
+          {/* Interactive Marauder's Map Drawer */}
+          <MaraudersMap
+            isRoundComplete={gameState.isRoundComplete}
+            lastRoundResult={lastResult}
+            onGuessSubmit={handleGuessSubmit}
+            disabled={gameState.isRoundComplete || gameState.isGameOver}
+          />
+
+          {/* Post-Round Score & Lore Reveal Modal */}
+          {gameState.isRoundComplete && lastResult && !gameState.isGameOver && (
+            <ScoreModal
+              result={lastResult}
+              isLastRound={gameState.currentRound >= gameState.totalRounds}
+              onNextRound={handleNextRound}
+            />
+          )}
+
+          {/* Game Over / O.W.L. Final Examination Report Card */}
+          {gameState.isGameOver && (
+            <GameOverModal
+              gameState={gameState}
+              onPlayAgain={() => startNewGame(gameState.house, gameState.mode)}
+              onChangeHouse={() => setShowLandingPage(true)}
+            />
+          )}
+        </>
       )}
 
-      {/* Game Over / O.W.L. Final Examination Report Card */}
-      {gameState.isGameOver && (
-        <GameOverModal
-          gameState={gameState}
-          onPlayAgain={() => startNewGame(gameState.house, gameState.mode)}
-          onChangeHouse={() => setShowHousePicker(true)}
-        />
-      )}
-
-      {/* House Sorting Ceremony & Mode Selector */}
+      {/* House Sorting Ceremony & Mode Selector Modal (if triggered manually) */}
       <HousePickerModal
         isOpen={showHousePicker}
         onStartGame={startNewGame}

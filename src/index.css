@@ -19,6 +19,18 @@
   font-family: 'UnifrakturCook', 'Pirata One', 'MedievalSharp', cursive;
 }
 
+.font-fraktur {
+  font-family: 'UnifrakturCook', 'Pirata One', cursive;
+}
+
+.font-headline {
+  font-family: 'Bebas Neue', 'Anton', sans-serif;
+}
+
+.font-newspaper {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
 .font-cinzel {
   font-family: 'Cinzel', serif;
 }
