@@ -45,16 +45,20 @@ export const NewspaperLandingPage: React.FC<NewspaperLandingPageProps> = ({
   const toggleSound = () => {
     const muted = sound.toggleMute();
     setIsMuted(muted);
-    if (!muted) sound.playTick();
+    if (!muted) {
+      sound.playThemeMusic(0.55);
+      sound.playTick();
+    }
   };
 
   const handleEnterGame = () => {
     if (isLaunching) return;
     setIsLaunching(true);
     sound.playWandWhoosh();
+    sound.playThemeMusic(0.55);
     setTimeout(() => {
       onStartGame(selectedHouse, selectedMode);
-    }, 600);
+    }, 400);
   };
 
   return (

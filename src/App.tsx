@@ -16,7 +16,6 @@ import { HogwartsLoadingScreen } from './components/HogwartsLoadingScreen';
 export function App() {
   const [deck, setDeck] = useState<Location3D[]>([]);
   const [isLoadingGame, setIsLoadingGame] = useState<boolean>(true);
-  const [loadingLabel, setLoadingLabel] = useState<string>("Summoning Hogwarts Castle");
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
   const [showHousePicker, setShowHousePicker] = useState<boolean>(false);
   const [showRules, setShowRules] = useState<boolean>(false);
@@ -54,11 +53,6 @@ export function App() {
     setLastResult(null);
     setShowHousePicker(false);
     setShowLandingPage(false);
-    setLoadingLabel(
-      mode === 'castle_only' 
-        ? 'Approaching Hogwarts Castle Chambers...' 
-        : 'Departing for Hogwarts & Great Britain...'
-    );
     setIsLoadingGame(true);
 
     setGameState({
@@ -153,8 +147,7 @@ export function App() {
       {isLoadingGame && (
         <HogwartsLoadingScreen
           onComplete={() => setIsLoadingGame(false)}
-          durationMs={4500}
-          destinationLabel={loadingLabel}
+          durationMs={4200}
         />
       )}
 

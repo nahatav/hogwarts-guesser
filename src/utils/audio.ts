@@ -1,8 +1,30 @@
-// Web Audio API Procedural Sound Synthesizer for Magical Wizarding Audio
+// Web Audio API Procedural Sound Synthesizer & Background Music Engine
 
 class WizardSoundEngine {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
+  private bgAudio: HTMLAudioElement | null = null;
+  private isMusicPlaying: boolean = false;
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      const autoStartMusicOnInteraction = () => {
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        if (this.bgAudio && !this.isMuted && this.bgAudio.paused) {
+          this.bgAudio.play().then(() => {
+            this.isMusicPlaying = true;
+          }).catch(() => {});
+        }
+      };
+
+      window.addEventListener('click', autoStartMusicOnInteraction);
+      window.addEventListener('pointerdown', autoStartMusicOnInteraction);
+      window.addEventListener('keydown', autoStartMusicOnInteraction);
+      window.addEventListener('touchstart', autoStartMusicOnInteraction);
+    }
+  }
 
   private getContext(): AudioContext | null {
     if (typeof window === 'undefined') return null;
@@ -13,17 +35,72 @@ class WizardSoundEngine {
       }
     }
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
     return this.ctx;
   }
 
+  // --- Background Theme Music (Hedwig's Theme) ---
+  public playThemeMusic(volume: number = 0.55): Promise<boolean> {
+    if (typeof window === 'undefined') return Promise.resolve(false);
+
+    if (!this.bgAudio) {
+      this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
+      this.bgAudio.loop = true;
+      this.bgAudio.preload = 'auto';
+    }
+
+    this.bgAudio.volume = volume;
+    this.bgAudio.muted = this.isMuted;
+
+    if (this.isMuted) {
+      return Promise.resolve(false);
+    }
+
+    const playPromise = this.bgAudio.play();
+    if (playPromise !== undefined) {
+      return playPromise
+        .then(() => {
+          this.isMusicPlaying = true;
+          return true;
+        })
+        .catch((err) => {
+          console.log("Audio autoplay waiting for user interaction:", err.message);
+          this.isMusicPlaying = false;
+          return false;
+        });
+    }
+    return Promise.resolve(false);
+  }
+
+  public pauseThemeMusic() {
+    if (this.bgAudio) {
+      this.bgAudio.pause();
+      this.isMusicPlaying = false;
+    }
+  }
+
+  public isThemePlaying(): boolean {
+    return this.isMusicPlaying && !!(this.bgAudio && !this.bgAudio.paused && !this.bgAudio.muted);
+  }
+
   public setMuted(muted: boolean) {
     this.isMuted = muted;
+    if (this.bgAudio) {
+      this.bgAudio.muted = muted;
+    }
   }
 
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
+    if (this.bgAudio) {
+      this.bgAudio.muted = this.isMuted;
+      if (!this.isMuted && this.bgAudio.paused) {
+        this.bgAudio.play().then(() => {
+          this.isMusicPlaying = true;
+        }).catch(() => {});
+      }
+    }
     return this.isMuted;
   }
 
@@ -91,7 +168,6 @@ class WizardSoundEngine {
     const ctx = this.getContext();
     if (!ctx) return;
 
-    // Deep parchment thud + high snitch sparkle
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -108,7 +184,6 @@ class WizardSoundEngine {
     osc.start();
     osc.stop(ctx.currentTime + 0.2);
 
-    // Golden sparkle
     const sparkle = ctx.createOscillator();
     const sparkleGain = ctx.createGain();
     sparkle.type = 'sine';
@@ -156,10 +231,10 @@ class WizardSoundEngine {
     if (!ctx) return;
 
     const notes = score >= 4000 
-      ? [523.25, 659.25, 783.99, 1046.50] // Major chord (C5, E5, G5, C6)
+      ? [523.25, 659.25, 783.99, 1046.50]
       : score >= 2000
-      ? [440, 554.37, 659.25] // A major
-      : [330, 311.13, 293.66]; // Dissonant minor / drop
+      ? [440, 554.37, 659.25]
+      : [330, 311.13, 293.66];
 
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
@@ -201,7 +276,7 @@ class WizardSoundEngine {
     osc.stop(ctx.currentTime + 0.04);
   }
 
-  // Legacy compatibility helpers
+  // Legacy helpers
   public playHover() { this.playTick(); }
   public playClick() { this.playWandWhoosh(); }
   public playWhoosh() { this.playWandWhoosh(); }
