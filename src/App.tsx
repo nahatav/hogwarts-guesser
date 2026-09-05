@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { GameState, PlayerGuess, RoundResult, Location3D } from './types/game';
 import { LOCATIONS } from './data/locations';
 import { calculateWizardingScore } from './utils/scoring';
@@ -16,6 +16,10 @@ export function App() {
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<RoundResult | null>(null);
+
+  useEffect(() => {
+    sound.playThemeMusic();
+  }, []);
 
   const [playerName, setPlayerName] = useState<string>(() => {
     try {

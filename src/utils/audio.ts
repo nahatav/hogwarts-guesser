@@ -1,5 +1,12 @@
 // Web Audio API Procedural Sound Synthesizer & Background Music Engine
 
+const getThemeAudioUrl = () => {
+  const base = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${base}audio/hedwigs-theme.mp3`;
+};
+
 class WizardSoundEngine {
   private ctx: AudioContext | null = null;
   private isMuted: boolean = false;
@@ -12,33 +19,27 @@ class WizardSoundEngine {
         const domAudio = (typeof document !== 'undefined') 
           ? (document.getElementById('harry-potter-theme') as HTMLAudioElement) 
           : null;
-        this.bgAudio = domAudio || new Audio('/audio/hedwigs-theme.mp3');
+        this.bgAudio = domAudio || new Audio(getThemeAudioUrl());
         this.bgAudio.loop = true;
         this.bgAudio.preload = 'auto';
         this.bgAudio.volume = 0.7;
-        this.bgAudio.play().then(() => {
-          this.isMusicPlaying = true;
-        }).catch(() => {
-          this.isMusicPlaying = false;
-        });
+        this.playThemeMusic().catch(() => {});
       } catch (e) {}
 
-      // Unlock on any user gesture instantly
+      // Unlock on any user gesture or interaction instantly
       const unlockAudio = () => {
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume().catch(() => {});
         }
-        if (this.bgAudio && !this.isMuted && this.bgAudio.paused) {
-          this.bgAudio.play().then(() => {
-            this.isMusicPlaying = true;
-          }).catch(() => {});
-        }
+        this.playThemeMusic().catch(() => {});
       };
 
       window.addEventListener('click', unlockAudio, { passive: true });
       window.addEventListener('pointerdown', unlockAudio, { passive: true });
+      window.addEventListener('pointerup', unlockAudio, { passive: true });
       window.addEventListener('keydown', unlockAudio, { passive: true });
       window.addEventListener('touchstart', unlockAudio, { passive: true });
+      window.addEventListener('touchend', unlockAudio, { passive: true });
       window.addEventListener('wheel', unlockAudio, { passive: true });
     }
   }
@@ -62,8 +63,9 @@ class WizardSoundEngine {
     if (!this.bgAudio) {
       this.bgAudio = document.getElementById('harry-potter-theme') as HTMLAudioElement;
       if (!this.bgAudio) {
-        this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
+        this.bgAudio = new Audio(getThemeAudioUrl());
         this.bgAudio.loop = true;
+        this.bgAudio.preload = 'auto';
       }
     }
     return this.bgAudio;
@@ -78,6 +80,11 @@ class WizardSoundEngine {
     audio.volume = volume;
     audio.muted = this.isMuted;
     if (this.isMuted) return Promise.resolve(false);
+
+    if (!audio.paused && !audio.ended && audio.currentTime > 0) {
+      this.isMusicPlaying = true;
+      return Promise.resolve(true);
+    }
 
     const playPromise = audio.play();
     if (playPromise !== undefined) {
