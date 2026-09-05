@@ -8,7 +8,23 @@ class WizardSoundEngine {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      const autoStartMusicOnInteraction = () => {
+      try {
+        this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
+        this.bgAudio.loop = true;
+        this.bgAudio.preload = 'auto';
+        this.bgAudio.volume = 0.65;
+        this.bgAudio.load();
+
+        // Attempt immediate playback on load
+        this.bgAudio.play().then(() => {
+          this.isMusicPlaying = true;
+        }).catch(() => {
+          this.isMusicPlaying = false;
+        });
+      } catch (e) {}
+
+      // Unlock on any user gesture instantly
+      const unlockAudio = () => {
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume().catch(() => {});
         }
@@ -19,10 +35,11 @@ class WizardSoundEngine {
         }
       };
 
-      window.addEventListener('click', autoStartMusicOnInteraction);
-      window.addEventListener('pointerdown', autoStartMusicOnInteraction);
-      window.addEventListener('keydown', autoStartMusicOnInteraction);
-      window.addEventListener('touchstart', autoStartMusicOnInteraction);
+      window.addEventListener('click', unlockAudio, { passive: true });
+      window.addEventListener('pointerdown', unlockAudio, { passive: true });
+      window.addEventListener('keydown', unlockAudio, { passive: true });
+      window.addEventListener('touchstart', unlockAudio, { passive: true });
+      window.addEventListener('wheel', unlockAudio, { passive: true });
     }
   }
 
@@ -41,7 +58,7 @@ class WizardSoundEngine {
   }
 
   // --- Background Theme Music (Hedwig's Theme) ---
-  public playThemeMusic(volume: number = 0.55): Promise<boolean> {
+  public playThemeMusic(volume: number = 0.65): Promise<boolean> {
     if (typeof window === 'undefined') return Promise.resolve(false);
 
     if (!this.bgAudio) {
@@ -65,7 +82,7 @@ class WizardSoundEngine {
           return true;
         })
         .catch((err) => {
-          console.log("Audio autoplay waiting for user interaction:", err.message);
+          console.log("Audio waiting for first gesture:", err.message);
           this.isMusicPlaying = false;
           return false;
         });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { sound } from '../utils/audio';
 
 interface HogwartsLoadingScreenProps {
@@ -6,232 +6,232 @@ interface HogwartsLoadingScreenProps {
   durationMs?: number;
 }
 
-interface Shard {
-  id: number;
-  clipPath: string;
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-  explodeX: number;
-  explodeY: number;
-  explodeZ: number;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
-  scale: number;
+interface CanvasShard {
+  pts: { x: number; y: number }[];
+  cx: number;
+  cy: number;
+  vx: number;
+  vy: number;
+  vRot: number;
+  rot: number;
+  opacity: number;
 }
 
 export const HogwartsLoadingScreen: React.FC<HogwartsLoadingScreenProps> = ({
   onComplete,
 }) => {
-  // Phase: 'still' (0-500ms) -> 'shake1' (500-1300ms) -> 'shake2' (1300-2000ms) -> 'shake3' (2000-2600ms) -> 'shattered' (2600ms+)
-  const [phase, setPhase] = useState<'still' | 'shake1' | 'shake2' | 'shake3' | 'shattered'>('still');
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Automatic music playback - no buttons
   useEffect(() => {
-    sound.playThemeMusic(0.65);
+    // 1. Auto play theme song immediately
+    sound.playThemeMusic(0.7);
 
-    const unlock = () => {
-      sound.playThemeMusic(0.65);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    let isBroken = false;
+    let shards: CanvasShard[] = [];
+
+    const img = new Image();
+    img.src = '/images/hogwarts-loading.jpg';
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Create random angular polygonal shards
+    const generateShards = (W: number, H: number) => {
+      const list: CanvasShard[] = [];
+      const cols = 6;
+      const rows = 5;
+
+      // Jittered grid vertices
+      const grid: { x: number; y: number }[][] = [];
+      for (let r = 0; r <= rows; r++) {
+        grid[r] = [];
+        for (let c = 0; c <= cols; c++) {
+          const baseX = (c / cols) * W;
+          const baseY = (r / rows) * H;
+          // Inner points get randomized jitter for jagged angular pieces
+          const isEdge = c === 0 || c === cols || r === 0 || r === rows;
+          const jx = isEdge ? baseX : baseX + (Math.random() - 0.5) * (W / cols) * 0.75;
+          const jy = isEdge ? baseY : baseY + (Math.random() - 0.5) * (H / rows) * 0.75;
+          grid[r].push({ x: jx, y: jy });
+        }
+      }
+
+      // Cut into triangles at random angles
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const p1 = grid[r][c];
+          const p2 = grid[r][c + 1];
+          const p3 = grid[r + 1][c];
+          const p4 = grid[r + 1][c + 1];
+
+          // 2 triangles per quad
+          const tri1 = [p1, p2, p3];
+          const tri2 = [p2, p4, p3];
+
+          [tri1, tri2].forEach(pts => {
+            const cx = (pts[0].x + pts[1].x + pts[2].x) / 3;
+            const cy = (pts[0].y + pts[1].y + pts[2].y) / 3;
+
+            const dx = cx - W / 2;
+            const dy = cy - H / 2;
+            const dist = Math.hypot(dx, dy) || 1;
+
+            const speed = 10 + Math.random() * 20;
+            const vx = (dx / dist) * speed + (Math.random() - 0.5) * 8;
+            const vy = (dy / dist) * speed + (Math.random() - 0.5) * 8;
+            const vRot = (Math.random() - 0.5) * 0.25;
+
+            list.push({
+              pts,
+              cx,
+              cy,
+              vx,
+              vy,
+              vRot,
+              rot: 0,
+              opacity: 1,
+            });
+          });
+        }
+      }
+
+      return list;
     };
 
-    window.addEventListener('pointerdown', unlock, { once: true });
-    window.addEventListener('click', unlock, { once: true });
-    window.addEventListener('keydown', unlock, { once: true });
+    const startTime = performance.now();
+    const STILL_MS = 500;
+    const SHAKE_END_MS = 2500;
+    const TOTAL_MS = 3600;
 
-    return () => {
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('click', unlock);
-      window.removeEventListener('keydown', unlock);
+    const render = (now: number) => {
+      const elapsed = now - startTime;
+      const W = canvas.width;
+      const H = canvas.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Compute cover dimensions for image
+      let drawW = W;
+      let drawH = H;
+      let drawX = 0;
+      let drawY = 0;
+
+      if (img.complete && img.naturalWidth) {
+        const imgRatio = img.naturalWidth / img.naturalHeight;
+        const screenRatio = W / H;
+        if (screenRatio > imgRatio) {
+          drawW = W;
+          drawH = W / imgRatio;
+          drawY = (H - drawH) / 2;
+        } else {
+          drawH = H;
+          drawW = H * imgRatio;
+          drawX = (W - drawW) / 2;
+        }
+      }
+
+      // PHASE 1 & 2: STILL for 0.5s, then accelerating shake up to 2.5s
+      if (elapsed < SHAKE_END_MS) {
+        ctx.save();
+
+        if (elapsed > STILL_MS) {
+          // Accelerates shake quadratically as it approaches break
+          const progress = (elapsed - STILL_MS) / (SHAKE_END_MS - STILL_MS);
+          const intensity = Math.pow(progress, 2.5); // accelerating
+          const maxOffset = 24 * intensity;
+          const maxRot = 0.04 * intensity;
+
+          const ox = (Math.random() - 0.5) * 2 * maxOffset;
+          const oy = (Math.random() - 0.5) * 2 * maxOffset;
+          const rot = (Math.random() - 0.5) * 2 * maxRot;
+
+          ctx.translate(W / 2 + ox, H / 2 + oy);
+          ctx.rotate(rot);
+          ctx.translate(-W / 2, -H / 2);
+        }
+
+        // Draw solid seamless image with zero lines
+        if (img.complete) {
+          ctx.drawImage(img, drawX, drawY, drawW, drawH);
+        }
+
+        ctx.restore();
+      } 
+      // PHASE 3: SHATTER BREAK into random shards in random angles!
+      else {
+        if (!isBroken) {
+          isBroken = true;
+          shards = generateShards(W, H);
+          sound.playWandWhoosh();
+        }
+
+        // Draw each shattered shard flying out
+        shards.forEach(s => {
+          s.cx += s.vx;
+          s.cy += s.vy;
+          s.vy += 0.4; // subtle gravity
+          s.rot += s.vRot;
+          s.opacity = Math.max(0, s.opacity - 0.025);
+
+          if (s.opacity <= 0) return;
+
+          ctx.save();
+          ctx.globalAlpha = s.opacity;
+
+          // Rotate around shard center
+          ctx.translate(s.cx, s.cy);
+          ctx.rotate(s.rot);
+          ctx.translate(-s.cx, -s.cy);
+
+          ctx.beginPath();
+          ctx.moveTo(s.pts[0].x, s.pts[0].y);
+          ctx.lineTo(s.pts[1].x, s.pts[1].y);
+          ctx.lineTo(s.pts[2].x, s.pts[2].y);
+          ctx.closePath();
+          ctx.clip();
+
+          if (img.complete) {
+            ctx.drawImage(img, drawX, drawY, drawW, drawH);
+          }
+
+          // Glowing fracture edge
+          ctx.strokeStyle = 'rgba(255, 235, 150, 0.7)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.restore();
+        });
+      }
+
+      if (elapsed < TOTAL_MS) {
+        animId = requestAnimationFrame(render);
+      } else {
+        onComplete();
+      }
     };
-  }, []);
 
-  // Choreographed timeline:
-  // 0 - 500ms: STILL
-  // 500ms - 1300ms: Gentle shake starts
-  // 1300ms - 2000ms: Medium shake accelerates
-  // 2000ms - 2600ms: Violent accelerating earthquake
-  // 2600ms: SHATTER BREAK into random shards
-  // 3600ms: Complete and reveal underlying game
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase('shake1'), 500);
-    const t2 = setTimeout(() => setPhase('shake2'), 1300);
-    const t3 = setTimeout(() => setPhase('shake3'), 2000);
-    const t4 = setTimeout(() => {
-      setPhase('shattered');
-      sound.playWandWhoosh();
-    }, 2600);
-    const t5 = setTimeout(() => {
-      onComplete();
-    }, 3650);
+    animId = requestAnimationFrame(render);
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
     };
   }, [onComplete]);
 
-  // Generate 28 random jagged shards at varied angles with irregular polygons
-  const shards = useMemo<Shard[]>(() => {
-    const list: Shard[] = [];
-    const cols = 5;
-    const rows = 5;
-
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        // Base box with small overlap so zero gaps exist
-        const left = (c / cols) * 100 - 2;
-        const top = (r / rows) * 100 - 2;
-        const width = (100 / cols) + 4;
-        const height = (100 / rows) + 4;
-
-        // Vector from screen center
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-        const dirX = (centerX - 50) / 50;
-        const dirY = (centerY - 50) / 50;
-
-        // Dynamic explosive trajectories
-        const explodeX = dirX * 700 + (Math.random() - 0.5) * 400;
-        const explodeY = dirY * 700 + (Math.random() - 0.5) * 400;
-        const explodeZ = 300 + Math.random() * 600;
-        const rotX = (Math.random() - 0.5) * 500;
-        const rotY = (Math.random() - 0.5) * 500;
-        const rotZ = (Math.random() - 0.5) * 400;
-        const scale = 0.4 + Math.random() * 0.4;
-
-        // Irregular jagged polygonal clip paths at random angles
-        const p1 = `${Math.floor(Math.random() * 18)}% ${Math.floor(Math.random() * 18)}%`;
-        const p2 = `${Math.floor(82 + Math.random() * 18)}% ${Math.floor(Math.random() * 22)}%`;
-        const p3 = `${Math.floor(85 + Math.random() * 15)}% ${Math.floor(82 + Math.random() * 18)}%`;
-        const p4 = `${Math.floor(Math.random() * 22)}% ${Math.floor(85 + Math.random() * 15)}%`;
-        const clipPath = `polygon(${p1}, ${p2}, ${p3}, ${p4})`;
-
-        list.push({
-          id: r * cols + c,
-          clipPath,
-          left,
-          top,
-          width,
-          height,
-          explodeX,
-          explodeY,
-          explodeZ,
-          rotX,
-          rotY,
-          rotZ,
-          scale,
-        });
-      }
-    }
-    return list;
-  }, []);
-
-  // Accelerating shake class
-  const getShakeClass = () => {
-    if (phase === 'shake1') return 'animate-shake-gentle';
-    if (phase === 'shake2') return 'animate-shake-medium';
-    if (phase === 'shake3') return 'animate-shake-violent';
-    return '';
-  };
-
   return (
-    <div 
-      className="fixed inset-0 w-screen h-screen z-[100] overflow-hidden select-none pointer-events-none"
-      style={{ perspective: '1400px' }}
-    >
-      {/* PHASE 1 & 2 (0 - 2.6s): Single SEAMLESS image with zero lines/seams, accelerating shake */}
-      {phase !== 'shattered' ? (
-        <div className={`w-full h-full ${getShakeClass()}`}>
-          <img
-            src="/images/hogwarts-loading.jpg"
-            alt="Hogwarts Castle"
-            className="w-full h-full object-cover select-none pointer-events-none"
-          />
-        </div>
-      ) : (
-        /* PHASE 3 (2.6s+): Breaks into random jagged shards in random angles in 3D */
-        <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
-          {shards.map((s) => (
-            <div
-              key={s.id}
-              className="absolute overflow-hidden"
-              style={{
-                left: `${s.left}%`,
-                top: `${s.top}%`,
-                width: `${s.width}%`,
-                height: `${s.height}%`,
-                clipPath: s.clipPath,
-                transformStyle: 'preserve-3d',
-                transform: `translate3d(${s.explodeX}px, ${s.explodeY}px, ${s.explodeZ}px) rotateX(${s.rotX}deg) rotateY(${s.rotY}deg) rotateZ(${s.rotZ}deg) scale(${s.scale})`,
-                opacity: 0,
-                transition: 'transform 1.05s cubic-bezier(0.18, 0.95, 0.28, 1), opacity 0.85s ease-out',
-                filter: 'drop-shadow(0 0 25px rgba(0,0,0,0.95))',
-              }}
-            >
-              {/* Image correctly aligned inside each shard */}
-              <div
-                className="absolute"
-                style={{
-                  left: `-${s.left}vw`,
-                  top: `-${s.top}vh`,
-                  width: '100vw',
-                  height: '100vh',
-                  backgroundImage: "url('/images/hogwarts-loading.jpg')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center center',
-                }}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Accelerating Shake Keyframes */}
-      <style>{`
-        @keyframes shakeGentle {
-          0% { transform: translate(0px, 0px) rotate(0deg); }
-          20% { transform: translate(-2px, 1px) rotate(-0.3deg); }
-          40% { transform: translate(2px, -1px) rotate(0.3deg); }
-          60% { transform: translate(-1px, -2px) rotate(0.2deg); }
-          80% { transform: translate(2px, 2px) rotate(-0.2deg); }
-          100% { transform: translate(0px, 0px) rotate(0deg); }
-        }
-
-        @keyframes shakeMedium {
-          0% { transform: translate(0px, 0px) rotate(0deg); }
-          20% { transform: translate(-6px, 4px) rotate(-0.9deg); }
-          40% { transform: translate(5px, -4px) rotate(0.8deg); }
-          60% { transform: translate(-5px, -5px) rotate(0.7deg); }
-          80% { transform: translate(6px, 5px) rotate(-0.8deg); }
-          100% { transform: translate(0px, 0px) rotate(0deg); }
-        }
-
-        @keyframes shakeViolent {
-          0% { transform: translate(0px, 0px) rotate(0deg); }
-          10% { transform: translate(-15px, 9px) rotate(-2.5deg); }
-          25% { transform: translate(14px, -11px) rotate(2.3deg); }
-          40% { transform: translate(-12px, -12px) rotate(-2deg); }
-          55% { transform: translate(16px, 11px) rotate(2.5deg); }
-          70% { transform: translate(-15px, 10px) rotate(-2.2deg); }
-          85% { transform: translate(16px, -10px) rotate(2.1deg); }
-          100% { transform: translate(0px, 0px) rotate(0deg); }
-        }
-
-        .animate-shake-gentle {
-          animation: shakeGentle 0.22s linear infinite;
-        }
-        .animate-shake-medium {
-          animation: shakeMedium 0.13s linear infinite;
-        }
-        .animate-shake-violent {
-          animation: shakeViolent 0.07s linear infinite;
-        }
-      `}</style>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 z-[100] w-screen h-screen pointer-events-none select-none"
+    />
   );
 };
