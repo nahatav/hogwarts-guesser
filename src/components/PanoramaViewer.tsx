@@ -194,10 +194,21 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
   const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!cameraRef.current) return;
-    const newFov = Math.max(25, Math.min(80, fovRef.current + e.deltaY * 0.05));
-    fovRef.current = newFov;
-    cameraRef.current.fov = newFov;
-    cameraRef.current.updateProjectionMatrix();
+    
+    // Pinch to zoom (trackpad pinch sets e.ctrlKey to true)
+    if (e.ctrlKey) {
+      const newFov = Math.max(25, Math.min(80, fovRef.current + e.deltaY * 0.05));
+      fovRef.current = newFov;
+      cameraRef.current.fov = newFov;
+      cameraRef.current.updateProjectionMatrix();
+    } else {
+      // Natural scrolling: scrolling up (deltaY < 0) tilts view UP
+      latRef.current = Math.max(-25, Math.min(25, latRef.current - e.deltaY * 0.05));
+      // Two-finger horizontal pan on trackpad
+      if (Math.abs(e.deltaX) > 0) {
+        lonRef.current = Math.max(-35, Math.min(35, lonRef.current + e.deltaX * 0.05));
+      }
+    }
   };
 
   return (

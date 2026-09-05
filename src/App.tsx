@@ -134,7 +134,7 @@ export function App() {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-black font-serif select-none">
+    <div className="relative w-screen h-screen h-[100dvh] overflow-hidden bg-black font-serif select-none">
       {/* Main Home Page with Cinematic Hogwarts Night, Floating Navbar & Large Hogwarts Guesser Title */}
       {showLandingPage ? (
         <HogwartsHomePage

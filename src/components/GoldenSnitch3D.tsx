@@ -30,6 +30,8 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
   const isSpinningRef = useRef<boolean>(false);
   const spinProgressRef = useRef<number>(0);
   const introCompleteCalledRef = useRef<boolean>(false);
+  const isExplodingRef = useRef<boolean>(false);
+  const explodeStartRef = useRef<number>(0);
 
   const handleCatch = useCallback(() => {
     sound.playWandWhoosh();
@@ -38,16 +40,22 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     isSpinningRef.current = true;
     spinProgressRef.current = 0;
 
+    if (isIntro) {
+      isExplodingRef.current = true;
+    }
+
     try {
       confetti({
-        particleCount: 100,
+        particleCount: isIntro ? 150 : 100,
         spread: 120,
-        origin: { y: 0.4 },
-        colors: ['#c9a84c', '#e8dcc8', '#ffffff'],
+        origin: { y: 0.5 },
+        colors: ['#c9a84c', '#e8dcc8', '#ffffff', '#ffd700'],
         shapes: ['circle'],
-        scalar: 1.2,
+        scalar: 1.4,
       });
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
 
     if (onSnitchCatch) {
       onSnitchCatch();
@@ -56,7 +64,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     setTimeout(() => {
       setShowCatchBanner(false);
     }, 3000);
-  }, [onSnitchCatch]);
+  }, [onSnitchCatch, isIntro]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -243,15 +251,21 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     trailRef.current = trailPoints;
     trailPositionsRef.current = trailPositions;
 
-    // Mouse Tracking
+    // Invisible generous hitbox for easy tapping on touch & mobile screens
+    const hitboxGeo = new THREE.SphereGeometry(2.4, 16, 16);
+    const hitboxMat = new THREE.MeshBasicMaterial({ visible: false });
+    const hitboxMesh = new THREE.Mesh(hitboxGeo, hitboxMat);
+    snitchGroup.add(hitboxMesh);
+
+    // Mouse & Touch Tracking
     const handlePointerMove = (e: PointerEvent) => {
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = -(e.clientY / window.innerHeight) * 2 + 1;
       mousePosRef.current = { x: nx, y: ny, active: true };
     };
 
-    const handlePointerDown = (e: MouseEvent) => {
-      if (!cameraRef.current || !snitchGroupRef.current) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (!cameraRef.current || !snitchGroupRef.current || isExplodingRef.current) return;
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = -(e.clientY / window.innerHeight) * 2 + 1;
 
@@ -263,7 +277,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     };
 
     window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('click', handlePointerDown);
+    window.addEventListener('pointerdown', handlePointerDown);
 
     const handleResize = () => {
       if (!rendererRef.current || !cameraRef.current) return;
@@ -306,32 +320,16 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
 
       const currentPos = snitchGroup.position;
 
-      if (isIntro) {
-        // Intro Sequence Logic
-        // 0 to 2.5s: fly randomly
-        // 2.5s to 3.0s: move to center
-        // 3.0s to 3.2s: pop (scale up quickly)
-        // > 3.2s: hide and trigger onIntroComplete
-        if (elapsed < 2.5) {
-          currentPos.x += (targetX - currentPos.x) * 0.08;
-          currentPos.y += (targetY - currentPos.y) * 0.08;
-          currentPos.z += (targetZ - currentPos.z) * 0.08;
-        } else if (elapsed < 3.0) {
-          // Move to center (0,0,0) quickly
-          currentPos.x += (0 - currentPos.x) * 0.15;
-          currentPos.y += (0 - currentPos.y) * 0.15;
-          currentPos.z += (4 - currentPos.z) * 0.15; // move slightly closer to camera
-          
-          // Face forward
-          snitchGroup.rotation.y += (0 - snitchGroup.rotation.y) * 0.15;
-          snitchGroup.rotation.x += (0 - snitchGroup.rotation.x) * 0.15;
-          snitchGroup.rotation.z += (0 - snitchGroup.rotation.z) * 0.15;
-        } else if (elapsed < 3.2) {
-          // Pop effect
-          const popProgress = (elapsed - 3.0) / 0.2;
-          const scale = 1 + popProgress * 15; // scale up drastically
+      if (isIntro && isExplodingRef.current) {
+        if (explodeStartRef.current === 0) {
+          explodeStartRef.current = elapsed;
+        }
+        const explodeProgress = (elapsed - explodeStartRef.current) / 0.35; // 350ms explosion
+        if (explodeProgress < 1.0) {
+          const scale = 1 + explodeProgress * 22; // rapid explosion scale
           snitchGroup.scale.set(scale, scale, scale);
-        } else if (elapsed > 3.2) {
+          snitchPointLight.intensity = 4 + explodeProgress * 25;
+        } else {
           snitchGroup.visible = false;
           if (onIntroComplete && !introCompleteCalledRef.current) {
             introCompleteCalledRef.current = true;
@@ -339,7 +337,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
           }
         }
       } else {
-        // Normal game flying logic
+        // Normal continuous flying
         currentPos.x += (targetX - currentPos.x) * 0.08;
         currentPos.y += (targetY - currentPos.y) * 0.08;
         currentPos.z += (targetZ - currentPos.z) * 0.08;
@@ -357,7 +355,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
         if (spinProgressRef.current > Math.PI * 4) {
           isSpinningRef.current = false;
         }
-      } else if (!isIntro || elapsed < 2.5) {
+      } else if (!isExplodingRef.current) {
         const speed = velocity.length();
         if (speed > 0.001) {
           const targetRotY = Math.atan2(velocity.x, velocity.z);
@@ -403,7 +401,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     return () => {
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
       window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('click', handlePointerDown);
+      window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
@@ -420,8 +418,8 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
         className="fixed inset-0 z-30 pointer-events-none overflow-hidden"
       />
 
-      {/* Clean Catch Notification Banner (No Emojis, No Gradients) */}
-      {showCatchBanner && (
+      {/* Clean Catch Notification Banner (Only during normal game, not intro) */}
+      {!isIntro && showCatchBanner && (
         <div className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-8 py-4 bg-[#0d0b08] border border-[#c9a84c]/60 shadow-[0_20px_60px_rgba(0,0,0,0.95)] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none">
           <p className="font-cinzel text-[10px] tracking-widest text-[#a09278] uppercase font-bold mb-1">
             Quidditch Victory

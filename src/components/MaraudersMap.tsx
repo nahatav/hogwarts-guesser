@@ -89,51 +89,51 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
     <div 
       className={`fixed z-30 transition-all duration-300 ease-out shadow-2xl rounded-sm border border-[#c9a84c]/40 bg-[#0d0b08] ${
         isExpanded
-          ? 'bottom-3 right-3 w-[96vw] max-w-[1080px] h-[88vh] max-h-[790px]'
-          : 'bottom-5 right-5 w-[420px] h-64 hover:w-[480px] hover:h-[310px]'
+          ? 'inset-2 sm:inset-auto sm:bottom-3 sm:right-3 w-auto sm:w-[96vw] sm:max-w-[1080px] h-auto sm:h-[88vh] sm:max-h-[790px]'
+          : 'bottom-2 left-2 right-2 sm:left-auto sm:bottom-5 sm:right-5 w-auto sm:w-[420px] h-[34vh] max-h-[250px] sm:max-h-none sm:h-64 sm:hover:w-[480px] sm:hover:h-[310px]'
       }`}
       style={{
         boxShadow: '0 20px 60px rgba(0,0,0,0.95)',
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#c9a84c]/20 bg-[#0a0806]">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-2.5 py-1.5 sm:px-4 sm:py-2 border-b border-[#c9a84c]/20 bg-[#0a0806]">
+        <div className="flex items-center gap-2 sm:gap-3 truncate">
           {currentLevel === 'castle' ? (
             <button
               onClick={() => {
                 setCurrentLevel('world');
                 sound.playWandWhoosh();
               }}
-              className="px-2 py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[10px] font-cinzel font-bold uppercase tracking-widest flex items-center gap-1 transition-colors"
+              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors shrink-0"
             >
-              <ArrowLeft className="w-3 h-3" />
-              <span>Great Britain Map</span>
+              <ArrowLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span>Great Britain</span>
             </button>
           ) : (
-            <span className="font-cinzel font-bold text-[10px] tracking-widest uppercase text-[#c9a84c] flex items-center gap-1.5 ml-1">
-              <span>✦</span> The Wizarding World of Great Britain & Ireland
+            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-[#c9a84c] flex items-center gap-1 ml-0.5 truncate">
+              <span>✦</span> <span className="truncate">Wizarding World</span>
             </span>
           )}
 
           {currentLevel === 'castle' && (
-            <span className="font-cinzel font-bold text-[10px] tracking-widest uppercase text-[#a09278] hidden sm:inline">
-              • Hogwarts Castle Floorplans
+            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-[#a09278] hidden sm:inline">
+              • Hogwarts Floorplan
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {currentLevel === 'world' && (
             <button
               onClick={() => {
                 setCurrentLevel('castle');
                 sound.playWandWhoosh();
               }}
-              className="px-2 py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[10px] font-cinzel font-bold uppercase tracking-widest flex items-center gap-1 transition-colors"
+              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors"
             >
-              <ZoomIn className="w-3 h-3" />
-              <span>Zoom to Castle</span>
+              <ZoomIn className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span>Hogwarts</span>
             </button>
           )}
 
@@ -142,13 +142,13 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
             className="p-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] transition-colors"
             title={isExpanded ? 'Minimize Map' : 'Expand Map'}
           >
-            {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isExpanded ? <Minimize2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Maximize2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
           </button>
         </div>
       </div>
 
       {/* Map Body */}
-      <div className="flex flex-1 relative overflow-hidden bg-[#181410] items-center justify-center p-2">
+      <div className="flex h-[calc(100%-72px)] sm:h-[calc(100%-96px)] relative overflow-hidden bg-[#181410] items-center justify-center p-1 sm:p-2">
         <div
           ref={mapCanvasRef}
           onClick={handleMapClick}
@@ -255,14 +255,14 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0806] border-t border-[#c9a84c]/20 px-4 flex items-center justify-between">
-        <div className="text-[10px] font-cinzel tracking-widest uppercase text-[#a09278] truncate mr-2">
+      <div className="absolute bottom-0 left-0 right-0 h-11 sm:h-14 bg-[#0a0806] border-t border-[#c9a84c]/20 px-2.5 sm:px-4 flex items-center justify-between">
+        <div className="text-[9px] sm:text-[10px] font-cinzel tracking-wider sm:tracking-widest uppercase text-[#a09278] truncate mr-2">
           {activeGuess ? (
             <span className="text-[#c9a84c]">✦ Ready to cast</span>
           ) : (
             <span>
               {currentLevel === 'world'
-                ? 'Drop pin on map • Click inset to zoom'
+                ? 'Drop pin on map'
                 : 'Click room to drop pin'}
             </span>
           )}
@@ -272,13 +272,13 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!activeGuess || disabled}
-            className={`px-6 py-2 rounded-sm font-cinzel text-xs font-semibold tracking-widest uppercase transition-colors flex items-center gap-2 shrink-0 border ${
+            className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-sm font-cinzel text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0 border ${
               activeGuess && !disabled
                 ? 'bg-[#0c0a08] hover:bg-[#181410] text-[#e8dcc8] border-[#c9a84c]/60 hover:border-[#c9a84c] cursor-pointer'
                 : 'bg-transparent text-[#5a4f3a] border-[#5a4f3a]/30 cursor-not-allowed'
             }`}
           >
-            <Navigation className="w-3.5 h-3.5" />
+            <Navigation className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             <span>Cast Guess</span>
           </button>
         )}
