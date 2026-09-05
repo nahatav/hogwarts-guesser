@@ -148,18 +148,20 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       </div>
 
       {/* Map Body */}
-      <div className="flex h-[calc(100%-96px)] relative overflow-hidden bg-[#181410]">
+      <div className="flex flex-1 relative overflow-hidden bg-[#181410] items-center justify-center p-2">
         <div
           ref={mapCanvasRef}
           onClick={handleMapClick}
-          className="flex-1 relative h-full cursor-crosshair overflow-hidden select-none flex items-center justify-center"
+          className="relative max-w-full max-h-full flex-shrink-0 cursor-crosshair"
+          style={{ display: 'inline-block' }}
         >
           {currentLevel === 'world' && (
-            <div className="relative w-full h-full flex items-center justify-center">
+            <>
               <img
                 src={`${import.meta.env.BASE_URL}maps/wizarding-world-map.jpg`}
                 alt="Wizarding World of Great Britain & Ireland"
-                className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
+                className="max-w-full max-h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
+                style={{ height: '100%', width: 'auto' }}
               />
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
                 <rect x="535" y="40" width="190" height="350" fill="transparent"
@@ -167,18 +169,16 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                   onMouseLeave={() => setHoveredZone(null)}
                   className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
               </svg>
-            </div>
+            </>
           )}
 
           {currentLevel === 'castle' && (
-            <div className="relative w-full h-full flex items-center justify-center animate-in zoom-in-95 duration-200">
-              <img
-                src={`${import.meta.env.BASE_URL}maps/hogwarts-castle-map.jpg`}
-                alt="Hogwarts Castle Floor Map"
-                className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
-              />
-              {/* No hover zones inside Hogwarts per user request */}
-            </div>
+            <img
+              src={`${import.meta.env.BASE_URL}maps/hogwarts-castle-map.jpg`}
+              alt="Hogwarts Castle Floor Map"
+              className="max-w-full max-h-full object-contain pointer-events-none select-none filter contrast-[1.04] animate-in zoom-in-95 duration-200"
+              style={{ height: '100%', width: 'auto' }}
+            />
           )}
 
           {/* Active Guess Marker */}

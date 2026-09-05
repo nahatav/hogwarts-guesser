@@ -83,15 +83,6 @@ export const ScoreModal: React.FC<ScoreModalProps> = ({
           </div>
         </div>
 
-        {/* Lore Snippet */}
-        <div className="mb-6 p-4 border border-[#c9a84c]/20 text-[11px] font-serif text-[#a09278] italic leading-relaxed bg-[#14100c]">
-          <div className="flex items-center gap-1.5 font-bold not-italic font-cinzel text-[#c9a84c] mb-2 text-[9px] uppercase tracking-widest">
-            <BookOpen className="w-3 h-3" />
-            <span>Hogwarts Archive</span>
-          </div>
-          "{location.loreSnippet}"
-        </div>
-
         {/* CTA */}
         <button
           onClick={onNextRound}

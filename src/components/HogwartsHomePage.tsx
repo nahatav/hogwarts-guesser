@@ -55,9 +55,15 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
         <div className="absolute inset-0 z-20 animate-in fade-in zoom-in duration-500 flex items-center justify-center">
           <button
             onClick={handlePlayClick}
-            className="w-24 h-24 rounded-full bg-[#c9a84c] hover:bg-[#d4af37] border-4 border-white text-white font-cinzel font-bold text-xl tracking-[0.1em] shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center"
+            className="group relative w-32 h-32 rounded-full bg-[#0c0a08] border-2 border-[#c9a84c] text-[#d4af37] flex items-center justify-center shadow-[0_0_40px_rgba(201,168,76,0.3)] transition-all duration-500 hover:scale-110 active:scale-95 overflow-hidden"
           >
-            PLAY
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,168,76,0.2)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <span 
+              className="font-harry text-5xl tracking-widest leading-none drop-shadow-[0_2px_10px_rgba(201,168,76,0.6)]"
+              style={{ paddingTop: '12px', paddingLeft: '8px' }}
+            >
+              Play
+            </span>
           </button>
         </div>
       )}
