@@ -184,7 +184,7 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     const deltaX = e.clientX - onPointerDownPointerXRef.current;
     const deltaY = e.clientY - onPointerDownPointerYRef.current;
     lonRef.current = onPointerDownLonRef.current + deltaX * 0.12;
-    latRef.current = onPointerDownLatRef.current - deltaY * 0.12;
+    latRef.current = onPointerDownLatRef.current + deltaY * 0.12;
   };
 
   const onPointerUp = () => {
