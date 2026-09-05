@@ -57,32 +57,36 @@ class WizardSoundEngine {
     return this.ctx;
   }
 
-  // --- Background Theme Music (Hedwig's Theme) ---
-  public playThemeMusic(volume: number = 0.65): Promise<boolean> {
-    if (typeof window === 'undefined') return Promise.resolve(false);
-
+  private getBgAudio(): HTMLAudioElement | null {
+    if (typeof document === 'undefined') return null;
     if (!this.bgAudio) {
-      this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
-      this.bgAudio.loop = true;
-      this.bgAudio.preload = 'auto';
+      this.bgAudio = document.getElementById('harry-potter-theme') as HTMLAudioElement;
+      if (!this.bgAudio) {
+        this.bgAudio = new Audio('/audio/hedwigs-theme.mp3');
+        this.bgAudio.loop = true;
+      }
     }
+    return this.bgAudio;
+  }
 
-    this.bgAudio.volume = volume;
-    this.bgAudio.muted = this.isMuted;
+  // --- Background Theme Music (Hedwig's Theme) ---
+  public playThemeMusic(volume: number = 0.7): Promise<boolean> {
+    if (typeof window === 'undefined') return Promise.resolve(false);
+    const audio = this.getBgAudio();
+    if (!audio) return Promise.resolve(false);
 
-    if (this.isMuted) {
-      return Promise.resolve(false);
-    }
+    audio.volume = volume;
+    audio.muted = this.isMuted;
+    if (this.isMuted) return Promise.resolve(false);
 
-    const playPromise = this.bgAudio.play();
+    const playPromise = audio.play();
     if (playPromise !== undefined) {
       return playPromise
         .then(() => {
           this.isMusicPlaying = true;
           return true;
         })
-        .catch((err) => {
-          console.log("Audio waiting for first gesture:", err.message);
+        .catch(() => {
           this.isMusicPlaying = false;
           return false;
         });
@@ -91,29 +95,33 @@ class WizardSoundEngine {
   }
 
   public pauseThemeMusic() {
-    if (this.bgAudio) {
-      this.bgAudio.pause();
+    const audio = this.getBgAudio();
+    if (audio) {
+      audio.pause();
       this.isMusicPlaying = false;
     }
   }
 
   public isThemePlaying(): boolean {
-    return this.isMusicPlaying && !!(this.bgAudio && !this.bgAudio.paused && !this.bgAudio.muted);
+    const audio = this.getBgAudio();
+    return !!(audio && !audio.paused && !audio.muted);
   }
 
   public setMuted(muted: boolean) {
     this.isMuted = muted;
-    if (this.bgAudio) {
-      this.bgAudio.muted = muted;
+    const audio = this.getBgAudio();
+    if (audio) {
+      audio.muted = muted;
     }
   }
 
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
-    if (this.bgAudio) {
-      this.bgAudio.muted = this.isMuted;
-      if (!this.isMuted && this.bgAudio.paused) {
-        this.bgAudio.play().then(() => {
+    const audio = this.getBgAudio();
+    if (audio) {
+      audio.muted = this.isMuted;
+      if (!this.isMuted && audio.paused) {
+        audio.play().then(() => {
           this.isMusicPlaying = true;
         }).catch(() => {});
       }
