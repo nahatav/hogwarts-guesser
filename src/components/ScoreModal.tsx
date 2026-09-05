@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import type { RoundResult } from '../types/game';
 import { sound } from '../utils/audio';
 import { formatRegionName } from '../utils/scoring';
-import { ArrowRight, Compass, Award, BookOpen } from 'lucide-react';
+import { ArrowRight, Compass, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface ScoreModalProps {
