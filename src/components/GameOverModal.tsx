@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 interface GameOverModalProps {
   gameState: GameState;
   onPlayAgain: () => void;
-  onChangeHouse: () => void;
+  onChangeHouse: () => void; // Keeping prop name for compatibility, but acts as go home
 }
 
 export const GameOverModal: React.FC<GameOverModalProps> = ({
@@ -15,7 +15,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   onPlayAgain,
   onChangeHouse,
 }) => {
-  const { totalScore, roundResults, house } = gameState;
+  const { totalScore, roundResults } = gameState;
   const maxScore = roundResults.length * 5000;
   const percentage = Math.round((totalScore / maxScore) * 100);
 
@@ -23,8 +23,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   let gradeDesc = 'You got lost in the secret corridors and failed your Cartography O.W.L.!';
 
   if (percentage >= 90) {
-    gradeTitle = 'O (Outstanding ⭐)';
-    gradeDesc = 'Unparalleled spatial mastery of the Wizarding World! 100 points awarded to your house!';
+    gradeTitle = 'O (Outstanding)';
+    gradeDesc = 'Unparalleled spatial mastery of the Wizarding World!';
   } else if (percentage >= 75) {
     gradeTitle = 'E (Exceeds Expectations)';
     gradeDesc = 'Remarkable knowledge of Hogwarts Castle and surrounding wizarding lands!';
@@ -44,124 +44,112 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
     if (percentage >= 70) {
       try {
         confetti({
-          particleCount: 120,
-          spread: 85,
-          origin: { y: 0.5 },
-          colors: ['#ffd700', '#121212', '#d4af37', '#ffffff'],
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.4 },
+          colors: ['#c9a84c', '#e8dcc8', '#ffffff'],
         });
       } catch (e) {}
     }
   }, [percentage, totalScore]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 select-none">
-      <div 
-        className="w-full max-w-2xl bg-[#ded6c4] border-[3px] border-[#181818] p-6 sm:p-8 text-[#141414] font-serif shadow-[0_25px_80px_rgba(0,0,0,0.95)] max-h-[92vh] overflow-y-auto relative"
-      >
-        {/* Corner filigrees */}
-        <span className="absolute top-1 left-2 text-sm text-[#181818]/70 select-none">❦</span>
-        <span className="absolute top-1 right-2 text-sm text-[#181818]/70 select-none">❦</span>
-        <span className="absolute bottom-1 left-2 text-sm text-[#181818]/70 select-none">❦</span>
-        <span className="absolute bottom-1 right-2 text-sm text-[#181818]/70 select-none">❦</span>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="w-full max-w-2xl bg-[#0d0b08] border border-[#c9a84c]/40 p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.95)] max-h-[92vh] overflow-y-auto">
+        
         {/* Header */}
-        <div className="text-center mb-5 border-b-2 border-[#181818] pb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#181818] text-[#ded6c4] text-xs font-cinzel font-bold uppercase tracking-widest mb-2">
-            <Award className="w-4 h-4 text-[#ffd700]" />
-            <span>Ministry of Magic Examination Certificate</span>
+        <div className="text-center mb-6 border-b border-[#c9a84c]/20 pb-5">
+          <div className="inline-flex items-center justify-center gap-2 mb-3">
+            <Award className="w-4 h-4 text-[#c9a84c]" />
+            <span className="text-[10px] text-[#c9a84c] font-cinzel font-bold uppercase tracking-[0.2em]">
+              Ministry of Magic
+            </span>
+            <Award className="w-4 h-4 text-[#c9a84c]" />
           </div>
-          <h1 className="font-headline text-4xl sm:text-5xl text-[#121212] tracking-tight uppercase leading-none mt-1">
-            O.W.L. Examination Report
+          <h1 className="font-cinzel text-3xl sm:text-4xl text-[#e8dcc8] tracking-widest uppercase leading-none">
+            O.W.L. Report
           </h1>
-          <p className="text-xs font-cinzel text-[#444] mt-1 uppercase tracking-widest">
-            Cartographic Diploma Conferred upon <strong>{gameState.playerName || 'The Chosen One'}</strong>
+          <p className="text-[11px] font-cinzel text-[#a09278] mt-3 uppercase tracking-widest">
+            Cartographic Diploma Conferred upon <span className="text-[#c9a84c]">{gameState.playerName || 'The Chosen One'}</span>
           </p>
         </div>
 
-        {/* Grade Badge Banner */}
-        <div className="p-4 rounded-xl border-2 border-[#181818] bg-[#e5ddd0] text-center mb-5">
-          <span className="text-[10px] font-cinzel uppercase tracking-widest block text-[#555] mb-1">Final Result</span>
-          <span className="font-headline text-4xl sm:text-5xl text-[#121212] block tracking-wide">
+        {/* Grade Banner */}
+        <div className="p-5 border border-[#c9a84c]/30 bg-[#14100c] text-center mb-6">
+          <span className="text-[10px] font-cinzel uppercase tracking-widest block text-[#a09278] mb-1">Final Result</span>
+          <span className="font-cinzel font-bold text-3xl sm:text-4xl text-[#c9a84c] block tracking-wider uppercase mb-2">
             {gradeTitle}
           </span>
-          <p className="text-xs font-newspaper italic text-[#333] mt-1 max-w-md mx-auto">
+          <p className="text-[11px] font-serif italic text-[#8a7f6a] max-w-md mx-auto">
             "{gradeDesc}"
           </p>
         </div>
 
-        {/* Score Summary Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          <div className="p-3 rounded-xl bg-[#e5ddd0] border border-[#181818]/40 text-center">
-            <span className="text-[9px] font-cinzel uppercase tracking-wider block text-[#555]">Total Score</span>
-            <span className="font-headline text-3xl text-[#121212]">
+        {/* Score Stats */}
+        <div className="grid grid-cols-2 gap-px bg-[#c9a84c]/20 border border-[#c9a84c]/20 mb-6">
+          <div className="bg-[#0d0b08] p-4 text-center">
+            <span className="text-[9px] font-cinzel uppercase tracking-widest block text-[#a09278] mb-1">Total Score</span>
+            <span className="font-cinzel font-bold text-2xl text-[#e8dcc8]">
               {totalScore.toLocaleString()}
             </span>
-            <span className="text-[9px] font-sans text-[#777] block">of {maxScore.toLocaleString()}</span>
+            <span className="text-[9px] font-cinzel text-[#5a4f3a] tracking-widest block mt-0.5">of {maxScore.toLocaleString()}</span>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#e5ddd0] border border-[#181818]/40 text-center">
-            <span className="text-[9px] font-cinzel uppercase tracking-wider block text-[#555]">Accuracy</span>
-            <span className="font-headline text-3xl text-[#121212]">
+          <div className="bg-[#0d0b08] p-4 text-center">
+            <span className="text-[9px] font-cinzel uppercase tracking-widest block text-[#a09278] mb-1">Accuracy</span>
+            <span className="font-cinzel font-bold text-2xl text-[#e8dcc8]">
               {percentage}%
             </span>
-            <span className="text-[9px] font-sans text-[#777] block">Calibration</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#e5ddd0] border border-[#181818]/40 text-center">
-            <span className="text-[9px] font-cinzel uppercase tracking-wider block text-[#555]">House Points</span>
-            <span className="font-headline text-3xl text-[#b37d22]">
-              +{Math.round(totalScore / 50)}
-            </span>
-            <span className="text-[9px] font-sans text-[#777] block">To {house}</span>
+            <span className="text-[9px] font-cinzel text-[#5a4f3a] tracking-widest block mt-0.5">Calibration</span>
           </div>
         </div>
 
-        {/* Round by Round Breakdown Table */}
-        <div className="mb-6 bg-[#e5ddd0] border border-[#181818]/40 rounded-xl p-3.5">
-          <h3 className="text-xs font-cinzel font-bold uppercase tracking-widest text-[#181818] mb-2.5 flex items-center gap-1.5">
-            <BookOpen className="w-3.5 h-3.5 text-[#b37d22]" />
-            <span>Chamber by Chamber Dispatches</span>
+        {/* Breakdown */}
+        <div className="mb-8 border border-[#c9a84c]/20 bg-[#14100c] p-4">
+          <h3 className="text-[10px] font-cinzel font-bold uppercase tracking-widest text-[#c9a84c] mb-3 flex items-center gap-2">
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Chamber Dispatches</span>
           </h3>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {roundResults.map((r, i) => (
               <div 
                 key={i}
-                className="flex items-center justify-between p-2 rounded-lg bg-[#ded6c4] border border-[#181818]/20 text-xs"
+                className="flex items-center justify-between py-2 border-b border-[#c9a84c]/10 last:border-0"
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-[#181818] text-[#ded6c4] flex items-center justify-center font-bold text-[10px]">
-                    {r.roundNumber}
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-cinzel text-[#a09278] w-4">
+                    {r.roundNumber}.
                   </span>
                   <div>
-                    <span className="font-bold text-[#121212] block">{r.location.name}</span>
-                    <span className="text-[10px] text-[#666]">
+                    <span className="font-cinzel text-[11px] text-[#e8dcc8] uppercase tracking-wider block">{r.location.name}</span>
+                    <span className="text-[9px] font-cinzel text-[#7a6a50] tracking-widest uppercase mt-0.5 block">
                       {r.regionMatched ? `${r.distanceMeters}m off` : 'Wrong Realm'} {r.floorDelta > 0 && `• ${r.floorDelta} fl`}
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="font-headline text-lg text-[#121212] block">+{r.score.toLocaleString()}</span>
+                  <span className="font-cinzel text-sm text-[#c9a84c] block">+{r.score.toLocaleString()}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={onPlayAgain}
-            className="flex-1 py-3 px-4 bg-[#121212] hover:bg-[#222] text-[#f7f2e7] font-headline text-xl tracking-widest uppercase transition-all duration-200 border-2 border-[#181818] shadow-md flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="flex-1 py-3 bg-[#0c0a08] hover:bg-[#181410] border border-[#c9a84c]/60 hover:border-[#c9a84c] text-[#e8dcc8] font-cinzel font-semibold text-xs tracking-widest uppercase transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]"
           >
-            <RotateCcw className="w-4 h-4 text-[#ffd700]" />
-            <span>Play Again (New Expedition)</span>
+            <RotateCcw className="w-4 h-4 text-[#c9a84c]" />
+            <span>Play Again</span>
           </button>
 
           <button
             onClick={onChangeHouse}
-            className="py-3 px-6 bg-[#ded6c4] hover:bg-[#181818] hover:text-[#ded6c4] text-[#121212] border-2 border-[#181818] font-cinzel font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-2 shadow-sm"
+            className="py-3 px-8 bg-transparent hover:bg-[#181410] text-[#a09278] hover:text-[#e8dcc8] border border-[#5a4f3a] hover:border-[#c9a84c]/50 font-cinzel font-semibold text-xs uppercase tracking-widest transition-all duration-150 flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />
             <span>Home</span>

@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { WizardRegion, PlayerGuess, RoundResult } from '../types/game';
 import { sound } from '../utils/audio';
-import { CheckCircle, Navigation, Maximize2, Minimize2, ArrowLeft, ZoomIn } from 'lucide-react';
+import { Navigation, Maximize2, Minimize2, ArrowLeft, ZoomIn, Check } from 'lucide-react';
 
 interface MaraudersMapProps {
   isRoundComplete: boolean;
@@ -16,14 +16,12 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
   onGuessSubmit,
   disabled = false,
 }) => {
-  // Current view level: 'world' (Great Britain & Ireland map) or 'castle' (Zoomed-in Hogwarts floor map)
   const [currentLevel, setCurrentLevel] = useState<'world' | 'castle'>('world');
   const [activeGuess, setActiveGuess] = useState<PlayerGuess | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [hoveredZone, setHoveredZone] = useState<string | null>(null);
   const mapCanvasRef = useRef<HTMLDivElement>(null);
 
-  // When round completes, automatically switch map view to actual location level to show the reveal
   useEffect(() => {
     if (isRoundComplete && lastRoundResult) {
       if (lastRoundResult.location.region === 'castle') {
@@ -31,25 +29,21 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       } else {
         setCurrentLevel('world');
       }
-      setIsExpanded(true); // expand to show footprints
+      setIsExpanded(true);
     } else {
       setActiveGuess(null);
     }
   }, [isRoundComplete, lastRoundResult]);
 
-  // Handle map click
   const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (isRoundComplete || disabled) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    // Convert pixel position to normalized 0-1000 coordinate space
     const normX = Math.round((clickX / rect.width) * 1000);
     const normY = Math.round((clickY / rect.height) * 1000);
 
-    // If on world map and player clicks directly on the Hogwarts / Scottish Highlands inset (X: 535-725, Y: 40-390)
-    // or Scotland Highlands pin (X: 360-440, Y: 220-310), automatically zoom in to the Castle!
     if (currentLevel === 'world') {
       const isHogwartsInset = normX >= 535 && normX <= 725 && normY >= 40 && normY <= 390;
       const isScotlandPin = normX >= 360 && normX <= 440 && normY >= 210 && normY <= 320;
@@ -60,13 +54,12 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       }
     }
 
-    // Determine region based on click
     let region: WizardRegion = 'castle';
     if (currentLevel === 'world') {
       if (normX >= 570 && normX <= 800 && normY >= 580 && normY <= 920) {
-        region = 'diagon_alley'; // London Inset
+        region = 'diagon_alley';
       } else if (normX >= 535 && normX <= 725 && normY >= 40 && normY <= 390) {
-        region = 'grounds'; // Highlands Inset
+        region = 'grounds';
       } else {
         region = 'hogsmeade';
       }
@@ -86,7 +79,6 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
     sound.playMapStamp();
   };
 
-  // Submit guess
   const handleSubmit = () => {
     if (!activeGuess || disabled || isRoundComplete) return;
     sound.playWandWhoosh();
@@ -95,76 +87,73 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
 
   return (
     <div 
-      className={`fixed z-30 transition-all duration-300 ease-out shadow-2xl rounded-2xl border-2 border-[#7a5836] backdrop-blur-md bg-[#231b14] text-[#2b1e10] ${
+      className={`fixed z-30 transition-all duration-300 ease-out shadow-2xl rounded-sm border border-[#c9a84c]/40 bg-[#0d0b08] ${
         isExpanded
           ? 'bottom-3 right-3 w-[96vw] max-w-[1080px] h-[88vh] max-h-[790px]'
           : 'bottom-5 right-5 w-[420px] h-64 hover:w-[480px] hover:h-[310px]'
       }`}
       style={{
-        boxShadow: '0 20px 60px rgba(0,0,0,0.92), inset 0 0 40px rgba(115,70,30,0.3)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.95)',
       }}
     >
-      {/* Parchment Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[#8c6b45] bg-[#ebd8bb] rounded-t-2xl shadow-inner">
-        <div className="flex items-center gap-2">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#c9a84c]/20 bg-[#0a0806]">
+        <div className="flex items-center gap-3">
           {currentLevel === 'castle' ? (
             <button
               onClick={() => {
                 setCurrentLevel('world');
                 sound.playWandWhoosh();
               }}
-              className="px-3 py-1.5 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border border-[#181818] text-xs font-cinzel font-bold uppercase tracking-wider flex items-center gap-1.5 transition active:scale-95 shadow-sm"
+              className="px-2 py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[10px] font-cinzel font-bold uppercase tracking-widest flex items-center gap-1 transition-colors"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#ffd700]" />
+              <ArrowLeft className="w-3 h-3" />
               <span>Great Britain Map</span>
             </button>
           ) : (
-            <span className="font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase text-[#181818] flex items-center gap-1.5">
+            <span className="font-cinzel font-bold text-[10px] tracking-widest uppercase text-[#c9a84c] flex items-center gap-1.5 ml-1">
               <span>✦</span> The Wizarding World of Great Britain & Ireland
             </span>
           )}
 
           {currentLevel === 'castle' && (
-            <span className="font-cinzel font-bold text-xs sm:text-sm tracking-wider uppercase text-[#181818] ml-2 hidden sm:inline">
+            <span className="font-cinzel font-bold text-[10px] tracking-widest uppercase text-[#a09278] hidden sm:inline">
               • Hogwarts Castle Floorplans
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Quick Zoom In to Hogwarts shortcut when on world map */}
           {currentLevel === 'world' && (
             <button
               onClick={() => {
                 setCurrentLevel('castle');
                 sound.playWandWhoosh();
               }}
-              className="px-3 py-1.5 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border border-[#181818] text-xs font-cinzel font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm transition active:scale-95"
+              className="px-2 py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[10px] font-cinzel font-bold uppercase tracking-widest flex items-center gap-1 transition-colors"
             >
-              <ZoomIn className="w-3.5 h-3.5 text-[#ffd700]" />
-              <span>Zoom to Hogwarts Castle</span>
+              <ZoomIn className="w-3 h-3" />
+              <span>Zoom to Castle</span>
             </button>
           )}
 
-          {/* Expand/Collapse Toggle */}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 rounded text-[#5c3a21] hover:bg-[#d8c2a3] transition"
+            className="p-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] transition-colors"
             title={isExpanded ? 'Minimize Map' : 'Expand Map'}
           >
-            {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
-      {/* Main Map Body */}
-      <div className="flex h-[calc(100%-88px)] relative overflow-hidden bg-[#160f0a]">
+      {/* Map Body */}
+      <div className="flex h-[calc(100%-96px)] relative overflow-hidden bg-[#181410]">
         <div
           ref={mapCanvasRef}
           onClick={handleMapClick}
-          className="flex-1 relative h-full cursor-crosshair overflow-hidden select-none bg-[#120c08] flex items-center justify-center"
+          className="flex-1 relative h-full cursor-crosshair overflow-hidden select-none flex items-center justify-center"
         >
-          {/* LEVEL 1: THE WIZARDING WORLD OF GREAT BRITAIN & IRELAND MAP */}
           {currentLevel === 'world' && (
             <div className="relative w-full h-full flex items-center justify-center">
               <img
@@ -172,62 +161,31 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 alt="Wizarding World of Great Britain & Ireland"
                 className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
               />
-
-              {/* Interactive Hotspots on the World Map */}
-              <svg 
-                className="absolute inset-0 w-full h-full"
-                viewBox="0 0 1000 1000"
-                preserveAspectRatio="none"
-              >
-                {/* 1. Hogwarts Castle & Scottish Highlands Inset Box (Click to Zoom!) */}
-                <rect
-                  x="535" y="40" width="190" height="350"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('🏰 Hogwarts Castle & Scottish Highlands (CLICK TO ZOOM IN)')}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                <rect x="535" y="40" width="190" height="350" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Hogwarts Castle & Scottish Highlands (Click to zoom)')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-amber-500/20 hover:stroke-amber-400 hover:stroke-2 cursor-pointer transition animate-pulse"
-                />
-
-                {/* 2. Scotland Highlands Hogwarts Pin on main UK map */}
-                <circle
-                  cx="400" cy="265" r="35"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('🏰 Hogwarts & Hogsmeade Station (CLICK TO ZOOM IN)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <circle cx="400" cy="265" r="35" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Hogwarts & Hogsmeade Station (Click to zoom)')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-amber-500/30 hover:stroke-amber-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* 3. London Inset Box (King's Cross & Platform 9 3/4, Diagon Alley, St. Mungo's) */}
-                <rect
-                  x="570" y="580" width="230" height="340"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('🏛️ London • King’s Cross, Platform 9¾, Diagon Alley & Ministry')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="570" y="580" width="230" height="340" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('London • King’s Cross, Diagon Alley & Ministry')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-emerald-500/20 hover:stroke-emerald-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* 4. The Burrow & Malfoy Manor Inset Box */}
-                <rect
-                  x="805" y="590" width="165" height="350"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('🧹 The Burrow (Ottery St Catchpole) & Malfoy Manor')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="805" y="590" width="165" height="350" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('The Burrow & Malfoy Manor')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-yellow-500/20 hover:stroke-yellow-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* 5. Azkaban Fortress in the North Sea */}
-                <rect
-                  x="485" y="330" width="75" height="100"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('⛓️ Azkaban Prison Fortress (North Sea)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="485" y="330" width="75" height="100" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Azkaban Prison Fortress')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-slate-500/30 hover:stroke-slate-400 hover:stroke-2 cursor-pointer transition"
-                />
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
               </svg>
             </div>
           )}
 
-          {/* LEVEL 2: ZOOMED-IN HOGWARTS CASTLE FLOOR-BY-FLOOR CROSS-SECTION MAP */}
           {currentLevel === 'castle' && (
             <div className="relative w-full h-full flex items-center justify-center animate-in zoom-in-95 duration-200">
               <img
@@ -235,171 +193,94 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 alt="Hogwarts Castle Floor Map"
                 className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
               />
-
-              {/* Interactive Room Overlay on the Zoomed-In Castle Map */}
-              <svg 
-                className="absolute inset-0 w-full h-full"
-                viewBox="0 0 1000 1000"
-                preserveAspectRatio="none"
-              >
-                {/* Dungeons: Snape's Potions Classroom */}
-                <rect
-                  x="355" y="40" width="85" height="110"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Potions Classroom (Professor Snape's Dungeon)")}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+                <rect x="355" y="40" width="85" height="110" fill="transparent"
+                  onMouseEnter={() => setHoveredZone("Potions Classroom")}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-emerald-500/25 hover:stroke-emerald-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Dungeons: Collegium Slitherinum (Slytherin Cavern & Chamber) */}
-                <rect
-                  x="520" y="40" width="95" height="110"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Collegium Slitherinum (Slytherin Cavern & Chamber of Secrets)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="520" y="40" width="95" height="110" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Slytherin Cavern & Chamber of Secrets')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-emerald-500/25 hover:stroke-emerald-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Dungeons: Kitchens & Hufflepuff Entrance */}
-                <rect
-                  x="645" y="40" width="105" height="110"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Kitchens & Hufflepuff Basement Entrance')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="645" y="40" width="105" height="110" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('The Kitchens')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-yellow-500/25 hover:stroke-yellow-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Ground Floor: Magna Aula (The Great Hall) */}
-                <rect
-                  x="285" y="160" width="210" height="110"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Magna Aula (The Great Hall & High Podium)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="285" y="160" width="210" height="110" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('The Great Hall')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-amber-500/25 hover:stroke-amber-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Ground Floor: Entrance Hall & Marble Staircase */}
-                <rect
-                  x="505" y="160" width="135" height="160"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Entrance Hall & Marble Grand Staircases')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="505" y="160" width="135" height="160" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Entrance Hall & Marble Staircases')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-amber-500/25 hover:stroke-amber-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* First Floor: Hospital Wing */}
-                <rect
-                  x="590" y="285" width="115" height="95"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Hospital Wing (Madam Pomfrey's Infirmary)")}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="590" y="285" width="115" height="95" fill="transparent"
+                  onMouseEnter={() => setHoveredZone("Hospital Wing")}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-rose-500/25 hover:stroke-rose-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Second Floor: Defense Against the Dark Arts */}
-                <rect
-                  x="485" y="400" width="110" height="95"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Defense Against the Dark Arts Classroom')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="485" y="400" width="110" height="95" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Defense Against the Dark Arts')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-indigo-500/25 hover:stroke-indigo-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Third Floor: Forbidden Corridor & Fluffy */}
-                <rect
-                  x="730" y="505" width="140" height="100"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Forbidden Corridor (Fluffy & The Trapdoor)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="730" y="505" width="140" height="100" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('The Forbidden Corridor')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-red-500/25 hover:stroke-red-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Fourth Floor: Bibliotheca (The Hogwarts Library) */}
-                <rect
-                  x="275" y="610" width="355" height="95"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Bibliotheca (The Great Hogwarts Library & Restricted Section)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="275" y="610" width="355" height="95" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('The Hogwarts Library')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-amber-500/25 hover:stroke-amber-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Fifth/Sixth Floor: Prefect's Bathroom */}
-                <rect
-                  x="265" y="720" width="220" height="130"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Prefect's Bathroom & Colored Bubbles Pool")}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="265" y="720" width="220" height="130" fill="transparent"
+                  onMouseEnter={() => setHoveredZone("Prefect's Bathroom")}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-cyan-500/25 hover:stroke-cyan-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Seventh Floor: Gryffindor Tower */}
-                <circle
-                  cx="578" cy="868" r="60"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Gryffindor Tower (Circular Common Room & Hearth)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <circle cx="578" cy="868" r="60" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Gryffindor Tower')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-red-600/30 hover:stroke-red-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Towers: Ravenclaw Tower */}
-                <rect
-                  x="685" y="815" width="60" height="125"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Ravenclaw Tower (Eagle Door Knocker)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <rect x="685" y="815" width="60" height="125" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Ravenclaw Tower')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-blue-500/25 hover:stroke-blue-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Towers: Astrology / Astronomy Tower */}
-                <circle
-                  cx="838" cy="872" r="50"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Astrology / Astronomy Tower (Celestial Astrolabe Rampart)')}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <circle cx="838" cy="872" r="50" fill="transparent"
+                  onMouseEnter={() => setHoveredZone('Astronomy Tower')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-cyan-500/30 hover:stroke-cyan-400 hover:stroke-2 cursor-pointer transition"
-                />
-
-                {/* Towers: Divination Classroom / High Turrets */}
-                <circle
-                  cx="925" cy="872" r="45"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Divination Classroom & Dumbledore's High Sanctum")}
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                <circle cx="925" cy="872" r="45" fill="transparent"
+                  onMouseEnter={() => setHoveredZone("Divination Classroom")}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-purple-500/30 hover:stroke-purple-400 hover:stroke-2 cursor-pointer transition"
-                />
+                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
               </svg>
             </div>
           )}
 
-          {/* Active Guess Marker (Golden Snitch Pin) */}
+          {/* Active Guess Marker */}
           {activeGuess && activeGuess.mapLevel === currentLevel && (
             <div
-              className="absolute -ml-3.5 -mt-7 pointer-events-none transition-transform duration-150 animate-bounce z-20"
+              className="absolute pointer-events-none transition-transform duration-150 z-20"
               style={{
                 left: `${(activeGuess.x / 1000) * 100}%`,
                 top: `${(activeGuess.y / 1000) * 100}%`,
+                transform: 'translate(-50%, -100%)'
               }}
             >
-              <div className="relative flex flex-col items-center">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-600 via-yellow-400 to-amber-200 border-2 border-[#4a260e] shadow-lg flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_8px_white]" />
-                </div>
-                <div className="w-1 h-3 bg-[#4a260e]" />
-                <span className="text-[9px] font-serif font-bold text-[#4a260e] bg-[#f7f0e3] px-1 rounded shadow border border-[#8c6b45] whitespace-nowrap">
+              <div className="flex flex-col items-center">
+                <div className="w-3 h-3 rounded-full bg-[#c9a84c] border border-black shadow-sm" />
+                <div className="w-[1px] h-3 bg-[#c9a84c]" />
+                <span className="mt-1 text-[8px] font-cinzel font-bold text-[#e8dcc8] bg-black/80 px-1.5 py-0.5 rounded-sm border border-[#c9a84c]/30 whitespace-nowrap">
                   Your Guess
                 </span>
               </div>
             </div>
           )}
 
-          {/* Post-Round Reveal (Actual Location & Footprint Animation) */}
+          {/* Reveal Markers */}
           {isRoundComplete && lastRoundResult && (
             <>
-              {/* Actual Location Marker */}
               {((currentLevel === 'castle' && lastRoundResult.location.region === 'castle') ||
                 (currentLevel === 'world')) && (
                 <div
-                  className="absolute -ml-4 -mt-8 pointer-events-none animate-pulse z-20"
+                  className="absolute pointer-events-none z-20"
                   style={{
                     left: currentLevel === 'castle'
                       ? `${(lastRoundResult.location.x / 1000) * 100}%`
@@ -407,21 +288,21 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                     top: currentLevel === 'castle'
                       ? `${(lastRoundResult.location.y / 1000) * 100}%`
                       : `${((lastRoundResult.location.worldY ?? lastRoundResult.location.y) / 1000) * 100}%`,
+                    transform: 'translate(-50%, -100%)'
                   }}
                 >
-                  <div className="relative flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-green-400 border-2 border-white shadow-xl flex items-center justify-center">
-                      <CheckCircle className="w-5 h-5 text-white" />
+                  <div className="flex flex-col items-center animate-in zoom-in duration-300">
+                    <div className="w-5 h-5 rounded-full bg-[#e8dcc8] border border-black shadow-sm flex items-center justify-center">
+                      <Check className="w-3 h-3 text-black" />
                     </div>
-                    <div className="w-1 h-3 bg-emerald-800" />
-                    <span className="text-[10px] font-serif font-bold text-white bg-emerald-900 px-1.5 py-0.5 rounded shadow border border-emerald-400 whitespace-nowrap">
+                    <div className="w-[1px] h-3 bg-[#e8dcc8]" />
+                    <span className="mt-1 text-[8px] font-cinzel font-bold text-black bg-[#e8dcc8] px-1.5 py-0.5 rounded-sm border border-black whitespace-nowrap">
                       {lastRoundResult.location.name}
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* Animated Footprints Trail connecting Guess to True Location */}
               {lastRoundResult.guess && lastRoundResult.guess.mapLevel === currentLevel && (
                 <FootprintsTrail
                   startX={(lastRoundResult.guess.x / 1000) * 100}
@@ -437,26 +318,25 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
             </>
           )}
 
-          {/* Active Hover Tooltip */}
+          {/* Hover Tooltip */}
           {hoveredZone && (
-            <div className="absolute top-2 left-2 pointer-events-none bg-[#1a1209]/95 text-[#f7f0e3] px-3 py-1 rounded text-xs font-serif shadow-xl border border-[#d4af37]/80 backdrop-blur-sm z-30 flex items-center gap-1.5">
-              <span className="text-[#ffd700]">✦</span>
-              <span>{hoveredZone}</span>
+            <div className="absolute top-3 left-3 pointer-events-none bg-black/90 text-[#e8dcc8] px-2.5 py-1 rounded-sm text-[10px] font-cinzel tracking-wider border border-[#c9a84c]/30 z-30 uppercase">
+              {hoveredZone}
             </div>
           )}
         </div>
       </div>
 
-      {/* Parchment Footer & Submit Button */}
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-[#ead6b6] border-t border-[#8c6b45]/50 px-4 flex items-center justify-between rounded-b-2xl">
-        <div className="text-xs font-serif text-[#4a260e] truncate mr-2">
+      {/* Footer */}
+      <div className="absolute bottom-0 left-0 right-0 h-14 bg-[#0a0806] border-t border-[#c9a84c]/20 px-4 flex items-center justify-between">
+        <div className="text-[10px] font-cinzel tracking-widest uppercase text-[#a09278] truncate mr-2">
           {activeGuess ? (
-            <span>✦ Pin dropped — ready to cast</span>
+            <span className="text-[#c9a84c]">✦ Ready to cast</span>
           ) : (
-            <span className="italic text-[#6b4221]">
+            <span>
               {currentLevel === 'world'
-                ? 'Click the map to place your guess. Click the Hogwarts inset to zoom in.'
-                : 'Click a room on the castle map to drop your pin.'}
+                ? 'Drop pin on map • Click inset to zoom'
+                : 'Click room to drop pin'}
             </span>
           )}
         </div>
@@ -465,13 +345,13 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!activeGuess || disabled}
-            className={`px-5 py-2 rounded-lg font-headline text-lg sm:text-xl tracking-widest uppercase transition-all shadow-md flex items-center gap-2 shrink-0 border-2 ${
+            className={`px-6 py-2 rounded-sm font-cinzel text-xs font-semibold tracking-widest uppercase transition-colors flex items-center gap-2 shrink-0 border ${
               activeGuess && !disabled
-                ? 'bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border-[#181818] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] active:scale-95 cursor-pointer'
-                : 'bg-[#d5bf9f] text-[#8c6b45] cursor-not-allowed border-[#bfa583]'
+                ? 'bg-[#0c0a08] hover:bg-[#181410] text-[#e8dcc8] border-[#c9a84c]/60 hover:border-[#c9a84c] cursor-pointer'
+                : 'bg-transparent text-[#5a4f3a] border-[#5a4f3a]/30 cursor-not-allowed'
             }`}
           >
-            <Navigation className="w-4 h-4 text-[#ffd700]" />
+            <Navigation className="w-3.5 h-3.5" />
             <span>Cast Guess</span>
           </button>
         )}
@@ -480,54 +360,29 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
   );
 };
 
-// --- Animated Marauder's Footprints Trail Component ---
+// Clean minimal dotted trail instead of emoji footprints
 const FootprintsTrail: React.FC<{
   startX: number;
   startY: number;
   endX: number;
   endY: number;
 }> = ({ startX, startY, endX, endY }) => {
-  const steps = 8;
-  const footstepCoords = useMemo(() => {
-    const arr = [];
-    for (let i = 1; i <= steps; i++) {
-      const t = i / (steps + 1);
-      const x = startX + (endX - startX) * t;
-      const y = startY + (endY - startY) * t;
-      arr.push({ x, y, isRightFoot: i % 2 === 0 });
-    }
-    return arr;
-  }, [startX, startY, endX, endY]);
-
   useEffect(() => {
     sound.playFootsteps();
   }, []);
 
   return (
-    <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+    <svg className="absolute inset-0 w-full h-full pointer-events-none z-10 animate-in fade-in duration-500">
       <line
         x1={`${startX}%`}
         y1={`${startY}%`}
         x2={`${endX}%`}
         y2={`${endY}%`}
-        stroke="#6b3c19"
-        strokeWidth="2.5"
-        strokeDasharray="6 4"
-        className="opacity-90"
+        stroke="#c9a84c"
+        strokeWidth="1.5"
+        strokeDasharray="4 6"
+        className="opacity-60"
       />
-      {footstepCoords.map((step, idx) => (
-        <text
-          key={idx}
-          x={`${step.x}%`}
-          y={`${step.y}%`}
-          fontSize="15"
-          fill="#3b1d07"
-          className="animate-pulse"
-          style={{ animationDelay: `${idx * 140}ms` }}
-        >
-          🐾
-        </text>
-      ))}
     </svg>
   );
 };

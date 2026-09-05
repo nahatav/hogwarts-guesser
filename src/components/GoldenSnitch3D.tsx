@@ -37,11 +37,11 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
 
     try {
       confetti({
-        particleCount: 75,
-        spread: 90,
-        origin: { y: 0.5 },
-        colors: ['#ffd700', '#f59e0b', '#fef08a', '#d97706', '#ffffff'],
-        shapes: ['circle', 'star'],
+        particleCount: 100,
+        spread: 120,
+        origin: { y: 0.4 },
+        colors: ['#c9a84c', '#e8dcc8', '#ffffff'],
+        shapes: ['circle'],
         scalar: 1.2,
       });
     } catch (e) {}
@@ -52,7 +52,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
 
     setTimeout(() => {
       setShowCatchBanner(false);
-    }, 4200);
+    }, 3000);
   }, [onSnitchCatch]);
 
   useEffect(() => {
@@ -79,18 +79,18 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
     rendererRef.current = renderer;
 
     // 2. Warm lighting for radiant golden metal
-    const ambientLight = new THREE.AmbientLight(0xfff3db, 1.5);
+    const ambientLight = new THREE.AmbientLight(0xfff3db, 1.2);
     scene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 2.8);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 3.0);
     dirLight1.position.set(10, 15, 12);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0xffdf70, 1.6);
+    const dirLight2 = new THREE.DirectionalLight(0xffdf70, 2.0);
     dirLight2.position.set(-12, -8, 8);
     scene.add(dirLight2);
 
-    const snitchPointLight = new THREE.PointLight(0xffdf55, 2.4, 14);
+    const snitchPointLight = new THREE.PointLight(0xc9a84c, 2.0, 15);
     scene.add(snitchPointLight);
 
     // 3. Golden Snitch Group
@@ -98,80 +98,107 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
     scene.add(snitchGroup);
     snitchGroupRef.current = snitchGroup;
 
-    // Main Golden Sphere Body
-    const sphereGeo = new THREE.SphereGeometry(0.85, 36, 36);
+    // High detail Golden Sphere Body
+    const sphereGeo = new THREE.SphereGeometry(0.85, 128, 128); // Increased geometry detail
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xf5bf18,
-      metalness: 0.94,
-      roughness: 0.16,
-      emissive: 0x4a3200,
-      emissiveIntensity: 0.35,
+      color: 0xc9a84c,
+      metalness: 1.0,
+      roughness: 0.15,
+      emissive: 0x221100,
+      emissiveIntensity: 0.2,
     });
     const sphereMesh = new THREE.Mesh(sphereGeo, goldMat);
     snitchGroup.add(sphereMesh);
     sphereMeshRef.current = sphereMesh;
 
-    // Engraved Seam Rings & Runes
+    // Highly detailed Engraved Seam Rings & Runes
     const seamMat = new THREE.MeshStandardMaterial({
-      color: 0xc48c08,
-      metalness: 0.88,
-      roughness: 0.28,
+      color: 0x8c734b,
+      metalness: 0.9,
+      roughness: 0.3,
     });
-    const equatorRing = new THREE.Mesh(new THREE.TorusGeometry(0.855, 0.02, 16, 64), seamMat);
-    snitchGroup.add(equatorRing);
 
-    const meridianRing = new THREE.Mesh(new THREE.TorusGeometry(0.855, 0.02, 16, 64), seamMat);
-    meridianRing.rotation.x = Math.PI / 2;
-    snitchGroup.add(meridianRing);
+    const createRing = (radius: number, tube: number, rx: number, ry: number, rz: number) => {
+      const geo = new THREE.TorusGeometry(radius, tube, 32, 128);
+      const mesh = new THREE.Mesh(geo, seamMat);
+      mesh.rotation.set(rx, ry, rz);
+      return mesh;
+    };
 
-    const diagonalRing = new THREE.Mesh(new THREE.TorusGeometry(0.854, 0.015, 16, 64), seamMat);
-    diagonalRing.rotation.x = Math.PI / 4;
-    diagonalRing.rotation.y = Math.PI / 4;
-    snitchGroup.add(diagonalRing);
+    snitchGroup.add(createRing(0.855, 0.015, 0, 0, 0)); // Equator
+    snitchGroup.add(createRing(0.855, 0.015, Math.PI / 2, 0, 0)); // Meridian
+    snitchGroup.add(createRing(0.855, 0.01, Math.PI / 4, Math.PI / 4, 0)); // Diagonal 1
+    snitchGroup.add(createRing(0.855, 0.01, -Math.PI / 4, Math.PI / 4, 0)); // Diagonal 2
+    snitchGroup.add(createRing(0.855, 0.01, Math.PI / 4, -Math.PI / 4, 0)); // Diagonal 3
+    snitchGroup.add(createRing(0.855, 0.01, -Math.PI / 4, -Math.PI / 4, 0)); // Diagonal 4
 
-    // Gossamer Feather Wing Shape
+    // Detailed Gossamer Feather Wing Shape
     const createWingShape = () => {
       const shape = new THREE.Shape();
       shape.moveTo(0, 0);
-      shape.bezierCurveTo(-0.6, 0.35, -1.6, 0.75, -2.8, 0.55);
-      shape.bezierCurveTo(-3.3, 0.45, -3.4, 0.2, -3.1, -0.05);
-      shape.bezierCurveTo(-2.4, -0.3, -1.4, -0.4, -0.6, -0.2);
-      shape.bezierCurveTo(-0.3, -0.1, 0, 0, 0, 0);
+      shape.bezierCurveTo(-0.5, 0.4, -1.5, 0.8, -3.0, 0.6);
+      shape.bezierCurveTo(-3.5, 0.5, -3.8, 0.2, -3.5, -0.1);
+      
+      // Feathered edge indentations
+      shape.bezierCurveTo(-3.0, 0.0, -2.8, -0.2, -2.5, -0.1);
+      shape.bezierCurveTo(-2.2, -0.2, -2.0, -0.3, -1.8, -0.15);
+      shape.bezierCurveTo(-1.5, -0.3, -1.2, -0.4, -0.8, -0.2);
+      
+      shape.bezierCurveTo(-0.4, -0.1, -0.2, 0, 0, 0);
       return shape;
     };
 
-    const wingGeo = new THREE.ShapeGeometry(createWingShape(), 18);
+    const wingGeo = new THREE.ShapeGeometry(createWingShape(), 32); // High detail curve
     const wingMat = new THREE.MeshStandardMaterial({
-      color: 0xfffae8,
-      roughness: 0.14,
-      metalness: 0.35,
+      color: 0xe8dcc8,
+      roughness: 0.1,
+      metalness: 0.6,
       transparent: true,
-      opacity: 0.84,
+      opacity: 0.8,
       side: THREE.DoubleSide,
     });
 
     // Left Wing Pivot Group
     const leftWingGroup = new THREE.Group();
-    leftWingGroup.position.set(-0.65, 0.3, 0);
+    leftWingGroup.position.set(-0.75, 0.35, 0);
     const leftWingMesh = new THREE.Mesh(wingGeo, wingMat);
     leftWingMesh.rotation.z = 0.2;
     leftWingGroup.add(leftWingMesh);
+    
+    // Add wing veins/ridges
+    const veinMat = new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.6 });
+    for (let i = 1; i <= 3; i++) {
+      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.005, 2.5), veinMat);
+      vein.position.set(-1.2, 0.3 - (i * 0.15), 0.01);
+      vein.rotation.z = Math.PI / 2 - (i * 0.1);
+      leftWingMesh.add(vein);
+    }
+    
     snitchGroup.add(leftWingGroup);
     leftWingRef.current = leftWingGroup;
 
     // Right Wing Pivot Group (Mirrored)
     const rightWingGroup = new THREE.Group();
-    rightWingGroup.position.set(0.65, 0.3, 0);
+    rightWingGroup.position.set(0.75, 0.35, 0);
     const rightWingGeo = wingGeo.clone();
     rightWingGeo.scale(-1, 1, 1);
     const rightWingMesh = new THREE.Mesh(rightWingGeo, wingMat);
     rightWingMesh.rotation.z = -0.2;
+    
+    // Add wing veins/ridges (mirrored)
+    for (let i = 1; i <= 3; i++) {
+      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.005, 2.5), veinMat);
+      vein.position.set(1.2, 0.3 - (i * 0.15), 0.01);
+      vein.rotation.z = -(Math.PI / 2 - (i * 0.1));
+      rightWingMesh.add(vein);
+    }
+
     rightWingGroup.add(rightWingMesh);
     snitchGroup.add(rightWingGroup);
     rightWingRef.current = rightWingGroup;
 
     // 4. Sparkle Particle Trail
-    const particleCount = 70;
+    const particleCount = 100;
     const trailPositions = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
@@ -189,9 +216,9 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
     const ctx = canvas.getContext('2d');
     if (ctx) {
       const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-      grad.addColorStop(0, 'rgba(255, 235, 120, 1)');
-      grad.addColorStop(0.4, 'rgba(245, 180, 20, 0.7)');
-      grad.addColorStop(1, 'rgba(245, 180, 20, 0)');
+      grad.addColorStop(0, 'rgba(201, 168, 76, 1)');
+      grad.addColorStop(0.4, 'rgba(201, 168, 76, 0.6)');
+      grad.addColorStop(1, 'rgba(201, 168, 76, 0)');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(16, 16, 16, 0, Math.PI * 2);
@@ -200,10 +227,10 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
 
     const particleTexture = new THREE.CanvasTexture(canvas);
     const trailMat = new THREE.PointsMaterial({
-      size: 0.75,
+      size: 0.6,
       map: particleTexture,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.7,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -253,7 +280,6 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
       reqIdRef.current = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // Multi-frequency 3D flight trajectory swooping across the landing page
       const t = elapsed * 0.85;
       const radiusX = 11.5;
       const radiusY = 5.8;
@@ -306,7 +332,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
       }
 
       // High-Frequency Fluttering Wings
-      const flapSpeed = isSpinningRef.current ? 65 : 44;
+      const flapSpeed = isSpinningRef.current ? 75 : 55;
       const flapAngle = Math.sin(elapsed * flapSpeed) * 0.65;
       const flutterTwist = Math.cos(elapsed * flapSpeed * 0.8) * 0.22;
 
@@ -355,34 +381,17 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
         className="fixed inset-0 z-30 pointer-events-none overflow-hidden"
       />
 
-      {/* Floating Interactive Snitch Radar / Catch Counter Badge */}
-      <div className="fixed top-3 right-4 z-40 flex items-center gap-2 pointer-events-auto">
-        <button
-          onClick={handleCatch}
-          className="px-3.5 py-1.5 rounded-full bg-[#1b1509]/95 border border-[#ffd700]/70 text-[#fef08a] hover:bg-[#2e210b] hover:border-[#ffd700] transition-all shadow-[0_0_15px_rgba(255,215,0,0.3)] flex items-center gap-2 text-xs font-cinzel font-bold tracking-wider active:scale-95"
-          title="Catch the flying Golden Snitch!"
-        >
-          <span className="animate-pulse text-sm">⚡</span>
-          <span>Snitch in Flight</span>
-          {caughtCount > 0 && (
-            <span className="px-1.5 py-0.5 rounded-full bg-[#ffd700] text-[#1a1200] text-[10px] font-black">
-              +{caughtCount * 150} pts
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Celebratory Catch Notification Banner */}
+      {/* Clean Catch Notification Banner (No Emojis, No Gradients) */}
       {showCatchBanner && (
-        <div className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#181105] via-[#2f220a] to-[#181105] border-2 border-[#ffd700] text-[#fef9c3] shadow-[0_10px_40px_rgba(0,0,0,0.9),0_0_30px_rgba(255,215,0,0.4)] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none">
-          <p className="font-cinzel text-xs tracking-[0.25em] text-[#eab308] uppercase font-bold">
-            ✦ QUIDDITCH VICTORY ✦
+        <div className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-8 py-4 bg-[#0d0b08] border border-[#c9a84c]/60 shadow-[0_20px_60px_rgba(0,0,0,0.95)] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none">
+          <p className="font-cinzel text-[10px] tracking-widest text-[#a09278] uppercase font-bold mb-1">
+            Quidditch Victory
           </p>
-          <h3 className="font-gothic text-2xl text-[#fff8db] leading-none mt-0.5">
-            Golden Snitch Captured!
+          <h3 className="font-cinzel text-xl text-[#c9a84c] tracking-widest uppercase leading-none">
+            Snitch Captured!
           </h3>
-          <p className="text-xs font-serif text-[#fef08a] mt-1">
-            +150 House Points Awarded!
+          <p className="text-[10px] font-cinzel tracking-widest text-[#e8dcc8] mt-2 uppercase">
+            +{caughtCount * 150} Points
           </p>
         </div>
       )}

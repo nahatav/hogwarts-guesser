@@ -21,10 +21,10 @@ export const ScoreModal: React.FC<ScoreModalProps> = ({
     if (result.score >= 4200) {
       try {
         confetti({
-          particleCount: 70,
-          spread: 75,
-          origin: { y: 0.6 },
-          colors: ['#ffd700', '#121212', '#b37d22', '#ffffff'],
+          particleCount: 60,
+          spread: 70,
+          origin: { y: 0.5 },
+          colors: ['#c9a84c', '#e8dcc8', '#ffffff'],
         });
       } catch (e) {}
     }
@@ -33,76 +33,74 @@ export const ScoreModal: React.FC<ScoreModalProps> = ({
   const { location, score, distanceMeters, floorDelta, regionMatched } = result;
 
   return (
-    <div className="fixed top-6 left-6 z-30 max-w-md w-full bg-[#ded6c4] border-[3px] border-[#181818] shadow-[0_20px_60px_rgba(0,0,0,0.92)] p-4 sm:p-5 text-[#141414] font-serif animate-in fade-in slide-in-from-top-4 duration-300 relative">
-      {/* Corner filigrees */}
-      <span className="absolute top-1 left-1.5 text-xs text-[#181818]/60 select-none">❦</span>
-      <span className="absolute top-1 right-1.5 text-xs text-[#181818]/60 select-none">❦</span>
-      <span className="absolute bottom-1 left-1.5 text-xs text-[#181818]/60 select-none">❦</span>
-      <span className="absolute bottom-1 right-1.5 text-xs text-[#181818]/60 select-none">❦</span>
-
-      {/* Header */}
-      <div className="flex items-center justify-between border-b-2 border-[#181818] pb-2 mb-3">
-        <div className="flex items-center gap-2">
-          <Award className="w-4 h-4 text-[#b37d22]" />
-          <span className="font-cinzel text-xs font-bold tracking-widest uppercase text-[#181818]">
-            Round Assessment
-          </span>
-        </div>
-        <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#181818] text-[#ded6c4] font-cinzel font-bold">
-          Round {result.roundNumber}
-        </span>
-      </div>
-
-      {/* Location Name */}
-      <div className="mb-3">
-        <h2 className="font-headline text-3xl text-[#121212] tracking-wide leading-tight uppercase">
-          {location.name}
-        </h2>
-        <p className="text-xs font-cinzel text-[#444] mt-0.5 flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-[#b37d22]" />
-          <span>{formatRegionName(location.region)} • {location.floorName}</span>
-        </p>
-      </div>
-
-      {/* Score Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-3 bg-[#e8dfcf] p-3 rounded-lg border border-[#181818]/40">
-        <div>
-          <span className="text-[9px] font-cinzel text-[#555] uppercase tracking-wider block">Score Awarded</span>
-          <span className="font-headline text-3xl text-[#121212] tracking-wider">
-            +{score.toLocaleString()} <span className="text-xs font-sans text-[#777]">/ 5,000</span>
-          </span>
-        </div>
-
-        <div>
-          <span className="text-[9px] font-cinzel text-[#555] uppercase tracking-wider block">Distance Offset</span>
-          <span className="font-headline text-2xl text-[#121212] tracking-wide">
-            {regionMatched ? `${distanceMeters}m` : 'Wrong Realm'}
-          </span>
-          {floorDelta > 0 && (
-            <span className="text-[10px] font-cinzel font-bold text-amber-900 block">
-              ({floorDelta} floor{floorDelta > 1 ? 's' : ''} off)
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="w-full max-w-md bg-[#0d0b08] border border-[#c9a84c]/40 p-6 sm:p-8 shadow-[0_20px_60px_rgba(0,0,0,0.95)]">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[#c9a84c]/20 pb-3 mb-5">
+          <div className="flex items-center gap-2">
+            <Award className="w-4 h-4 text-[#c9a84c]" />
+            <span className="font-cinzel text-xs font-semibold tracking-widest uppercase text-[#e8dcc8]">
+              Round Assessment
             </span>
-          )}
+          </div>
+          <span className="text-[10px] px-2 py-0.5 border border-[#c9a84c]/30 text-[#a09278] font-cinzel font-bold tracking-widest uppercase">
+            Round {result.roundNumber}
+          </span>
         </div>
-      </div>
 
-      {/* Lore Snippet */}
-      <div className="mb-4 bg-[#e5ddd0] p-3 rounded-lg border-l-4 border-[#181818] text-xs font-newspaper text-[#262626] italic leading-relaxed">
-        <div className="flex items-center gap-1.5 font-bold not-italic font-cinzel text-[#181818] mb-1 text-[10px] uppercase tracking-wider">
-          <BookOpen className="w-3 h-3 text-[#b37d22]" />
-          <span>Hogwarts Archive:</span>
+        {/* Location Name */}
+        <div className="mb-6">
+          <h2 className="font-cinzel text-2xl text-[#e8dcc8] tracking-wide leading-tight uppercase">
+            {location.name}
+          </h2>
+          <p className="text-[11px] font-cinzel tracking-widest text-[#a09278] mt-1.5 flex items-center gap-1.5 uppercase">
+            <Compass className="w-3.5 h-3.5 text-[#c9a84c]" />
+            <span>{formatRegionName(location.region)} • {location.floorName}</span>
+          </p>
         </div>
-        "{location.loreSnippet}"
-      </div>
 
-      {/* Solid Black CTA Button matching RETURN TO HOGWARTS */}
-      <button
-        onClick={onNextRound}
-        className="w-full py-3 px-4 bg-[#121212] hover:bg-[#222] text-[#f7f2e7] font-headline text-xl tracking-widest uppercase transition-all duration-200 border-2 border-[#181818] shadow-md flex items-center justify-center gap-2 active:scale-[0.98]"
-      >
-        <span>{isLastRound ? 'View Final O.W.L. Results' : 'Proceed to Next Chamber'}</span>
-        <ArrowRight className="w-5 h-5 text-[#ffd700]" />
-      </button>
+        {/* Score Grid */}
+        <div className="grid grid-cols-2 gap-px bg-[#c9a84c]/20 border border-[#c9a84c]/20 mb-6">
+          <div className="bg-[#0d0b08] p-4 flex flex-col justify-center">
+            <span className="text-[9px] font-cinzel text-[#a09278] uppercase tracking-widest mb-1">Score Awarded</span>
+            <span className="font-cinzel text-2xl font-bold text-[#c9a84c] tracking-wider">
+              +{score.toLocaleString()}
+            </span>
+            <span className="text-[9px] font-cinzel text-[#5a4f3a] tracking-widest mt-0.5">/ 5,000</span>
+          </div>
+
+          <div className="bg-[#0d0b08] p-4 flex flex-col justify-center">
+            <span className="text-[9px] font-cinzel text-[#a09278] uppercase tracking-widest mb-1">Distance Offset</span>
+            <span className="font-cinzel text-xl text-[#e8dcc8] tracking-wide">
+              {regionMatched ? `${distanceMeters}m` : 'Wrong Realm'}
+            </span>
+            {floorDelta > 0 && (
+              <span className="text-[9px] font-cinzel text-[#a09278] tracking-widest mt-0.5">
+                ({floorDelta} floor{floorDelta > 1 ? 's' : ''} off)
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Lore Snippet */}
+        <div className="mb-6 p-4 border border-[#c9a84c]/20 text-[11px] font-serif text-[#a09278] italic leading-relaxed bg-[#14100c]">
+          <div className="flex items-center gap-1.5 font-bold not-italic font-cinzel text-[#c9a84c] mb-2 text-[9px] uppercase tracking-widest">
+            <BookOpen className="w-3 h-3" />
+            <span>Hogwarts Archive</span>
+          </div>
+          "{location.loreSnippet}"
+        </div>
+
+        {/* CTA */}
+        <button
+          onClick={onNextRound}
+          className="w-full py-3 bg-[#0c0a08] hover:bg-[#181410] border border-[#c9a84c]/50 hover:border-[#c9a84c] text-[#e8dcc8] font-cinzel font-semibold text-xs tracking-widest uppercase transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]"
+        >
+          <span>{isLastRound ? 'View Final Results' : 'Next Chamber'}</span>
+          <ArrowRight className="w-4 h-4 text-[#c9a84c]" />
+        </button>
+      </div>
     </div>
   );
 };

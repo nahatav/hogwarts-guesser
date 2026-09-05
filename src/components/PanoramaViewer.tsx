@@ -21,12 +21,12 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sphereMeshRef = useRef<THREE.Mesh | null>(null);
+  const meshRef = useRef<THREE.Mesh | null>(null);
   const textureRef = useRef<THREE.Texture | null>(null);
   const reqIdRef = useRef<number | null>(null);
   const textureLoaderRef = useRef<THREE.TextureLoader>(new THREE.TextureLoader());
 
-  // Camera orientation state (spherical coords)
+  // Camera orientation state
   const isUserInteractingRef = useRef<boolean>(false);
   const onPointerDownPointerXRef = useRef<number>(0);
   const onPointerDownPointerYRef = useRef<number>(0);
@@ -35,26 +35,23 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
 
   const lonRef = useRef<number>(location.initialYaw || 0);
   const latRef = useRef<number>(location.initialPitch || 0);
-  const fovRef = useRef<number>(75);
+  const fovRef = useRef<number>(55); // Start slightly zoomed in
 
   const [headingDegrees, setHeadingDegrees] = useState<number>(0);
   const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Reset orientation on location change
   useEffect(() => {
     lonRef.current = location.initialYaw || 0;
     latRef.current = location.initialPitch || 0;
-    fovRef.current = 75;
+    fovRef.current = 55;
   }, [location]);
 
-  // Track mouse for Lumos spotlight
   const handleMouseMove = (e: React.MouseEvent) => {
     setMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  // Helper to apply texture to sphere
   const applyTexture = (texture: THREE.Texture) => {
-    if (!sphereMeshRef.current) return;
+    if (!meshRef.current) return;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.minFilter = THREE.LinearFilter;
     texture.magFilter = THREE.LinearFilter;
@@ -68,27 +65,22 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
 
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      side: THREE.DoubleSide, // Ensure always visible from inside
+      side: THREE.DoubleSide,
     });
 
-    if (sphereMeshRef.current.material instanceof THREE.Material) {
-      sphereMeshRef.current.material.dispose();
+    if (meshRef.current.material instanceof THREE.Material) {
+      meshRef.current.material.dispose();
     }
-    sphereMeshRef.current.material = material;
+    meshRef.current.material = material;
   };
 
-  // Load real high-res online image texture or fallback to procedural canvas
   const loadLocationTexture = (loc: Location3D) => {
     const realImagePath = `/panoramas/${loc.id}.jpg`;
-
     textureLoaderRef.current.load(
       realImagePath,
-      (loadedTexture) => {
-        applyTexture(loadedTexture);
-      },
+      (loadedTexture) => applyTexture(loadedTexture),
       undefined,
       () => {
-        // Fallback to procedural generator if image file not loaded
         const panoCanvas = generateProceduralPanorama(loc);
         const canvasTexture = new THREE.CanvasTexture(panoCanvas);
         applyTexture(canvasTexture);
@@ -96,13 +88,11 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     );
   };
 
-  // Update texture on location change
   useEffect(() => {
-    if (!sceneRef.current || !sphereMeshRef.current) return;
+    if (!sceneRef.current || !meshRef.current) return;
     loadLocationTexture(location);
   }, [location]);
 
-  // Initialize Three.js WebGL Scene
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
@@ -112,7 +102,7 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(75, width / height, 1, 2000);
+    const camera = new THREE.PerspectiveCamera(55, width / height, 1, 2000);
     camera.position.set(0, 0, 0);
     cameraRef.current = camera;
 
@@ -124,26 +114,37 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    // Create 360 Sphere Geometry (radius 500)
-    const geometry = new THREE.SphereGeometry(500, 64, 32);
+    // Create a curved cylinder segment instead of a full sphere to prevent crazy warping
+    // params: radius, height, radialSegments, heightSegments, openEnded, thetaStart, thetaLength
+    // 120 degree field of view = Math.PI * (2/3)
+    const geometry = new THREE.CylinderGeometry(
+      500, 500, 600, 
+      64, 1, true, 
+      -Math.PI / 3, // Start at -60 deg
+      Math.PI * (2/3) // Span 120 deg
+    );
+    
     const initialMaterial = new THREE.MeshBasicMaterial({
-      color: 0x111111,
+      color: 0x080808,
       side: THREE.DoubleSide,
     });
 
-    const sphere = new THREE.Mesh(geometry, initialMaterial);
-    scene.add(sphere);
-    sphereMeshRef.current = sphere;
+    const cylinder = new THREE.Mesh(geometry, initialMaterial);
+    
+    // Scale X to mirror the texture so it renders correctly from inside
+    cylinder.scale.x = -1;
+    
+    scene.add(cylinder);
+    meshRef.current = cylinder;
 
-    // Load initial texture
     loadLocationTexture(location);
 
-    // Animation Loop
     const animate = () => {
       reqIdRef.current = requestAnimationFrame(animate);
 
-      // Clamp latitude to prevent flipping
-      latRef.current = Math.max(-85, Math.min(85, latRef.current));
+      // Clamp panning tightly so we don't look past the edges of the curved screen
+      latRef.current = Math.max(-25, Math.min(25, latRef.current));
+      lonRef.current = Math.max(-35, Math.min(35, lonRef.current));
       
       const phi = THREE.MathUtils.degToRad(90 - latRef.current);
       const theta = THREE.MathUtils.degToRad(lonRef.current);
@@ -154,7 +155,6 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
 
       camera.lookAt(targetX, targetY, targetZ);
       
-      // Update heading indicator
       const normalizedHeading = ((lonRef.current % 360) + 360) % 360;
       setHeadingDegrees(Math.round(normalizedHeading));
 
@@ -163,7 +163,6 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
 
     animate();
 
-    // Resize Handler
     const handleResize = () => {
       if (!containerRef.current || !rendererRef.current || !cameraRef.current) return;
       const w = containerRef.current.clientWidth || window.innerWidth;
@@ -185,7 +184,6 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     };
   }, []);
 
-  // Mouse & Touch Pan Interaction Listeners
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     isUserInteractingRef.current = true;
     onPointerDownPointerXRef.current = e.clientX;
@@ -198,21 +196,18 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     if (!isUserInteractingRef.current) return;
     const deltaX = e.clientX - onPointerDownPointerXRef.current;
     const deltaY = e.clientY - onPointerDownPointerYRef.current;
-    
-    // Smooth camera rotation
-    lonRef.current = onPointerDownLonRef.current - deltaX * 0.18;
-    latRef.current = onPointerDownLatRef.current + deltaY * 0.18;
+    lonRef.current = onPointerDownLonRef.current - deltaX * 0.12;
+    latRef.current = onPointerDownLatRef.current + deltaY * 0.12;
   };
 
   const onPointerUp = () => {
     isUserInteractingRef.current = false;
   };
 
-  // Scroll to Zoom
   const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!cameraRef.current) return;
-    const newFov = Math.max(35, Math.min(100, fovRef.current + e.deltaY * 0.05));
+    const newFov = Math.max(25, Math.min(80, fovRef.current + e.deltaY * 0.05));
     fovRef.current = newFov;
     cameraRef.current.fov = newFov;
     cameraRef.current.updateProjectionMatrix();
@@ -220,14 +215,14 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
 
   const zoomIn = useCallback(() => {
     if (!cameraRef.current) return;
-    fovRef.current = Math.max(35, fovRef.current - 12);
+    fovRef.current = Math.max(25, fovRef.current - 10);
     cameraRef.current.fov = fovRef.current;
     cameraRef.current.updateProjectionMatrix();
   }, []);
 
   const zoomOut = useCallback(() => {
     if (!cameraRef.current) return;
-    fovRef.current = Math.min(100, fovRef.current + 12);
+    fovRef.current = Math.min(80, fovRef.current + 10);
     cameraRef.current.fov = fovRef.current;
     cameraRef.current.updateProjectionMatrix();
   }, []);
@@ -236,8 +231,8 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
     lonRef.current = location.initialYaw || 0;
     latRef.current = location.initialPitch || 0;
     if (cameraRef.current) {
-      fovRef.current = 75;
-      cameraRef.current.fov = 75;
+      fovRef.current = 55;
+      cameraRef.current.fov = 55;
       cameraRef.current.updateProjectionMatrix();
     }
   }, [location]);
@@ -252,89 +247,82 @@ export const PanoramaViewer: React.FC<PanoramaViewerProps> = ({
       onMouseMove={handleMouseMove}
       onWheel={onWheel}
     >
-      {/* WebGL Container */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-      {/* Lumos Dark Mode Spotlight Overlay */}
+      {/* Lumos Dark Mode Spotlight */}
       {lumosActive && (
         <div 
           className="absolute inset-0 pointer-events-none transition-opacity duration-300"
           style={{
-            background: `radial-gradient(circle 240px at ${mousePos.x}px ${mousePos.y}px, rgba(255,248,220,0.05) 0%, rgba(10,12,24,0.85) 60%, rgba(0,0,0,0.98) 100%)`,
+            background: `radial-gradient(circle 240px at ${mousePos.x}px ${mousePos.y}px, rgba(255,248,220,0.02) 0%, rgba(8,8,12,0.92) 60%, rgba(0,0,0,0.98) 100%)`,
             boxShadow: `inset 0 0 100px rgba(0,0,0,0.95)`
           }}
         >
-          {/* Wand tip glow cursor */}
           <div 
-            className="absolute w-6 h-6 -ml-3 -mt-3 rounded-full bg-cyan-200/80 blur-sm pointer-events-none animate-pulse"
+            className="absolute w-4 h-4 -ml-2 -mt-2 rounded-full bg-[#e8dcc8]/60 blur-[2px] pointer-events-none animate-pulse"
             style={{ left: mousePos.x, top: mousePos.y }}
           />
         </div>
       )}
 
-      {/* Floating HUD Controls */}
-      <div className="absolute top-6 left-6 z-20 flex items-center gap-3">
-        {/* Magical Compass */}
+      {/* Left HUD Controls (Compass + Lumos) */}
+      <div className="absolute top-20 left-4 z-20 flex flex-col items-center gap-3">
         <div 
-          className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#1c1815]/85 border border-[#d4af37]/60 shadow-[0_0_15px_rgba(212,175,55,0.25)] backdrop-blur-md"
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-[#0d0b08]/80 border border-[#c9a84c]/30 shadow-[0_4px_16px_rgba(0,0,0,0.7)] backdrop-blur-sm"
           title={`Heading: ${headingDegrees}°`}
         >
           <div 
-            className="w-full h-full flex items-center justify-center transition-transform duration-75"
+            className="transition-transform duration-75"
             style={{ transform: `rotate(${-headingDegrees}deg)` }}
           >
-            <Compass className="w-8 h-8 text-[#d4af37]" />
+            <Compass className="w-6 h-6 text-[#c9a84c]" />
           </div>
-          <span className="absolute -bottom-5 text-[10px] tracking-widest text-[#d4af37] font-serif font-bold uppercase">
-            {headingDegrees}°
-          </span>
         </div>
 
-        {/* Lumos Spell Toggle Button */}
         {onLumosToggle && (
           <button
             onClick={onLumosToggle}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs font-serif tracking-wide transition-all backdrop-blur-md shadow-lg ${
+            className={`flex items-center justify-center w-11 h-11 rounded-full border shadow-[0_4px_16px_rgba(0,0,0,0.7)] backdrop-blur-sm transition-colors duration-150 ${
               lumosActive
-                ? 'bg-[#d4af37]/90 text-black border-[#ffd700] shadow-[0_0_20px_rgba(255,215,0,0.6)]'
-                : 'bg-[#1c1815]/80 text-[#e6d5b8] border-[#8c734b]/60 hover:border-[#d4af37] hover:text-[#d4af37]'
+                ? 'bg-[#c9a84c]/90 text-black border-[#c9a84c]'
+                : 'bg-[#0d0b08]/80 text-[#a09278] border-[#c9a84c]/30 hover:border-[#c9a84c]/60 hover:text-[#e8dcc8]'
             }`}
+            title={lumosActive ? 'Nox (Disable)' : 'Lumos (Focus)'}
           >
-            <Sparkles className="w-4 h-4 text-current animate-spin" style={{ animationDuration: '6s' }} />
-            <span>{lumosActive ? 'Nox (Disable)' : 'Lumos (Focus)'}</span>
+            <Sparkles className="w-5 h-5" />
           </button>
         )}
       </div>
 
-      {/* Right Zoom / Reset Controls */}
-      <div className="absolute top-6 right-6 z-20 flex flex-col gap-2">
+      {/* Right HUD Controls (Zoom + Reset) */}
+      <div className="absolute top-20 right-4 z-20 flex flex-col gap-2">
         <button
           onClick={zoomIn}
-          className="p-2.5 rounded-lg bg-[#1c1815]/85 border border-[#8c734b]/60 text-[#d4af37] hover:bg-[#2e261f] hover:border-[#d4af37] transition shadow-md backdrop-blur-sm"
+          className="w-10 h-10 flex items-center justify-center rounded-sm bg-[#0d0b08]/80 border border-[#c9a84c]/30 text-[#a09278] hover:text-[#e8dcc8] hover:border-[#c9a84c]/60 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] transition-colors duration-150"
           title="Zoom In"
         >
-          <ZoomIn className="w-5 h-5" />
+          <ZoomIn className="w-4 h-4" />
         </button>
         <button
           onClick={zoomOut}
-          className="p-2.5 rounded-lg bg-[#1c1815]/85 border border-[#8c734b]/60 text-[#d4af37] hover:bg-[#2e261f] hover:border-[#d4af37] transition shadow-md backdrop-blur-sm"
+          className="w-10 h-10 flex items-center justify-center rounded-sm bg-[#0d0b08]/80 border border-[#c9a84c]/30 text-[#a09278] hover:text-[#e8dcc8] hover:border-[#c9a84c]/60 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] transition-colors duration-150"
           title="Zoom Out"
         >
-          <ZoomOut className="w-5 h-5" />
+          <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={resetOrientation}
-          className="p-2.5 rounded-lg bg-[#1c1815]/85 border border-[#8c734b]/60 text-[#d4af37] hover:bg-[#2e261f] hover:border-[#d4af37] transition shadow-md backdrop-blur-sm"
+          className="w-10 h-10 flex items-center justify-center rounded-sm bg-[#0d0b08]/80 border border-[#c9a84c]/30 text-[#a09278] hover:text-[#e8dcc8] hover:border-[#c9a84c]/60 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] transition-colors duration-150 mt-1"
           title="Reset Camera View"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Hint / Instructions subtle overlay */}
-      <div className="absolute bottom-6 left-6 z-20 pointer-events-none opacity-70 hover:opacity-100 transition-opacity">
-        <p className="text-[12px] font-serif tracking-wider text-[#e6d5b8] bg-[#141210]/80 px-3 py-1.5 rounded-md border border-[#8c734b]/40 backdrop-blur-sm">
-          ✦ Click & Drag to look around 360° | Scroll to Zoom
+      {/* Subtle Hint */}
+      <div className="absolute bottom-6 left-6 z-20 pointer-events-none hidden sm:block">
+        <p className="text-[10px] font-cinzel tracking-widest text-[#a09278] uppercase drop-shadow-md">
+          Drag to explore • Scroll to zoom
         </p>
       </div>
     </div>

@@ -18,71 +18,71 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState, onNewGame, on
     if (!muted) sound.playTick();
   };
 
-  const roundLabel = gameState.mode === 'owl_streak' ? `${gameState.streakCount} 🔥` : `${gameState.currentRound} / ${gameState.totalRounds}`;
+  const roundLabel =
+    gameState.mode === 'owl_streak'
+      ? `${gameState.streakCount}`
+      : `${gameState.currentRound} / ${gameState.totalRounds}`;
+
+  const roundCaption = gameState.mode === 'owl_streak' ? 'Streak' : 'Round';
 
   return (
     <header className="fixed top-3 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
-      {/* Left: Player Name & Score in Broadsheet Parchment */}
+
+      {/* Left: player name + score */}
       <div className="flex items-center gap-2 pointer-events-auto">
-        <div
-          className="px-3 py-1.5 rounded-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] flex items-center gap-1.5"
-          title="Active Explorer"
-        >
-          <span className="text-sm">⚡</span>
-          <span className="font-cinzel text-xs font-bold text-[#181818] tracking-wider max-w-[120px] sm:max-w-[160px] truncate">
+        {/* Player name pill */}
+        <div className="px-3 py-1.5 bg-[#0d0b08]/90 border border-[#c9a84c]/30 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] flex items-center">
+          <span className="font-cinzel text-xs font-semibold text-[#e8dcc8] tracking-wider max-w-[120px] sm:max-w-[160px] truncate">
             {gameState.playerName || 'The Chosen One'}
           </span>
         </div>
 
-        <div
-          className="px-3.5 py-1.5 rounded-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] text-center relative"
-        >
-          <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#555] uppercase leading-none">Score</p>
-          <p className="font-headline text-lg text-[#121212] tracking-wider leading-none mt-0.5">
+        {/* Score pill */}
+        <div className="px-3 py-1.5 bg-[#0d0b08]/90 border border-[#c9a84c]/30 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] text-center">
+          <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#7a6a50] uppercase leading-none">Score</p>
+          <p className="font-cinzel text-sm font-bold text-[#c9a84c] tracking-wider leading-none mt-0.5">
             {gameState.totalScore.toLocaleString()}
           </p>
         </div>
       </div>
 
-      {/* Center: Round / Streak Indicator in Broadsheet Parchment */}
-      <div
-        className="px-4 py-1.5 rounded-lg bg-[#ded6c4] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] text-center pointer-events-auto"
-      >
-        <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#555] uppercase leading-none">
-          {gameState.mode === 'owl_streak' ? 'Streak' : 'Round'}
+      {/* Center: round indicator */}
+      <div className="px-5 py-1.5 bg-[#0d0b08]/90 border border-[#c9a84c]/30 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] text-center pointer-events-auto">
+        <p className="text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#7a6a50] uppercase leading-none">
+          {roundCaption}
         </p>
-        <p className="font-headline text-lg text-[#121212] tracking-wider leading-none mt-0.5">
+        <p className="font-cinzel text-sm font-bold text-[#e8dcc8] tracking-wider leading-none mt-0.5">
           {roundLabel}
         </p>
       </div>
 
-      {/* Right: Sound Toggle + Rules Guide + Return to Home */}
-      <div className="flex items-center gap-2 pointer-events-auto">
-        {/* Rules button */}
+      {/* Right: icon buttons */}
+      <div className="flex items-center gap-1.5 pointer-events-auto">
+        {/* Rules */}
         <button
           onClick={onOpenRules}
-          className="p-2 rounded-lg bg-[#ded6c4] border-2 border-[#181818] text-[#121212] hover:bg-[#181818] hover:text-[#ded6c4] transition shadow-md"
+          className="p-2 bg-[#0d0b08]/90 border border-[#c9a84c]/30 text-[#a09278] hover:text-[#e8dcc8] hover:border-[#c9a84c]/60 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] transition-colors duration-150"
           title="Field Guide & Rules"
         >
-          <BookOpen className="w-4 h-4 text-[#b37d22]" />
+          <BookOpen className="w-4 h-4" />
         </button>
 
-        {/* Audio Toggle */}
+        {/* Audio */}
         <button
           onClick={toggleSound}
-          className="p-2 rounded-lg bg-[#ded6c4] border-2 border-[#181818] text-[#121212] hover:bg-[#181818] hover:text-[#ded6c4] transition shadow-md"
+          className="p-2 bg-[#0d0b08]/90 border border-[#c9a84c]/30 text-[#a09278] hover:text-[#e8dcc8] hover:border-[#c9a84c]/60 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] transition-colors duration-150"
           title={isMuted ? 'Unmute' : 'Mute'}
         >
-          {isMuted ? <VolumeX className="w-4 h-4 text-red-700" /> : <Volume2 className="w-4 h-4 text-emerald-800" />}
+          {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
         </button>
 
-        {/* Home Button */}
+        {/* Home */}
         <button
           onClick={onNewGame}
-          className="px-3.5 py-2 rounded-lg bg-[#121212] hover:bg-[#222] text-[#f7f2e7] border-2 border-[#181818] shadow-[0_4px_12px_rgba(0,0,0,0.7)] font-headline text-sm tracking-widest uppercase transition flex items-center gap-1.5 active:scale-95"
-          title="Return to Hogwarts Home Screen"
+          className="px-3.5 py-2 bg-[#0d0b08]/90 border border-[#c9a84c]/30 hover:border-[#c9a84c]/70 text-[#e8dcc8] hover:text-[#c9a84c] backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] font-cinzel text-xs tracking-widest uppercase transition-all duration-150 flex items-center gap-1.5 active:scale-[0.97]"
+          title="Return to home"
         >
-          <Home className="w-3.5 h-3.5 text-[#ffd700]" />
+          <Home className="w-3.5 h-3.5" />
           <span>Home</span>
         </button>
       </div>
