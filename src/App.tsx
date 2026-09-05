@@ -156,8 +156,6 @@ export function App() {
           <div className="w-full h-full">
             <PanoramaViewer
               location={gameState.currentLocation}
-              lumosActive={gameState.lumosActive}
-              onLumosToggle={() => setGameState(prev => ({ ...prev, lumosActive: !prev.lumosActive }))}
             />
           </div>
 

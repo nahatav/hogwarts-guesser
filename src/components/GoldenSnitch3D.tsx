@@ -5,9 +5,11 @@ import { sound } from '../utils/audio';
 
 interface GoldenSnitch3DProps {
   onSnitchCatch?: () => void;
+  isIntro?: boolean;
+  onIntroComplete?: () => void;
 }
 
-export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch }) => {
+export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, isIntro, onIntroComplete }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const [caughtCount, setCaughtCount] = useState<number>(0);
   const [showCatchBanner, setShowCatchBanner] = useState<boolean>(false);
@@ -27,6 +29,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
   const reqIdRef = useRef<number | null>(null);
   const isSpinningRef = useRef<boolean>(false);
   const spinProgressRef = useRef<number>(0);
+  const introCompleteCalledRef = useRef<boolean>(false);
 
   const handleCatch = useCallback(() => {
     sound.playWandWhoosh();
@@ -302,23 +305,59 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch })
       }
 
       const currentPos = snitchGroup.position;
-      currentPos.x += (targetX - currentPos.x) * 0.08;
-      currentPos.y += (targetY - currentPos.y) * 0.08;
-      currentPos.z += (targetZ - currentPos.z) * 0.08;
+
+      if (isIntro) {
+        // Intro Sequence Logic
+        // 0 to 2.5s: fly randomly
+        // 2.5s to 3.0s: move to center
+        // 3.0s to 3.2s: pop (scale up quickly)
+        // > 3.2s: hide and trigger onIntroComplete
+        if (elapsed < 2.5) {
+          currentPos.x += (targetX - currentPos.x) * 0.08;
+          currentPos.y += (targetY - currentPos.y) * 0.08;
+          currentPos.z += (targetZ - currentPos.z) * 0.08;
+        } else if (elapsed < 3.0) {
+          // Move to center (0,0,0) quickly
+          currentPos.x += (0 - currentPos.x) * 0.15;
+          currentPos.y += (0 - currentPos.y) * 0.15;
+          currentPos.z += (4 - currentPos.z) * 0.15; // move slightly closer to camera
+          
+          // Face forward
+          snitchGroup.rotation.y += (0 - snitchGroup.rotation.y) * 0.15;
+          snitchGroup.rotation.x += (0 - snitchGroup.rotation.x) * 0.15;
+          snitchGroup.rotation.z += (0 - snitchGroup.rotation.z) * 0.15;
+        } else if (elapsed < 3.2) {
+          // Pop effect
+          const popProgress = (elapsed - 3.0) / 0.2;
+          const scale = 1 + popProgress * 15; // scale up drastically
+          snitchGroup.scale.set(scale, scale, scale);
+        } else if (elapsed > 3.2) {
+          snitchGroup.visible = false;
+          if (onIntroComplete && !introCompleteCalledRef.current) {
+            introCompleteCalledRef.current = true;
+            onIntroComplete();
+          }
+        }
+      } else {
+        // Normal game flying logic
+        currentPos.x += (targetX - currentPos.x) * 0.08;
+        currentPos.y += (targetY - currentPos.y) * 0.08;
+        currentPos.z += (targetZ - currentPos.z) * 0.08;
+      }
 
       snitchPointLight.position.copy(currentPos);
 
       const velocity = new THREE.Vector3().subVectors(currentPos, prevPos);
       prevPos.copy(currentPos);
 
-      if (isSpinningRef.current) {
+      if (isSpinningRef.current && !isIntro) {
         spinProgressRef.current += 0.15;
         snitchGroup.rotation.y += 0.45;
         snitchGroup.rotation.x += 0.25;
         if (spinProgressRef.current > Math.PI * 4) {
           isSpinningRef.current = false;
         }
-      } else {
+      } else if (!isIntro || elapsed < 2.5) {
         const speed = velocity.length();
         if (speed > 0.001) {
           const targetRotY = Math.atan2(velocity.x, velocity.z);

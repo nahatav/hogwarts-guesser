@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GoldenSnitch3D } from './GoldenSnitch3D';
 import { sound } from '../utils/audio';
 
@@ -11,8 +11,9 @@ interface HogwartsHomePageProps {
 
 export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
   onStartGame,
-  onOpenRules,
 }) => {
+  const [introPhase, setIntroPhase] = useState<'video' | 'snitch' | 'done'>('video');
+
   const handlePlayClick = () => {
     sound.playWandWhoosh();
     onStartGame();
@@ -20,91 +21,46 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
 
   return (
     <div className="relative w-full h-screen overflow-hidden select-none bg-[#03070a]">
-      {/* Background: Hogwarts at night */}
-      <div
-        className="absolute inset-0 w-full h-full bg-cover bg-center"
-        style={{
-          backgroundImage: `url('${import.meta.env.BASE_URL}images/hogwarts-loading.jpg')`,
-          filter: 'brightness(0.88) contrast(1.06) saturate(0.9)',
-        }}
-      />
-
-      {/* Vignette — dark top + dark bottom */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `
-            linear-gradient(to bottom,
-              rgba(2,5,8,0.82) 0%,
-              rgba(2,5,8,0.10) 22%,
-              rgba(2,5,8,0.08) 65%,
-              rgba(2,5,8,0.92) 100%
-            )
-          `,
-        }}
-      />
-
-      {/* Flying Snitch */}
-      <div className="absolute inset-0 z-10 pointer-events-auto">
-        <GoldenSnitch3D />
-      </div>
-
-      {/* ── TOP NAV ─────────────────────────────────────────── */}
-      <header className="absolute top-0 inset-x-0 z-30 flex items-center justify-center px-8 sm:px-12 py-5 pointer-events-none mt-2">
-        {/* Center: minimal pill nav */}
-        <nav className="pointer-events-auto flex items-center gap-10 px-8 py-2.5 rounded-full bg-black/50 border border-[#c9a84c]/20 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.7)]">
-          <span className="font-cinzel text-sm font-semibold text-[#e8dcc8] tracking-widest cursor-default">
-            Home
-          </span>
-          <button
-            onClick={handlePlayClick}
-            className="font-cinzel text-sm font-semibold text-[#c9a84c] hover:text-[#e0c06a] tracking-widest transition-colors duration-150"
-          >
-            Play
-          </button>
-          <button
-            onClick={onOpenRules}
-            className="font-cinzel text-sm font-semibold text-[#a09278] hover:text-[#e8dcc8] tracking-widest transition-colors duration-150"
-          >
-            Guide
-          </button>
-        </nav>
-      </header>
-
-      {/* ── BOTTOM TITLE + CTA ──────────────────────────────── */}
-      <div className="absolute bottom-10 sm:bottom-14 inset-x-0 z-20 flex flex-col items-center text-center px-4 pointer-events-none">
-        {/* Game title — HarryP font, gold */}
-        <h1
-          className="font-harry select-none leading-none tracking-wider uppercase"
-          style={{
-            fontSize: 'clamp(3.2rem, 9vw, 7.5rem)',
-            color: '#d4af37',
-            textShadow: `
-              0 0 18px rgba(212,175,55,0.55),
-              0 0 60px rgba(180,140,30,0.25),
-              2px 4px 20px rgba(0,0,0,0.95)
-            `,
-            letterSpacing: '0.06em',
-          }}
+      
+      {/* PHASE 1: Video */}
+      {introPhase === 'video' && (
+        <video
+          autoPlay
+          muted
+          playsInline
+          onEnded={() => setIntroPhase('snitch')}
+          className="absolute inset-0 w-full h-full object-cover z-50 transform scale-125"
         >
-          Hogwarts Guesser
-        </h1>
+          <source src={`${import.meta.env.BASE_URL}videos/broom_fly.mp4`} type="video/mp4" />
+        </video>
+      )}
 
-        {/* Subtitle */}
-        <p className="font-cinzel text-[10px] sm:text-xs tracking-[0.22em] text-[#a09278] uppercase mt-3">
-          Panoramic Realm Geoguesser
-        </p>
+      {/* PHASE 2 & 3: White screen */}
+      {(introPhase === 'snitch' || introPhase === 'done') && (
+        <div className="absolute inset-0 z-0 bg-white" />
+      )}
 
-        {/* CTA button — clean, matte dark with gold border */}
-        <div className="mt-7 pointer-events-auto">
+      {/* Flying Snitch (Handles Phase 2 -> Phase 3 transition) */}
+      {introPhase === 'snitch' && (
+        <div className="absolute inset-0 z-10 pointer-events-auto">
+          <GoldenSnitch3D
+            isIntro={true}
+            onIntroComplete={() => setIntroPhase('done')}
+          />
+        </div>
+      )}
+
+      {/* PHASE 3: Done (Circle Play Button) */}
+      {introPhase === 'done' && (
+        <div className="absolute inset-0 z-20 animate-in fade-in zoom-in duration-500 flex items-center justify-center">
           <button
             onClick={handlePlayClick}
-            className="px-10 py-3 rounded-sm bg-[#0c0a08] hover:bg-[#181410] border border-[#c9a84c]/60 hover:border-[#c9a84c] text-[#e8dcc8] font-cinzel font-semibold text-sm tracking-[0.18em] uppercase shadow-[0_4px_20px_rgba(0,0,0,0.8)] hover:shadow-[0_4px_30px_rgba(212,175,55,0.18)] transition-all duration-200 active:scale-[0.97]"
+            className="w-24 h-24 rounded-full bg-[#c9a84c] hover:bg-[#d4af37] border-4 border-white text-white font-cinzel font-bold text-xl tracking-[0.1em] shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center"
           >
-            Cast Off &amp; Play
+            PLAY
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };

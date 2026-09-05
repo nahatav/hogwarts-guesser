@@ -166,22 +166,6 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                   onMouseEnter={() => setHoveredZone('Hogwarts Castle & Scottish Highlands (Click to zoom)')}
                   onMouseLeave={() => setHoveredZone(null)}
                   className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <circle cx="400" cy="265" r="35" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Hogwarts & Hogsmeade Station (Click to zoom)')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="570" y="580" width="230" height="340" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('London • King’s Cross, Diagon Alley & Ministry')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="805" y="590" width="165" height="350" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Burrow & Malfoy Manor')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="485" y="330" width="75" height="100" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Azkaban Prison Fortress')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
               </svg>
             </div>
           )}
@@ -193,64 +177,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 alt="Hogwarts Castle Floor Map"
                 className="w-full h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
               />
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-                <rect x="355" y="40" width="85" height="110" fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Potions Classroom")}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="520" y="40" width="95" height="110" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Slytherin Cavern & Chamber of Secrets')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="645" y="40" width="105" height="110" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Kitchens')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="285" y="160" width="210" height="110" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Great Hall')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="505" y="160" width="135" height="160" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Entrance Hall & Marble Staircases')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="590" y="285" width="115" height="95" fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Hospital Wing")}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="485" y="400" width="110" height="95" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Defense Against the Dark Arts')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="730" y="505" width="140" height="100" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Forbidden Corridor')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="275" y="610" width="355" height="95" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('The Hogwarts Library')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="265" y="720" width="220" height="130" fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Prefect's Bathroom")}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <circle cx="578" cy="868" r="60" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Gryffindor Tower')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <rect x="685" y="815" width="60" height="125" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Ravenclaw Tower')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <circle cx="838" cy="872" r="50" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Astronomy Tower')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-                <circle cx="925" cy="872" r="45" fill="transparent"
-                  onMouseEnter={() => setHoveredZone("Divination Classroom")}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
-              </svg>
+              {/* No hover zones inside Hogwarts per user request */}
             </div>
           )}
 
