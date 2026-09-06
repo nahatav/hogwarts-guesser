@@ -30,8 +30,8 @@ export function calculateWizardingScore(
   if (guess.mapLevel === 'castle') {
     if (!isCastleActual) {
       // Player guessed Hogwarts Castle, but location was outside in the wider world
-      const hogwartsWorldX = 600;
-      const hogwartsWorldY = 240;
+      const hogwartsWorldX = 625;
+      const hogwartsWorldY = 304;
       const targetX = actual.worldX ?? hogwartsWorldX;
       const targetY = actual.worldY ?? hogwartsWorldY;
       const dx = hogwartsWorldX - targetX;
@@ -82,14 +82,14 @@ export function calculateWizardingScore(
   }
 
   // Case 2: Player guessed on the Great Britain & World Map
-  const targetX = actual.worldX ?? (isCastleActual ? 600 : actual.x);
-  const targetY = actual.worldY ?? (isCastleActual ? 240 : actual.y);
+  const targetX = actual.worldX ?? (isCastleActual ? 625 : actual.x);
+  const targetY = actual.worldY ?? (isCastleActual ? 304 : actual.y);
   const dx = guess.x - targetX;
   const dy = guess.y - targetY;
   const rawDist = Math.sqrt(dx * dx + dy * dy);
 
   // Preset regional tolerance for landmarks on the overworld map
-  const worldTolerance = 25;
+  const worldTolerance = 35;
   let score = 0;
   let distanceMeters = 0;
 

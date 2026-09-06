@@ -21,7 +21,6 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
   const [currentLevel, setCurrentLevel] = useState<'world' | 'castle'>('world');
   const [activeGuess, setActiveGuess] = useState<PlayerGuess | null>(null);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [hoveredZone, setHoveredZone] = useState<string | null>(null);
   const mapCanvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
         return { x: g.x, y: g.y };
       } else {
         // Player guessed inside Hogwarts Castle -> pin on Hogwarts on the world map!
-        return { x: 600, y: 240 };
+        return { x: 625, y: 304 };
       }
     }
   }, [currentLevel, lastRoundResult, activeGuess]);
@@ -76,8 +75,8 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       return null;
     } else {
       // Current level is 'world'
-      const wx = loc.worldX ?? 600;
-      const wy = loc.worldY ?? 240;
+      const wx = loc.worldX ?? 625;
+      const wy = loc.worldY ?? 304;
       return { x: wx, y: wy, name: loc.name };
     }
   }, [currentLevel, lastRoundResult]);
@@ -91,24 +90,19 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
     const normX = Math.round((clickX / rect.width) * 1000);
     const normY = Math.round((clickY / rect.height) * 1000);
 
-    if (currentLevel === 'world') {
-      const isHogwartsInset = normX >= 535 && normX <= 725 && normY >= 40 && normY <= 390;
-      const isScotlandPin = normX >= 360 && normX <= 440 && normY >= 210 && normY <= 320;
-      if (isHogwartsInset || isScotlandPin) {
-        sound.playWandWhoosh();
-        setCurrentLevel('castle');
-        return;
-      }
-    }
-
     let region: WizardRegion = 'castle';
     if (currentLevel === 'world') {
       if (normX >= 570 && normX <= 800 && normY >= 580 && normY <= 920) {
         region = 'diagon_alley';
-      } else if (normX >= 535 && normX <= 725 && normY >= 40 && normY <= 390) {
-        region = 'grounds';
+      } else if (normX >= 535 && normX <= 725 && normY >= 40 && normY <= 450) {
+        // Inset 1: Scottish Highlands & Hogsmeade
+        if (normY >= 350) {
+          region = 'hogsmeade';
+        } else {
+          region = 'grounds';
+        }
       } else {
-        region = 'hogsmeade';
+        region = 'grounds';
       }
     } else {
       region = 'castle';
@@ -182,10 +176,11 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 setCurrentLevel('castle');
                 sound.playWandWhoosh();
               }}
-              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#4a2e14] hover:text-black hover:bg-[#dfcca4]/60 border border-[#784b1e]/30 text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
+              className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-sm text-[#4a2e14] hover:text-black hover:bg-[#dfcca4] border border-[#784b1e]/40 text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-all cursor-pointer shadow-xs bg-[#faf5e8]/90"
+              title="Inspect Hogwarts Castle Interior Floorplan"
             >
-              <ZoomIn className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              <span>Hogwarts</span>
+              <ZoomIn className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#781d1d]" />
+              <span className="text-[#781d1d]">🏰 Castle Floorplan</span>
             </button>
           )}
 
@@ -208,20 +203,12 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           style={{ display: 'inline-block' }}
         >
           {currentLevel === 'world' && (
-            <>
-              <img
-                src={`${import.meta.env.BASE_URL}maps/wizarding-world-map.jpg`}
-                alt="Wizarding World of Great Britain & Ireland"
-                className="max-w-full max-h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
-                style={{ height: '100%', width: 'auto' }}
-              />
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1000 1000" preserveAspectRatio="none">
-                <rect x="535" y="40" width="190" height="350" fill="transparent"
-                  onMouseEnter={() => setHoveredZone('Hogwarts Castle & Scottish Highlands (Click to zoom)')}
-                  onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#781d1d]/15 hover:stroke-[#781d1d] hover:stroke-1 cursor-pointer transition" />
-              </svg>
-            </>
+            <img
+              src={`${import.meta.env.BASE_URL}maps/wizarding-world-map.jpg`}
+              alt="Wizarding World of Great Britain & Ireland"
+              className="max-w-full max-h-full object-contain pointer-events-none select-none filter contrast-[1.04]"
+              style={{ height: '100%', width: 'auto' }}
+            />
           )}
 
           {currentLevel === 'castle' && (
@@ -284,13 +271,6 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 />
               )}
             </>
-          )}
-
-          {/* Hover Tooltip */}
-          {hoveredZone && (
-            <div className="absolute top-3 left-3 pointer-events-none bg-[#faf5e8]/95 text-[#16110b] px-2.5 py-1 rounded-sm text-[10px] font-cinzel font-bold tracking-wider border border-[#5c3a1e] shadow-md z-30 uppercase">
-              {hoveredZone}
-            </div>
           )}
         </div>
       </div>
