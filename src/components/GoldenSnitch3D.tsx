@@ -23,7 +23,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
   const trailRef = useRef<THREE.Points | null>(null);
   const trailPositionsRef = useRef<Float32Array | null>(null);
   const trailIndexRef = useRef<number>(0);
-  const mousePosRef = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
+  const mousePosRef = useRef<{ x: number; y: number; active: boolean; isMouse: boolean }>({ x: 0, y: 0, active: false, isMouse: false });
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const sphereMeshRef = useRef<THREE.Mesh | null>(null);
   const reqIdRef = useRef<number | null>(null);
@@ -428,25 +428,62 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
 
     // Mouse & Touch Tracking
     const handlePointerMove = (e: PointerEvent) => {
+      // Only track mouse hover evasion - NEVER repel from touch taps on mobile!
+      if (e.pointerType === 'touch') return;
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
       const ny = -(e.clientY / window.innerHeight) * 2 + 1;
-      mousePosRef.current = { x: nx, y: ny, active: true };
+      mousePosRef.current = { x: nx, y: ny, active: true, isMouse: true };
     };
 
-    const handlePointerDown = (e: PointerEvent) => {
-      if (!cameraRef.current || !snitchGroupRef.current || isExplodingRef.current) return;
-      const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = -(e.clientY / window.innerHeight) * 2 + 1;
+    // Robust Catch Check: Combines 3D raycasting with 2D screen-space pixel proximity
+    const tryCatchAtScreenCoord = (clientX: number, clientY: number, tolerancePx: number = 85) => {
+      if (!cameraRef.current || !snitchGroupRef.current || isExplodingRef.current) return false;
 
+      // 1. Raycast test
+      const nx = (clientX / window.innerWidth) * 2 - 1;
+      const ny = -(clientY / window.innerHeight) * 2 + 1;
       raycasterRef.current.setFromCamera(new THREE.Vector2(nx, ny), cameraRef.current);
       const intersects = raycasterRef.current.intersectObjects(snitchGroupRef.current.children, true);
       if (intersects.length > 0) {
         handleCatch();
+        return true;
+      }
+
+      // 2. 2D Screen-space proximity test (crucial for responsive mobile touch catching)
+      const snitchPos = new THREE.Vector3();
+      snitchGroupRef.current.getWorldPosition(snitchPos);
+      const projected = snitchPos.clone().project(cameraRef.current);
+
+      // Verify snitch is in front of camera
+      if (projected.z < 1.0) {
+        const snitchScreenX = (projected.x * 0.5 + 0.5) * window.innerWidth;
+        const snitchScreenY = (-(projected.y * 0.5) + 0.5) * window.innerHeight;
+        const dist = Math.hypot(clientX - snitchScreenX, clientY - snitchScreenY);
+
+        if (dist <= tolerancePx) {
+          handleCatch();
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    const handlePointerDown = (e: PointerEvent) => {
+      const tolerance = e.pointerType === 'touch' ? 95 : 55;
+      tryCatchAtScreenCoord(e.clientX, e.clientY, tolerance);
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches && e.touches.length > 0) {
+        const touch = e.touches[0];
+        tryCatchAtScreenCoord(touch.clientX, touch.clientY, 100);
       }
     };
 
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
 
     const handleResize = () => {
       if (!rendererRef.current || !cameraRef.current) return;
@@ -468,12 +505,20 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
 
       // Calculate visible frustum bounds at z = 0 based on camera FOV & aspect ratio
       const aspect = camera.aspect || (window.innerWidth / window.innerHeight);
+      const isPortrait = aspect < 1.0;
       const vHalfHeight = 24 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
       const vHalfWidth = vHalfHeight * aspect;
 
+      // In portrait (mobile phones), scale down slightly so the snitch and its wings fit comfortably
+      const targetScale = isPortrait ? 0.76 : 1.0;
+      if (!isExplodingRef.current) {
+        snitchGroup.scale.setScalar(targetScale);
+      }
+
       // Safe boundaries that keep the snitch body and wings well inside the screen frame
-      const maxBoundX = Math.max(2.4, vHalfWidth - 1.8);
-      const maxBoundY = Math.max(3.0, vHalfHeight - 2.5);
+      const wingBuffer = isPortrait ? 2.5 : 2.0;
+      const maxBoundX = Math.max(1.2, vHalfWidth - wingBuffer);
+      const maxBoundY = Math.max(2.8, vHalfHeight - 2.8);
 
       const t = elapsed * 0.85;
       const radiusX = maxBoundX * 0.75;
@@ -484,7 +529,8 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
       let targetY = Math.cos(t * 0.9) * radiusY + Math.sin(t * 2.1) * (radiusY * 0.22);
       let targetZ = Math.sin(t * 1.3) * radiusZ;
 
-      if (mousePosRef.current.active && cameraRef.current) {
+      // Mouse repulsion ONLY if using an actual mouse pointer (never on touch screens)
+      if (mousePosRef.current.active && mousePosRef.current.isMouse && cameraRef.current) {
         const mouseWorldX = mousePosRef.current.x * maxBoundX;
         const mouseWorldY = mousePosRef.current.y * maxBoundY;
         const dist = Math.hypot(targetX - mouseWorldX, targetY - mouseWorldY);
@@ -508,7 +554,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
         }
         const explodeProgress = (elapsed - explodeStartRef.current) / 0.35; // 350ms explosion
         if (explodeProgress < 1.0) {
-          const scale = 1 + explodeProgress * 22; // rapid explosion scale
+          const scale = targetScale * (1 + explodeProgress * 22); // rapid explosion scale
           snitchGroup.scale.set(scale, scale, scale);
           snitchPointLight.intensity = 4 + explodeProgress * 25;
         } else {
@@ -587,6 +633,7 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
       if (reqIdRef.current) cancelAnimationFrame(reqIdRef.current);
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       if (container && renderer.domElement && container.contains(renderer.domElement)) {
@@ -606,14 +653,17 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
       {/* Intro Prompt: Catch the Golden Snitch to Begin */}
       {isIntro && (
         <div 
-          className="fixed top-8 inset-x-0 mx-auto w-fit z-50 px-6 py-2.5 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-none shadow-xl"
+          className="fixed top-11 sm:top-8 inset-x-0 mx-auto w-fit max-w-[92vw] z-50 px-4 sm:px-6 py-2 sm:py-2.5 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-none shadow-xl select-none"
           style={{
             background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
             boxShadow: 'inset 0 0 20px rgba(120, 75, 30, 0.22), 0 15px 40px rgba(0, 0, 0, 0.85)',
           }}
         >
-          <p className="font-cinzel text-xs sm:text-sm font-bold tracking-[0.2em] text-[#16110b] uppercase">
+          <p className="font-cinzel text-[11px] sm:text-sm font-bold tracking-[0.14em] sm:tracking-[0.2em] text-[#16110b] uppercase">
             ✦ Catch the Golden Snitch to Begin ✦
+          </p>
+          <p className="font-cinzel text-[9px] sm:text-[10px] text-[#781d1d] font-semibold tracking-wider uppercase mt-0.5 sm:hidden">
+            Tap the Snitch to Enter Hogwarts
           </p>
         </div>
       )}
@@ -621,19 +671,19 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
       {/* Clean Catch Notification Banner (Only during normal game, not intro) */}
       {!isIntro && showCatchBanner && (
         <div 
-          className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-8 py-4 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none"
+          className="fixed top-14 sm:top-16 inset-x-0 mx-auto w-fit max-w-[92vw] z-50 px-5 sm:px-8 py-3 sm:py-4 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none"
           style={{
             background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
             boxShadow: 'inset 0 0 25px rgba(120, 75, 30, 0.22), 0 20px 60px rgba(0, 0, 0, 0.9)',
           }}
         >
-          <p className="font-cinzel text-[10px] tracking-widest text-[#614124] uppercase font-bold mb-1">
+          <p className="font-cinzel text-[9px] sm:text-[10px] tracking-widest text-[#614124] uppercase font-bold mb-1">
             Quidditch Victory
           </p>
-          <h3 className="font-cinzel font-bold text-xl text-[#781d1d] tracking-widest uppercase leading-none">
+          <h3 className="font-cinzel font-bold text-lg sm:text-xl text-[#781d1d] tracking-widest uppercase leading-none">
             Snitch Captured!
           </h3>
-          <p className="text-[10px] font-cinzel font-bold tracking-widest text-[#16110b] mt-2 uppercase">
+          <p className="text-[9px] sm:text-[10px] font-cinzel font-bold tracking-widest text-[#16110b] mt-1.5 sm:mt-2 uppercase">
             +{caughtCount * 150} Points
           </p>
         </div>

@@ -109,13 +109,13 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
       {/* PHASE 2: Official Ministry of Magic Legal Paper to Sign */}
       {introPhase === 'paper' && (
         <div 
-          className="absolute inset-0 z-40 flex items-center justify-center p-2 sm:p-5 overflow-y-auto animate-in fade-in duration-300"
+          className="fixed inset-0 z-40 overflow-y-auto overflow-x-hidden p-2.5 sm:p-6 flex flex-col items-center justify-start sm:justify-center animate-in fade-in duration-300"
           style={{
             background: 'radial-gradient(circle at center, #1e150f 0%, #0a0705 100%)',
           }}
         >
           <div 
-            className="w-full max-w-2xl p-4 sm:p-7 max-h-[94dvh] overflow-y-auto rounded-sm border-2 border-[#5c3a1e] relative shadow-2xl text-[#16110b]"
+            className="w-full max-w-2xl my-auto p-3.5 sm:p-7 rounded-sm border-2 border-[#5c3a1e] relative shadow-2xl text-[#16110b] shrink-0"
             style={{
               backgroundColor: '#f4ebd0',
               backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, rgba(120, 80, 40, 0.12) 28px)',
@@ -130,101 +130,101 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
               <img
                 src={`${import.meta.env.BASE_URL}images/ministry_letterhead.png`}
                 alt="The Ministry of Magic"
-                className="w-full max-w-sm sm:max-w-md mx-auto object-contain select-none pointer-events-none drop-shadow-xs"
+                className="w-full max-w-[210px] sm:max-w-md mx-auto object-contain select-none pointer-events-none drop-shadow-xs"
               />
             </div>
 
             {/* Department Header & Docket Metadata */}
-            <div className="text-center pb-2 mb-2 relative z-10 border-b border-[#8b5a2b]/30">
-              <p className="font-cinzel text-[8px] sm:text-[9.5px] font-bold text-[#a82424] tracking-[0.22em] uppercase">
+            <div className="text-center pb-1.5 sm:pb-2 mb-2 relative z-10 border-b border-[#8b5a2b]/30">
+              <p className="font-cinzel text-[7.5px] sm:text-[9.5px] font-bold text-[#a82424] tracking-[0.18em] sm:tracking-[0.22em] uppercase">
                 Department of Magical Education • Wizengamot Examinations Board
               </p>
-              <h1 className="font-cinzel font-bold text-base sm:text-xl text-[#16110b] tracking-[0.14em] uppercase mt-0.5">
+              <h1 className="font-cinzel font-bold text-sm sm:text-xl text-[#16110b] tracking-[0.12em] sm:tracking-[0.14em] uppercase mt-0.5">
                 Cartographic O.W.L. Examination Accord
               </h1>
-              <div className="flex items-center justify-center gap-3 mt-1 text-[8px] sm:text-[9px] font-cinzel text-[#614124] uppercase tracking-wider">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-3 mt-1 text-[7.5px] sm:text-[9px] font-cinzel text-[#614124] uppercase tracking-wider">
                 <span>Ref: MoM/OWL-742/1993</span>
-                <span>•</span>
+                <span className="hidden sm:inline">•</span>
                 <span className="text-[#a82424] font-bold">Classification: Mandatory</span>
-                <span>•</span>
+                <span className="hidden sm:inline">•</span>
                 <span>London, W.C.</span>
               </div>
             </div>
 
             {/* Preamble */}
-            <p className="font-serif italic text-xs sm:text-[13px] text-[#2c1d11] leading-relaxed mb-2.5 border-l-2 border-[#781d1d] pl-2.5 relative z-10">
+            <p className="font-serif italic text-[11px] sm:text-[13px] text-[#2c1d11] leading-snug sm:leading-relaxed mb-2 sm:mb-2.5 border-l-2 border-[#781d1d] pl-2 sm:pl-2.5 relative z-10">
               "I, the undersigned candidate, having presented myself before the Ministry of Magic Directorate of Cartography, do hereby solemnly covenant and submit to the official statutory regulations set forth hereunder:"
             </p>
 
             {/* Official Legal Articles / Examination Rules */}
-            <div className="space-y-2 mb-3 relative z-10">
+            <div className="space-y-1.5 sm:space-y-2 mb-2.5 sm:mb-3 relative z-10">
               <div 
-                className="p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
+                className="p-1.5 sm:p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
-                <strong className="font-cinzel text-[10.5px] sm:text-xs font-bold text-[#16110b] uppercase block">
+                <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
                   § 1. Spherical Reconnaissance (360° Vision)
                 </strong>
-                <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed mt-0.5">
+                <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
                   The examinee shall pan, tilt, and zoom through 360-degree panoramas to survey architectural nuances, terrain, and celestial headings across Great Britain.
                 </p>
               </div>
 
               <div 
-                className="p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
+                className="p-1.5 sm:p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
-                <strong className="font-cinzel text-[10.5px] sm:text-xs font-bold text-[#16110b] uppercase block">
+                <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
                   § 2. Consultation of the Marauder’s Record
                 </strong>
-                <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed mt-0.5">
+                <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
                   Pursuant to Ministerial Waiver, the examinee is authorized to consult the Marauder’s Map to cross-reference overworld realms and interior Hogwarts Castle chambers.
                 </p>
               </div>
 
               <div 
-                className="p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
+                className="p-1.5 sm:p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
-                <strong className="font-cinzel text-[10.5px] sm:text-xs font-bold text-[#16110b] uppercase block">
+                <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
                   § 3. Irrevocable Coordinate Affixture
                 </strong>
-                <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed mt-0.5">
+                <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
                   A single coordinate pin shall be cast to pinpoint the candidate’s location. Once confirmed with "Cast Guess", the submission is sealed in perpetuity before the Examiners.
                 </p>
               </div>
 
               <div 
-                className="p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
+                className="p-1.5 sm:p-2 border border-[#8b5a2b]/30 rounded-xs shadow-[inset_0_1px_3px_rgba(107,68,35,0.06)]"
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
-                <strong className="font-cinzel text-[10.5px] sm:text-xs font-bold text-[#16110b] uppercase block">
+                <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
                   § 4. Standardized Evaluation & Honors
                 </strong>
-                <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed mt-0.5">
+                <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
                   The examination comprises five (5) chambers. Candidates are awarded up to 5,000 marks per trial (25,000 aggregate), determining the grade of their O.W.L. Diploma.
                 </p>
               </div>
 
               <div 
-                className="p-2 border-2 border-[#781d1d]/40 rounded-xs shadow-[inset_0_1px_3px_rgba(120,29,29,0.08)]"
+                className="p-1.5 sm:p-2 border-2 border-[#781d1d]/40 rounded-xs shadow-[inset_0_1px_3px_rgba(120,29,29,0.08)]"
                 style={{ background: 'rgba(253, 245, 240, 0.92)' }}
               >
-                <strong className="font-cinzel text-[10.5px] sm:text-xs font-bold text-[#781d1d] uppercase block">
+                <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#781d1d] uppercase block">
                   § 5. The Seeker's Rite (Mandatory Execution)
                 </strong>
-                <p className="text-[10px] sm:text-[11px] text-[#541212] font-serif font-semibold leading-relaxed mt-0.5">
+                <p className="text-[9.5px] sm:text-[11px] text-[#541212] font-serif font-semibold leading-tight sm:leading-relaxed mt-0.5">
                   Pursuant to Educational Decree No. 104: To ratify this accord and activate the examination, the candidate must seize the Golden Snitch.
                 </p>
               </div>
             </div>
 
             {/* Candidate Signature & Execution Block ("Paper I'm Signing") */}
-            <div className="my-2.5 p-3 border-2 border-dashed border-[#8b5a2b]/40 bg-[#fdfbf7]/85 rounded-xs relative z-10 shadow-xs">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 items-end">
+            <div className="my-2 sm:my-2.5 p-2.5 sm:p-3 border-2 border-dashed border-[#8b5a2b]/40 bg-[#fdfbf7]/85 rounded-xs relative z-10 shadow-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3.5 items-end">
                 {/* Signature Field */}
                 <div>
-                  <label className="block text-[8.5px] font-cinzel font-bold text-[#614124] uppercase tracking-widest mb-1">
+                  <label className="block text-[8px] sm:text-[8.5px] font-cinzel font-bold text-[#614124] uppercase tracking-widest mb-1">
                     Candidate Signature (Inked Name)
                   </label>
                   <div className="relative border-b-2 border-[#16110b] pb-0.5">
@@ -238,7 +238,7 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
                       className="w-full pl-6 pr-2 bg-transparent font-serif italic text-base sm:text-lg font-bold text-[#161c2b] focus:outline-none placeholder:text-[#8b6b4a]/60"
                     />
                   </div>
-                  <p className="text-[8px] font-cinzel text-[#8b6540] uppercase tracking-widest mt-1">
+                  <p className="text-[7.5px] sm:text-[8px] font-cinzel text-[#8b6540] uppercase tracking-widest mt-0.5">
                     X Sign your candidate name above
                   </p>
                 </div>
@@ -246,26 +246,26 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
                 {/* Date & Official Stamp */}
                 <div className="flex items-center justify-between sm:justify-end gap-3 text-right">
                   <div className="text-left sm:text-right">
-                    <p className="text-[8px] font-cinzel font-bold text-[#614124] uppercase tracking-widest">
+                    <p className="text-[7.5px] sm:text-[8px] font-cinzel font-bold text-[#614124] uppercase tracking-widest">
                       Date of Ratification
                     </p>
-                    <p className="font-serif italic text-xs font-bold text-[#16110b]">
+                    <p className="font-serif italic text-[11px] sm:text-xs font-bold text-[#16110b]">
                       6 September, 1993
                     </p>
-                    <p className="text-[8px] font-cinzel text-[#8b6540]">
+                    <p className="text-[7.5px] sm:text-[8px] font-cinzel text-[#8b6540]">
                       Whitehall, London
                     </p>
                   </div>
 
                   {/* Circular Red Rubber Stamp */}
-                  <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full border-2 border-[#a82424] text-[#a82424] flex flex-col items-center justify-center p-1 transform -rotate-12 select-none shrink-0 shadow-xs">
-                    <span className="text-[6px] font-cinzel font-bold tracking-tighter uppercase leading-none text-center">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-full border-2 border-[#a82424] text-[#a82424] flex flex-col items-center justify-center p-0.5 sm:p-1 transform -rotate-12 select-none shrink-0 shadow-xs">
+                    <span className="text-[5.5px] sm:text-[6px] font-cinzel font-bold tracking-tighter uppercase leading-none text-center">
                       MINISTRY
                     </span>
-                    <span className="text-[7px] font-cinzel font-bold tracking-widest uppercase leading-none my-0.5 text-center">
+                    <span className="text-[6.5px] sm:text-[7px] font-cinzel font-bold tracking-widest uppercase leading-none my-0.5 text-center">
                       ★ O.W.L. ★
                     </span>
-                    <span className="text-[6px] font-cinzel font-bold tracking-tighter uppercase leading-none text-center">
+                    <span className="text-[5.5px] sm:text-[6px] font-cinzel font-bold tracking-tighter uppercase leading-none text-center">
                       APPROVED
                     </span>
                   </div>
@@ -276,18 +276,18 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
             {/* Sign & Ratify Button */}
             <button
               onClick={handlePlayClick}
-              className="w-full py-3 bg-[#2b1810] hover:bg-[#3e2418] border-2 border-[#5c3a1e] text-[#fbf8f0] font-cinzel font-bold text-xs sm:text-sm tracking-[0.2em] uppercase transition-all duration-150 flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] cursor-pointer mt-2.5 relative z-10"
+              className="w-full py-2.5 sm:py-3 bg-[#2b1810] hover:bg-[#3e2418] border-2 border-[#5c3a1e] text-[#fbf8f0] font-cinzel font-bold text-xs sm:text-sm tracking-[0.16em] sm:tracking-[0.2em] uppercase transition-all duration-150 flex items-center justify-center gap-2 shadow-xl active:scale-[0.98] cursor-pointer mt-2 sm:mt-2.5 relative z-10 touch-manipulation"
             >
               <span>Sign Accord & Release Snitch</span>
               <ArrowRight className="w-4 h-4 text-[#e8dcc8]" />
             </button>
 
             {/* Official Ministry Footer (Matching Reference Image) */}
-            <div className="text-center pt-2.5 mt-2 border-t border-[#8b5a2b]/25 relative z-10">
-              <p className="font-cinzel text-[8.5px] sm:text-[9.5px] tracking-[0.22em] text-[#a82424] font-bold uppercase">
+            <div className="text-center pt-2 sm:pt-2.5 mt-2 border-t border-[#8b5a2b]/25 relative z-10">
+              <p className="font-cinzel text-[8px] sm:text-[9.5px] tracking-[0.2em] sm:tracking-[0.22em] text-[#a82424] font-bold uppercase">
                 IMPORTANT MINISTRY OF MAGIC BUSINESS
               </p>
-              <p className="font-cinzel text-[7.5px] sm:text-[8.5px] text-[#4a3319] tracking-wider uppercase mt-0.5">
+              <p className="font-cinzel text-[7px] sm:text-[8.5px] text-[#4a3319] tracking-wider uppercase mt-0.5">
                 The Ministry of Magic, Deep Underground in Central Whitehall, London
               </p>
             </div>
@@ -295,9 +295,15 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
         </div>
       )}
 
-      {/* PHASE 3: White Screen with Flying Golden Snitch (Catch to Start) */}
+      {/* PHASE 3: Snitch Catching Page (Atmospheric Warm Antique Parchment Background) */}
       {introPhase === 'snitch' && (
-        <div className="absolute inset-0 z-10 pointer-events-auto bg-white cursor-pointer">
+        <div 
+          className="absolute inset-0 z-10 pointer-events-auto cursor-pointer touch-manipulation"
+          style={{
+            background: 'radial-gradient(ellipse at center, #faf6ee 0%, #f3ebd7 60%, #e6d7be 100%)',
+            boxShadow: 'inset 0 0 100px rgba(120, 75, 30, 0.12)',
+          }}
+        >
           <GoldenSnitch3D
             isIntro={true}
             onIntroComplete={onStartGame}
