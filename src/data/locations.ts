@@ -77,31 +77,7 @@ export const LOCATIONS: Location3D[] = [
       features: [{ type: 'fireplace', count: 1, color: '#ff4500' }]
     }
   },
-  {
-    id: 'slytherin-common-room',
-    name: 'Slytherin Common Room (Collegium Slitherinum)',
-    areaName: 'Basamentum et Dungeones • Dungeons',
-    region: 'castle',
-    floorLevel: -1,
-    floorName: 'Dungeons (B1)',
-    x: 552,
-    y: 89,
-    worldX: 600,
-    worldY: 240,
-    initialYaw: 0,
-    initialPitch: 0,
-    difficulty: 'Year 3 (Medium)',
-    description: 'A subterranean gothic common room carved from rough stone beneath the Black Lake, illuminated by greenish light, leather sofas, and a carved serpent fireplace mantle.',
-    loreSnippet: 'Located beneath the Black Lake, requiring passwords like "Pure-Blood". Harry and Ron sneaked in using Polyjuice Potion.',
-    hint: 'Subterranean stone chamber with greenish light, carved serpent mantle, and studded leather sofas.',
-    panoramaType: 'image',
-    panoramaTheme: {
-      skyColor: '#051810',
-      ambientColor: '#00fa9a',
-      fogColor: '#02120a',
-      features: [{ type: 'underwater_lake', count: 8, color: '#004d40' }]
-    }
-  },
+
   {
     id: 'ravenclaw-tower',
     name: 'Ravenclaw Tower (Bronze Eagle)',
@@ -127,31 +103,7 @@ export const LOCATIONS: Location3D[] = [
       features: [{ type: 'statues', count: 2, color: '#d4af37' }]
     }
   },
-  {
-    id: 'hufflepuff-basement',
-    name: 'Hufflepuff Basement & The Kitchens',
-    areaName: 'Basamentum et Dungeones • Kitchens Entrance',
-    region: 'castle',
-    floorLevel: -1,
-    floorName: 'Dungeons (B1)',
-    x: 684,
-    y: 89,
-    worldX: 600,
-    worldY: 240,
-    initialYaw: 0,
-    initialPitch: 0,
-    difficulty: 'Year 3 (Medium)',
-    description: 'Cozy, low-ceilinged round room reminiscent of a badger sett, filled with yellow hangings, polished copper, and hanging ferns.',
-    loreSnippet: 'Entered through a stack of barrels near the kitchen; tap the rhythm of "Helga Hufflepuff" on the second barrel from the bottom.',
-    hint: 'Warm earthen barrel arches, yellow banners, and hanging plants.',
-    panoramaType: 'image',
-    panoramaTheme: {
-      skyColor: '#2b2308',
-      ambientColor: '#ffd700',
-      fogColor: '#292005',
-      features: [{ type: 'shelves', count: 20, color: '#5c4033' }]
-    }
-  },
+
   {
     id: 'dumbledores-office',
     name: "Headmaster's Office & High Sanctum",
@@ -383,8 +335,8 @@ export const LOCATIONS: Location3D[] = [
   },
   {
     id: 'gringotts-vaults',
-    name: 'Gringotts Wizarding Bank & Minecarts',
-    areaName: 'Deep Subterranean London',
+    name: 'Gringotts Wizarding Bank (Marble Atrium)',
+    areaName: 'Diagon Alley, London',
     region: 'diagon_alley',
     floorLevel: -2,
     floorName: 'Subterranean Vaults',
@@ -395,9 +347,9 @@ export const LOCATIONS: Location3D[] = [
     initialYaw: 0,
     initialPitch: 0,
     difficulty: 'Year 3 (Medium)',
-    description: 'An underground labyrinth of speeding minecart rails over bottomless chasms, subterranean waterfalls, and dragon-guarded stone vaults.',
+    description: 'The grand marble banking hall with colossal crystal chandeliers, towering marble columns, and goblin tellers seated high at polished walnut desks weighing coins.',
     loreSnippet: 'The safest place in the world for anything you want to keep safe — guarded by Goblins and a Ukrainian Ironbelly dragon.',
-    hint: 'Imposing white marble facade and underground cavern minecart rails.',
+    hint: 'Colossal crystal chandelier hanging above rows of goblin tellers and marble columns.',
     panoramaType: 'image',
     panoramaTheme: {
       skyColor: '#0a0808',
@@ -435,8 +387,8 @@ export const LOCATIONS: Location3D[] = [
   // --- HOGSMEADE VILLAGE ---
   {
     id: 'hogsmeade-high-street',
-    name: 'Hogsmeade Village & High Street',
-    areaName: 'Hogsmeade Village',
+    name: 'Hogsmeade Station & Village',
+    areaName: 'Hogsmeade Valley',
     region: 'hogsmeade',
     floorLevel: 0,
     floorName: 'Ground Level',
@@ -447,9 +399,9 @@ export const LOCATIONS: Location3D[] = [
     initialYaw: 0,
     initialPitch: 0,
     difficulty: 'Year 1 (Easy)',
-    description: 'The cozy, picturesque wizarding village in winter with snow-covered thatched roofs, smoking stone chimneys, and Butterbeer pubs.',
-    loreSnippet: 'The only all-wizarding village in Britain. Madam Rosmerta serves warm Butterbeer to Hogwarts students here.',
-    hint: 'Snow-capped thatched cottage roofs, wooden tavern signs, and Butterbeer mugs.',
+    description: 'The picturesque railway station in the Scottish valley where the Hogwarts Express arrives, framed by the red passenger footbridge and distant views of Hogwarts Castle.',
+    loreSnippet: 'The only all-wizarding village in Britain. Students disembark here and first-years take the traditional boat ride.',
+    hint: 'Red passenger footbridge over the railway platform with Hogwarts Castle visible on the distant mountain.',
     panoramaType: 'image',
     panoramaTheme: {
       skyColor: '#1e293b',
