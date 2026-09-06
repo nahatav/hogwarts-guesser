@@ -109,24 +109,96 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     scene.add(snitchGroup);
     snitchGroupRef.current = snitchGroup;
 
+    // Procedural High-Resolution Engraved Filigree Bump Texture
+    const createSnitchBumpTexture = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      ctx.fillStyle = '#808080';
+      ctx.fillRect(0, 0, 1024, 512);
+
+      // Etched seam lines and concentric circles around wing sockets (x=256 and x=768, y=256)
+      ctx.strokeStyle = '#252525';
+      ctx.lineWidth = 4;
+
+      // Equator seam band
+      ctx.beginPath();
+      ctx.moveTo(0, 256);
+      ctx.lineTo(1024, 256);
+      ctx.stroke();
+
+      // Etched concentric decorative rings around sockets
+      [256, 768].forEach(cx => {
+        for (let r = 24; r <= 140; r += 20) {
+          ctx.lineWidth = r % 40 === 0 ? 3 : 1.5;
+          ctx.beginPath();
+          ctx.arc(cx, 256, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // Radiating notched compass gears
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 12) {
+          ctx.beginPath();
+          ctx.moveTo(cx + Math.cos(a) * 40, 256 + Math.sin(a) * 40);
+          ctx.lineTo(cx + Math.cos(a) * 75, 256 + Math.sin(a) * 75);
+          ctx.stroke();
+        }
+      });
+
+      // Etched Art Nouveau filigree swirls across hemispheres
+      ctx.lineWidth = 2.5;
+      for (let i = 0; i < 8; i++) {
+        const sx = i * 128 + 64;
+        ctx.beginPath();
+        ctx.moveTo(sx, 120);
+        ctx.bezierCurveTo(sx + 35, 80, sx + 50, 160, sx + 20, 220);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(sx, 392);
+        ctx.bezierCurveTo(sx - 35, 432, sx - 50, 352, sx - 20, 292);
+        ctx.stroke();
+      }
+
+      // Etched ancient inscription along equator
+      ctx.font = 'bold 15px serif';
+      ctx.fillStyle = '#222222';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✦ I OPEN AT THE CLOSE ✦', 512, 238);
+      ctx.fillText('✦ I OPEN AT THE CLOSE ✦', 512, 274);
+
+      const bumpTexture = new THREE.CanvasTexture(canvas);
+      bumpTexture.wrapS = THREE.RepeatWrapping;
+      bumpTexture.wrapT = THREE.ClampToEdgeWrapping;
+      return bumpTexture;
+    };
+
+    const bumpMap = createSnitchBumpTexture();
+
     // High detail Golden Sphere Body
-    const sphereGeo = new THREE.SphereGeometry(0.85, 128, 128); // Increased geometry detail
+    const sphereGeo = new THREE.SphereGeometry(0.85, 128, 128);
     const goldMat = new THREE.MeshStandardMaterial({
-      color: 0xc9a84c,
-      metalness: 1.0,
-      roughness: 0.15,
-      emissive: 0x221100,
-      emissiveIntensity: 0.2,
+      color: 0xdeb346,
+      metalness: 0.98,
+      roughness: 0.18,
+      bumpMap: bumpMap || undefined,
+      bumpScale: 0.045,
+      emissive: 0x301e06,
+      emissiveIntensity: 0.15,
     });
     const sphereMesh = new THREE.Mesh(sphereGeo, goldMat);
     snitchGroup.add(sphereMesh);
     sphereMeshRef.current = sphereMesh;
 
-    // Highly detailed Engraved Seam Rings & Runes
+    // Engraved Seam Rings in Burnished Bronze
     const seamMat = new THREE.MeshStandardMaterial({
-      color: 0x8c734b,
-      metalness: 0.9,
-      roughness: 0.3,
+      color: 0x966e35,
+      metalness: 0.92,
+      roughness: 0.28,
     });
 
     const createRing = (radius: number, tube: number, rx: number, ry: number, rz: number) => {
@@ -143,45 +215,126 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
     snitchGroup.add(createRing(0.855, 0.01, Math.PI / 4, -Math.PI / 4, 0)); // Diagonal 3
     snitchGroup.add(createRing(0.855, 0.01, -Math.PI / 4, -Math.PI / 4, 0)); // Diagonal 4
 
+    // Mechanical Wing Sockets & Pivot Gimbal
+    const socketMat = new THREE.MeshStandardMaterial({
+      color: 0x7a5522,
+      metalness: 0.95,
+      roughness: 0.35,
+    });
+    const pivotBallMat = new THREE.MeshStandardMaterial({
+      color: 0xd8c8a8,
+      metalness: 0.95,
+      roughness: 0.12,
+    });
+
+    const createSocket = (side: 1 | -1) => {
+      const socketGroup = new THREE.Group();
+      socketGroup.position.set(side * 0.82, 0.28, 0);
+
+      // Bezel collar ring
+      const bezel = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.024, 24, 48), socketMat);
+      bezel.rotation.y = Math.PI / 2;
+      socketGroup.add(bezel);
+
+      // Inner stepped cylinder collar
+      const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.08, 32), socketMat);
+      collar.rotation.z = Math.PI / 2;
+      socketGroup.add(collar);
+
+      // 6 Rivet studs
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const rivet = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 8), socketMat);
+        rivet.position.set(0, Math.cos(angle) * 0.17, Math.sin(angle) * 0.17);
+        socketGroup.add(rivet);
+      }
+
+      // Ball gimbal pivot
+      const pivotBall = new THREE.Mesh(new THREE.SphereGeometry(0.11, 24, 24), pivotBallMat);
+      socketGroup.add(pivotBall);
+
+      return socketGroup;
+    };
+
+    snitchGroup.add(createSocket(-1));
+    snitchGroup.add(createSocket(1));
+
     // Detailed Gossamer Feather Wing Shape
     const createWingShape = () => {
       const shape = new THREE.Shape();
       shape.moveTo(0, 0);
-      shape.bezierCurveTo(-0.5, 0.4, -1.5, 0.8, -3.0, 0.6);
-      shape.bezierCurveTo(-3.5, 0.5, -3.8, 0.2, -3.5, -0.1);
+      shape.bezierCurveTo(-0.6, 0.45, -1.6, 0.85, -3.2, 0.65);
+      shape.bezierCurveTo(-3.7, 0.55, -4.0, 0.25, -3.7, -0.08);
       
-      // Feathered edge indentations
-      shape.bezierCurveTo(-3.0, 0.0, -2.8, -0.2, -2.5, -0.1);
-      shape.bezierCurveTo(-2.2, -0.2, -2.0, -0.3, -1.8, -0.15);
-      shape.bezierCurveTo(-1.5, -0.3, -1.2, -0.4, -0.8, -0.2);
-      
-      shape.bezierCurveTo(-0.4, -0.1, -0.2, 0, 0, 0);
+      // Feathered scalloped edge indentations
+      shape.bezierCurveTo(-3.2, 0.02, -2.9, -0.22, -2.6, -0.1);
+      shape.bezierCurveTo(-2.3, -0.22, -2.0, -0.32, -1.8, -0.16);
+      shape.bezierCurveTo(-1.5, -0.32, -1.2, -0.42, -0.9, -0.2);
+      shape.bezierCurveTo(-0.5, -0.25, -0.2, -0.1, 0, 0);
       return shape;
     };
 
-    const wingGeo = new THREE.ShapeGeometry(createWingShape(), 32); // High detail curve
+    // Smaller Secondary Covert Feather Shape (Layer 2)
+    const createCovertWingShape = () => {
+      const shape = new THREE.Shape();
+      shape.moveTo(0, 0);
+      shape.bezierCurveTo(-0.4, 0.3, -1.0, 0.55, -1.8, 0.4);
+      shape.bezierCurveTo(-2.1, 0.35, -2.2, 0.15, -2.0, -0.05);
+      shape.bezierCurveTo(-1.6, -0.15, -1.2, -0.22, -0.7, -0.1);
+      shape.bezierCurveTo(-0.3, -0.12, -0.1, -0.05, 0, 0);
+      return shape;
+    };
+
+    const wingGeo = new THREE.ShapeGeometry(createWingShape(), 48);
+    const covertWingGeo = new THREE.ShapeGeometry(createCovertWingShape(), 32);
+
     const wingMat = new THREE.MeshStandardMaterial({
-      color: 0xe8dcc8,
-      roughness: 0.1,
-      metalness: 0.6,
+      color: 0xf5eedc,
+      roughness: 0.12,
+      metalness: 0.85,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.86,
+      side: THREE.DoubleSide,
+    });
+
+    const covertMat = new THREE.MeshStandardMaterial({
+      color: 0xe8dcc8,
+      roughness: 0.2,
+      metalness: 0.9,
+      transparent: true,
+      opacity: 0.82,
       side: THREE.DoubleSide,
     });
 
     // Left Wing Pivot Group
     const leftWingGroup = new THREE.Group();
-    leftWingGroup.position.set(-0.75, 0.35, 0);
+    leftWingGroup.position.set(-0.82, 0.28, 0);
+
+    // Primary long wing mesh
     const leftWingMesh = new THREE.Mesh(wingGeo, wingMat);
-    leftWingMesh.rotation.z = 0.2;
+    leftWingMesh.rotation.z = 0.18;
     leftWingGroup.add(leftWingMesh);
-    
-    // Add wing veins/ridges
-    const veinMat = new THREE.MeshBasicMaterial({ color: 0xc9a84c, transparent: true, opacity: 0.6 });
-    for (let i = 1; i <= 3; i++) {
-      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.005, 2.5), veinMat);
-      vein.position.set(-1.2, 0.3 - (i * 0.15), 0.01);
-      vein.rotation.z = Math.PI / 2 - (i * 0.1);
+
+    // Secondary overlapping covert wing mesh (mechanical feather layering)
+    const leftCovertMesh = new THREE.Mesh(covertWingGeo, covertMat);
+    leftCovertMesh.rotation.z = 0.14;
+    leftCovertMesh.position.set(0, 0, 0.02);
+    leftWingGroup.add(leftCovertMesh);
+
+    // Main curved quill rachis spine
+    const spineMat = new THREE.MeshStandardMaterial({ color: 0xb89240, metalness: 0.95, roughness: 0.2 });
+    const spine = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.006, 3.4, 16), spineMat);
+    spine.position.set(-1.6, 0.32, 0.015);
+    spine.rotation.z = Math.PI / 2 - 0.08;
+    leftWingMesh.add(spine);
+
+    // 6 Branching structural quill veins
+    const veinMat = new THREE.MeshBasicMaterial({ color: 0xb89240, transparent: true, opacity: 0.75 });
+    for (let i = 1; i <= 6; i++) {
+      const veinLen = 0.6 - (i * 0.06);
+      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.003, veinLen, 8), veinMat);
+      vein.position.set(-0.4 - (i * 0.45), 0.28 - (i * 0.1), 0.015);
+      vein.rotation.z = Math.PI / 2 - (i * 0.12);
       leftWingMesh.add(vein);
     }
     
@@ -190,17 +343,33 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
 
     // Right Wing Pivot Group (Mirrored)
     const rightWingGroup = new THREE.Group();
-    rightWingGroup.position.set(0.75, 0.35, 0);
+    rightWingGroup.position.set(0.82, 0.28, 0);
+
     const rightWingGeo = wingGeo.clone();
     rightWingGeo.scale(-1, 1, 1);
     const rightWingMesh = new THREE.Mesh(rightWingGeo, wingMat);
-    rightWingMesh.rotation.z = -0.2;
-    
-    // Add wing veins/ridges (mirrored)
-    for (let i = 1; i <= 3; i++) {
-      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.005, 2.5), veinMat);
-      vein.position.set(1.2, 0.3 - (i * 0.15), 0.01);
-      vein.rotation.z = -(Math.PI / 2 - (i * 0.1));
+    rightWingMesh.rotation.z = -0.18;
+    rightWingGroup.add(rightWingMesh);
+
+    const rightCovertGeo = covertWingGeo.clone();
+    rightCovertGeo.scale(-1, 1, 1);
+    const rightCovertMesh = new THREE.Mesh(rightCovertGeo, covertMat);
+    rightCovertMesh.rotation.z = -0.14;
+    rightCovertMesh.position.set(0, 0, 0.02);
+    rightWingGroup.add(rightCovertMesh);
+
+    // Mirrored spine
+    const rightSpine = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.006, 3.4, 16), spineMat);
+    rightSpine.position.set(1.6, 0.32, 0.015);
+    rightSpine.rotation.z = -(Math.PI / 2 - 0.08);
+    rightWingMesh.add(rightSpine);
+
+    // 6 Mirrored branching quill veins
+    for (let i = 1; i <= 6; i++) {
+      const veinLen = 0.6 - (i * 0.06);
+      const vein = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.003, veinLen, 8), veinMat);
+      vein.position.set(0.4 + (i * 0.45), 0.28 - (i * 0.1), 0.015);
+      vein.rotation.z = -(Math.PI / 2 - (i * 0.12));
       rightWingMesh.add(vein);
     }
 
@@ -433,6 +602,21 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
         ref={mountRef}
         className="fixed inset-0 z-30 pointer-events-none overflow-hidden"
       />
+
+      {/* Intro Prompt: Catch the Golden Snitch to Begin */}
+      {isIntro && (
+        <div 
+          className="fixed top-8 inset-x-0 mx-auto w-fit z-50 px-6 py-2.5 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-500 pointer-events-none shadow-xl"
+          style={{
+            background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
+            boxShadow: 'inset 0 0 20px rgba(120, 75, 30, 0.22), 0 15px 40px rgba(0, 0, 0, 0.85)',
+          }}
+        >
+          <p className="font-cinzel text-xs sm:text-sm font-bold tracking-[0.2em] text-[#16110b] uppercase">
+            ✦ Catch the Golden Snitch to Begin ✦
+          </p>
+        </div>
+      )}
 
       {/* Clean Catch Notification Banner (Only during normal game, not intro) */}
       {!isIntro && showCatchBanner && (
