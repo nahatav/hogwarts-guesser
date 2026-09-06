@@ -7,6 +7,7 @@ interface MaraudersMapProps {
   isRoundComplete: boolean;
   lastRoundResult: RoundResult | null;
   onGuessSubmit: (guess: PlayerGuess) => void;
+  onPendingGuessChange?: (guess: PlayerGuess | null) => void;
   disabled?: boolean;
 }
 
@@ -14,6 +15,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
   isRoundComplete,
   lastRoundResult,
   onGuessSubmit,
+  onPendingGuessChange,
   disabled = false,
 }) => {
   const [currentLevel, setCurrentLevel] = useState<'world' | 'castle'>('world');
@@ -35,9 +37,10 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       // Reset map size, level, and active guess for the new turn
       setIsExpanded(false);
       setActiveGuess(null);
+      onPendingGuessChange?.(null);
       setCurrentLevel('world');
     }
-  }, [isRoundComplete, lastRoundResult]);
+  }, [isRoundComplete, lastRoundResult, onPendingGuessChange]);
 
   // Compute player guess coordinates on the currently active map level
   const guessOnCurrentLevel = React.useMemo(() => {
@@ -120,6 +123,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
     };
 
     setActiveGuess(newGuess);
+    onPendingGuessChange?.(newGuess);
     sound.playMapStamp();
   };
 

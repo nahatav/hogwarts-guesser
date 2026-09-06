@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import type { GameState, PlayerGuess, RoundResult, Location3D } from './types/game';
 import { LOCATIONS } from './data/locations';
 import { calculateWizardingScore } from './utils/scoring';
 import { sound } from './utils/audio';
-import { PanoramaViewer } from './components/PanoramaViewer';
+import { LumosImageViewer } from './components/LumosImageViewer';
 import { MaraudersMap } from './components/MaraudersMap';
 import { GameHeader } from './components/GameHeader';
 import { ScoreModal } from './components/ScoreModal';
@@ -16,6 +16,12 @@ export function App() {
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
   const [showRules, setShowRules] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<RoundResult | null>(null);
+  const [pendingGuess, setPendingGuess] = useState<PlayerGuess | null>(null);
+  const pendingGuessRef = useRef<PlayerGuess | null>(null);
+
+  useEffect(() => {
+    pendingGuessRef.current = pendingGuess;
+  }, [pendingGuess]);
 
   useEffect(() => {
     sound.playThemeMusic();
@@ -50,18 +56,81 @@ export function App() {
     isGameOver: false,
     streakCount: 0,
     lumosActive: false,
-    timeRemaining: 0,
+    timeRemaining: 30,
   });
 
-  // Start / Reset Game
+  const handleGuessSubmit = useCallback((guess: PlayerGuess | null) => {
+    setGameState(prev => {
+      if (!prev.isGuessing || prev.isRoundComplete) return prev;
+
+      const timeTaken = Math.max(0, 30 - prev.timeRemaining);
+      const breakdown = calculateWizardingScore(guess, prev.currentLocation);
+      
+      const result: RoundResult = {
+        roundNumber: prev.currentRound,
+        location: prev.currentLocation,
+        guess,
+        score: breakdown.score,
+        distanceMeters: breakdown.distanceMeters,
+        floorDelta: breakdown.floorDelta,
+        regionMatched: breakdown.regionMatched,
+        timeTakenSeconds: timeTaken,
+      };
+
+      setLastResult(result);
+      setPendingGuess(null);
+      pendingGuessRef.current = null;
+
+      const newScore = prev.totalScore + breakdown.score;
+      const newResults = [...prev.roundResults, result];
+      const isOver = prev.currentRound >= prev.totalRounds;
+
+      return {
+        ...prev,
+        totalScore: newScore,
+        roundResults: newResults,
+        isGuessing: false,
+        isRoundComplete: true,
+        isGameOver: isOver,
+      };
+    });
+  }, []);
+
+  useEffect(() => {
+    if (showLandingPage || !gameState.isGuessing || gameState.isRoundComplete) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setGameState(prev => {
+        if (!prev.isGuessing || prev.isRoundComplete) return prev;
+        const nextTime = prev.timeRemaining - 1;
+
+        if (nextTime <= 0) {
+          clearInterval(interval);
+          setTimeout(() => {
+            const currentPin = pendingGuessRef.current;
+            handleGuessSubmit(currentPin);
+          }, 0);
+          return { ...prev, timeRemaining: 0 };
+        }
+
+        return { ...prev, timeRemaining: nextTime };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [showLandingPage, gameState.isGuessing, gameState.isRoundComplete, gameState.currentRound, handleGuessSubmit]);
+
   const startNewGame = useCallback(() => {
     const pool = [...LOCATIONS];
-    // Shuffle pool
     const shuffled = pool.sort(() => Math.random() - 0.5);
     const initialLocation = shuffled[0] || LOCATIONS[0];
 
     setDeck(shuffled);
     setLastResult(null);
+    setPendingGuess(null);
+    pendingGuessRef.current = null;
     setShowLandingPage(false);
 
     setGameState({
@@ -78,44 +147,10 @@ export function App() {
       isGameOver: false,
       streakCount: 0,
       lumosActive: false,
-      timeRemaining: 0,
+      timeRemaining: 30,
     });
   }, [playerName]);
 
-  // Handle Guess Submission from Marauder's Map
-  const handleGuessSubmit = (guess: PlayerGuess) => {
-    if (!gameState.isGuessing || gameState.isRoundComplete) return;
-
-    const breakdown = calculateWizardingScore(guess, gameState.currentLocation);
-    
-    const result: RoundResult = {
-      roundNumber: gameState.currentRound,
-      location: gameState.currentLocation,
-      guess,
-      score: breakdown.score,
-      distanceMeters: breakdown.distanceMeters,
-      floorDelta: breakdown.floorDelta,
-      regionMatched: breakdown.regionMatched,
-      timeTakenSeconds: 0,
-    };
-
-    setLastResult(result);
-
-    const newScore = gameState.totalScore + breakdown.score;
-    const newResults = [...gameState.roundResults, result];
-    const isOver = gameState.currentRound >= gameState.totalRounds;
-
-    setGameState(prev => ({
-      ...prev,
-      totalScore: newScore,
-      roundResults: newResults,
-      isGuessing: false,
-      isRoundComplete: true,
-      isGameOver: isOver,
-    }));
-  };
-
-  // Next Round Transition
   const handleNextRound = () => {
     if (gameState.isGameOver) {
       return;
@@ -126,6 +161,8 @@ export function App() {
 
     sound.playWandWhoosh();
     setLastResult(null);
+    setPendingGuess(null);
+    pendingGuessRef.current = null;
 
     setGameState(prev => ({
       ...prev,
@@ -134,12 +171,12 @@ export function App() {
       isGuessing: true,
       isRoundComplete: false,
       lumosActive: false,
+      timeRemaining: 30,
     }));
   };
 
   return (
     <div className="relative w-screen h-screen h-[100dvh] overflow-hidden bg-black font-serif select-none">
-      {/* Main Home Page with Cinematic Hogwarts Night, Floating Navbar & Large Hogwarts Guesser Title */}
       {showLandingPage ? (
         <HogwartsHomePage
           playerName={playerName}
@@ -149,29 +186,26 @@ export function App() {
         />
       ) : (
         <>
-          {/* Top HUD Game Header */}
           <GameHeader
             gameState={gameState}
             onNewGame={() => setShowLandingPage(true)}
             onOpenRules={() => setShowRules(true)}
           />
 
-          {/* Main 360° Photosphere Panorama Viewport */}
           <div className="w-full h-full">
-            <PanoramaViewer
+            <LumosImageViewer
               location={gameState.currentLocation}
             />
           </div>
 
-          {/* Interactive Marauder's Map Drawer */}
           <MaraudersMap
             isRoundComplete={gameState.isRoundComplete}
             lastRoundResult={lastResult}
             onGuessSubmit={handleGuessSubmit}
+            onPendingGuessChange={setPendingGuess}
             disabled={gameState.isRoundComplete || gameState.isGameOver}
           />
 
-          {/* Post-Round Score & Lore Reveal Modal */}
           {gameState.isRoundComplete && lastResult && !gameState.isGameOver && (
             <ScoreModal
               result={lastResult}

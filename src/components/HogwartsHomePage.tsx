@@ -163,10 +163,10 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
                 <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
-                  § 1. Spherical Reconnaissance (360° Vision)
+                  § 1. Lumos Wand Illumination (Darkened Chamber)
                 </strong>
                 <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
-                  The examinee shall pan, tilt, and zoom through 360-degree panoramas to survey architectural nuances, terrain, and celestial headings across Great Britain.
+                  The chamber is shrouded in magical darkness. The examinee shall tap or drag their wand across the frame to cast Lumos and illuminate architectural nuances, artifacts, and scenery.
                 </p>
               </div>
 
@@ -199,10 +199,10 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
                 style={{ background: 'rgba(251, 247, 238, 0.88)' }}
               >
                 <strong className="font-cinzel text-[10px] sm:text-xs font-bold text-[#16110b] uppercase block">
-                  § 4. Standardized Evaluation & Honors
+                  § 4. Standardized Evaluation & 30-Second Hourglass
                 </strong>
                 <p className="text-[9.5px] sm:text-[11px] text-[#4a3319] font-serif leading-tight sm:leading-relaxed mt-0.5">
-                  The examination comprises five (5) chambers. Candidates are awarded up to 5,000 marks per trial (25,000 aggregate), determining the grade of their O.W.L. Diploma.
+                  A strict thirty (30) second time limit applies per trial. When time expires, placed coordinates are automatically sealed. Candidates are awarded up to 5,000 marks per trial (25,000 aggregate).
                 </p>
               </div>
 

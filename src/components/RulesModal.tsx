@@ -1,5 +1,4 @@
-import React from 'react';
-import { X, Compass, Layers, Award, BookOpen, MapPin } from 'lucide-react';
+import { X, Sparkles, Timer, Layers, Award, BookOpen } from 'lucide-react';
 
 interface RulesModalProps {
   isOpen: boolean;
@@ -38,26 +37,26 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Instructions */}
-        <div className="space-y-3 relative z-10">
+        <div className="space-y-2.5 sm:space-y-3 relative z-10">
           <div 
-            className="flex items-start gap-3 p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
+            className="flex items-start gap-3 p-2.5 sm:p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
             style={{ background: '#fbf8f0' }}
           >
             <div className="mt-0.5">
-              <Compass className="w-3.5 h-3.5 text-[#781d1d]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#781d1d]" />
             </div>
             <div>
               <strong className="font-cinzel text-[11px] sm:text-xs font-bold text-[#16110b] uppercase tracking-wider block mb-0.5">
-                1. Explore in 360°
+                1. Cast Lumos to Illuminate
               </strong>
               <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed">
-                Click and drag (or swipe) to pan across the scene. Use your scroll wheel to look up and down, or pinch to zoom.
+                The chamber is enveloped in darkness. Tap or drag your finger/mouse across the scene to cast Lumos and illuminate the architecture, artifacts, and clues.
               </p>
             </div>
           </div>
 
           <div 
-            className="flex items-start gap-3 p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
+            className="flex items-start gap-3 p-2.5 sm:p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
             style={{ background: '#fbf8f0' }}
           >
             <div className="mt-0.5">
@@ -65,33 +64,33 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <strong className="font-cinzel text-[11px] sm:text-xs font-bold text-[#16110b] uppercase tracking-wider block mb-0.5">
-                2. Unfurl the Map
+                2. Unfurl the Marauder’s Map
               </strong>
               <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed">
-                Open the map in the bottom corner. Toggle between the Great Britain overworld map and the Hogwarts Castle floorplan.
+                Open the map in the corner to toggle between the Great Britain overworld realms and the detailed Hogwarts Castle cross-section floorplan.
               </p>
             </div>
           </div>
 
           <div 
-            className="flex items-start gap-3 p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
+            className="flex items-start gap-3 p-2.5 sm:p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
             style={{ background: '#fbf8f0' }}
           >
             <div className="mt-0.5">
-              <MapPin className="w-3.5 h-3.5 text-[#781d1d]" />
+              <Timer className="w-3.5 h-3.5 text-[#781d1d]" />
             </div>
             <div>
               <strong className="font-cinzel text-[11px] sm:text-xs font-bold text-[#16110b] uppercase tracking-wider block mb-0.5">
-                3. Drop Your Pin
+                3. 30-Second Ministerial Hourglass
               </strong>
               <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed">
-                Tap anywhere on the parchment map to drop your golden pin, then click "Cast Guess".
+                You have 30 seconds per chamber. Drop a pin on the map before time runs out. When the hourglass expires, your placed pin is automatically cast.
               </p>
             </div>
           </div>
 
           <div 
-            className="flex items-start gap-3 p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
+            className="flex items-start gap-3 p-2.5 sm:p-3 border border-[#784b1e]/30 rounded-sm shadow-[inset_0_1px_3px_rgba(107,68,35,0.1)]"
             style={{ background: '#fbf8f0' }}
           >
             <div className="mt-0.5">
@@ -99,10 +98,10 @@ export const RulesModal: React.FC<RulesModalProps> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <strong className="font-cinzel text-[11px] sm:text-xs font-bold text-[#16110b] uppercase tracking-wider block mb-0.5">
-                4. Scoring
+                4. Standardized Evaluation & Diploma
               </strong>
               <p className="text-[10px] sm:text-[11px] text-[#4a3319] font-serif leading-relaxed">
-                Earn up to 5,000 points per round. Closer guesses earn higher grades. Complete all rounds to earn your O.W.L. diploma.
+                Earn up to 5,000 marks per trial based on coordinate accuracy. Complete all five rounds to receive your official O.W.L. diploma.
               </p>
             </div>
           </div>
