@@ -17,7 +17,7 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
 }) => {
   const [introPhase, setIntroPhase] = useState<'video' | 'paper' | 'snitch'>('video');
   const [candidateName, setCandidateName] = useState<string>(playerName || 'The Chosen One');
-  const [zoomScale, setZoomScale] = useState<number>(1.05);
+  const [zoomScale, setZoomScale] = useState<number>(1.20);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Immediately start music as video/page mounts
@@ -51,7 +51,7 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
     applyPlaybackSpeed();
   };
 
-  // Gradually zoom in as video plays: end scale is 20% more zoomed in than the start (1.05 * 1.20 = 1.26)
+  // Video starts at 20% zoomed (1.20) and gradually zooms up to 40% (1.40) by the end
   const handleTimeUpdate = () => {
     if (!sound.isThemePlaying()) {
       sound.playThemeMusic();
@@ -62,8 +62,8 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
       }
       const duration = videoRef.current.duration || 1;
       const progress = Math.min(Math.max(videoRef.current.currentTime / duration, 0), 1);
-      // Gradually zoom in: starts at 1.05, ends at 1.05 * 1.20 = 1.26 (+20%)
-      setZoomScale(1.05 * (1 + progress * 0.20));
+      // Start already at 1.20 (20% zoomed) and go up to 1.40 (40% zoomed)
+      setZoomScale(1.20 + progress * 0.20);
     }
   };
 
@@ -77,10 +77,10 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
   return (
     <div className="relative w-full h-screen h-[100dvh] overflow-hidden select-none bg-black">
       
-      {/* PHASE 1: Video (1.25x speed with gradual 20% zoom-in) */}
+      {/* PHASE 1: Video (1.25x speed, starts at 20% zoom and goes up to 40% zoom, no skip) */}
       {introPhase === 'video' && (
         <div 
-          className="absolute inset-0 w-full h-full cursor-pointer z-50 overflow-hidden bg-black"
+          className="absolute inset-0 w-full h-full z-50 overflow-hidden bg-black"
           onPointerDown={handleVideoPlaying}
           onTouchStart={handleVideoPlaying}
           onClick={handleVideoPlaying}
@@ -103,18 +103,6 @@ export const HogwartsHomePage: React.FC<HogwartsHomePageProps> = ({
           >
             <source src={`${import.meta.env.BASE_URL}videos/broom_fly.mp4`} type="video/mp4" />
           </video>
-
-          {/* Skip button in top right */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              sound.playWandWhoosh();
-              setIntroPhase('paper');
-            }}
-            className="absolute top-4 right-4 z-50 px-3.5 py-1.5 bg-[#1a120b]/85 hover:bg-[#2b1810] border border-[#c9a84c]/60 text-[#f5eedc] font-cinzel text-[10px] font-bold tracking-widest uppercase rounded-sm cursor-pointer shadow-lg transition-colors"
-          >
-            Skip Intro ➔
-          </button>
         </div>
       )}
 
