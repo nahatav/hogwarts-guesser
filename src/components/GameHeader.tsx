@@ -21,9 +21,14 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
 
       {/* Left: Score only */}
       <div className="flex items-center pointer-events-auto">
-        <div className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#0d0b08]/90 border border-[#c9a84c]/30 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] text-center">
-          <p className="text-[8px] sm:text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#7a6a50] uppercase leading-none">Score</p>
-          <p className="font-cinzel text-xs sm:text-sm font-bold text-[#c9a84c] tracking-wider leading-none mt-0.5">
+        <div 
+          className="px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-sm border border-[#5c3a1e] text-center shadow-[inset_0_0_12px_rgba(120,75,30,0.18),0_6px_16px_rgba(0,0,0,0.6)]"
+          style={{
+            background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
+          }}
+        >
+          <p className="text-[8px] sm:text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#614124] uppercase leading-none">Score</p>
+          <p className="font-cinzel text-xs sm:text-sm font-bold text-[#16110b] tracking-wider leading-none mt-0.5">
             {gameState.totalScore.toLocaleString()}
           </p>
         </div>
@@ -31,11 +36,16 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ gameState }) => {
 
       {/* Center: round indicator */}
       <div className="pointer-events-auto">
-        <div className="px-3 py-1 sm:px-5 sm:py-1.5 bg-[#0d0b08]/90 border border-[#c9a84c]/30 backdrop-blur-sm shadow-[0_4px_16px_rgba(0,0,0,0.7)] text-center">
-          <p className="text-[8px] sm:text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#7a6a50] uppercase leading-none">
+        <div 
+          className="px-3 py-1 sm:px-5 sm:py-1.5 rounded-sm border border-[#5c3a1e] text-center shadow-[inset_0_0_12px_rgba(120,75,30,0.18),0_6px_16px_rgba(0,0,0,0.6)]"
+          style={{
+            background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
+          }}
+        >
+          <p className="text-[8px] sm:text-[9px] font-cinzel font-bold tracking-[0.2em] text-[#614124] uppercase leading-none">
             {roundCaption}
           </p>
-          <p className="font-cinzel text-xs sm:text-sm font-bold text-[#e8dcc8] tracking-wider leading-none mt-0.5">
+          <p className="font-cinzel text-xs sm:text-sm font-bold text-[#16110b] tracking-wider leading-none mt-0.5">
             {roundLabel}
           </p>
         </div>

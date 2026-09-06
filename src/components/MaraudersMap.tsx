@@ -131,17 +131,21 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
 
   return (
     <div 
-      className={`fixed z-30 transition-all duration-300 ease-out shadow-2xl rounded-sm border border-[#c9a84c]/40 bg-[#0d0b08] ${
+      className={`fixed z-30 transition-all duration-300 ease-out shadow-2xl rounded-sm border-2 border-[#5c3a1e] overflow-hidden ${
         isExpanded
           ? 'inset-2 sm:inset-auto sm:bottom-3 sm:right-3 w-auto sm:w-[96vw] sm:max-w-[1080px] h-auto sm:h-[88vh] sm:max-h-[790px]'
           : 'bottom-2 left-2 right-2 sm:left-auto sm:bottom-5 sm:right-5 w-auto sm:w-[420px] h-[34vh] max-h-[250px] sm:max-h-none sm:h-64 sm:hover:w-[480px] sm:hover:h-[310px]'
       }`}
       style={{
-        boxShadow: '0 20px 60px rgba(0,0,0,0.95)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.95), inset 0 0 20px rgba(120,75,30,0.15)',
+        background: '#eadeb8',
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-2.5 py-1.5 sm:px-4 sm:py-2 border-b border-[#c9a84c]/20 bg-[#0a0806]">
+      <div 
+        className="flex items-center justify-between px-2.5 py-1.5 sm:px-4 sm:py-2 border-b border-[#784b1e]/40"
+        style={{ background: 'linear-gradient(180deg, #faf5e8 0%, #ecdcb9 100%)' }}
+      >
         <div className="flex items-center gap-2 sm:gap-3 truncate">
           {currentLevel === 'castle' ? (
             <button
@@ -149,19 +153,19 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 setCurrentLevel('world');
                 sound.playWandWhoosh();
               }}
-              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors shrink-0"
+              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#4a2e14] hover:text-black hover:bg-[#dfcca4]/60 border border-[#784b1e]/30 text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors shrink-0 cursor-pointer shadow-xs"
             >
               <ArrowLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               <span>Great Britain</span>
             </button>
           ) : (
-            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-[#c9a84c] flex items-center gap-1 ml-0.5 truncate">
-              <span>✦</span> <span className="truncate">Wizarding World</span>
+            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-wider sm:tracking-widest uppercase text-[#16110b] flex items-center gap-1 ml-0.5 truncate">
+              <span className="text-[#781d1d]">✦</span> <span className="truncate">Wizarding World</span>
             </span>
           )}
 
           {currentLevel === 'castle' && (
-            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-[#a09278] hidden sm:inline">
+            <span className="font-cinzel font-bold text-[9px] sm:text-[10px] tracking-widest uppercase text-[#614124] hidden sm:inline">
               • Hogwarts Floorplan
             </span>
           )}
@@ -174,7 +178,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 setCurrentLevel('castle');
                 sound.playWandWhoosh();
               }}
-              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors"
+              className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-sm text-[#4a2e14] hover:text-black hover:bg-[#dfcca4]/60 border border-[#784b1e]/30 text-[9px] sm:text-[10px] font-cinzel font-bold uppercase tracking-wider sm:tracking-widest flex items-center gap-1 transition-colors cursor-pointer shadow-xs"
             >
               <ZoomIn className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               <span>Hogwarts</span>
@@ -183,7 +187,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1 rounded-sm text-[#a09278] hover:text-[#e8dcc8] hover:bg-[#181410] transition-colors"
+            className="p-1 rounded-sm text-[#4a2e14] hover:text-black hover:bg-[#dfcca4]/60 border border-[#784b1e]/30 transition-colors cursor-pointer shadow-xs"
             title={isExpanded ? 'Minimize Map' : 'Expand Map'}
           >
             {isExpanded ? <Minimize2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Maximize2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
@@ -192,7 +196,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       </div>
 
       {/* Map Body */}
-      <div className="flex h-[calc(100%-72px)] sm:h-[calc(100%-96px)] relative overflow-hidden bg-[#181410] items-center justify-center p-1 sm:p-2">
+      <div className="flex h-[calc(100%-72px)] sm:h-[calc(100%-96px)] relative overflow-hidden bg-[#e4d3ad] items-center justify-center p-1 sm:p-2">
         <div
           ref={mapCanvasRef}
           onClick={handleMapClick}
@@ -211,7 +215,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 <rect x="535" y="40" width="190" height="350" fill="transparent"
                   onMouseEnter={() => setHoveredZone('Hogwarts Castle & Scottish Highlands (Click to zoom)')}
                   onMouseLeave={() => setHoveredZone(null)}
-                  className="hover:fill-[#c9a84c]/10 hover:stroke-[#c9a84c] hover:stroke-1 cursor-pointer transition" />
+                  className="hover:fill-[#781d1d]/15 hover:stroke-[#781d1d] hover:stroke-1 cursor-pointer transition" />
               </svg>
             </>
           )}
@@ -236,9 +240,9 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
               }}
             >
               <div className="flex flex-col items-center">
-                <div className="w-3.5 h-3.5 rounded-full bg-[#c9a84c] border border-black shadow-md" />
-                <div className="w-[1px] h-3 bg-[#c9a84c]" />
-                <span className="mt-1 text-[8px] font-cinzel font-bold text-[#e8dcc8] bg-black/90 px-1.5 py-0.5 rounded-sm border border-[#c9a84c]/40 whitespace-nowrap shadow-sm">
+                <div className="w-3.5 h-3.5 rounded-full bg-[#781d1d] border border-black shadow-md" />
+                <div className="w-[1px] h-3 bg-[#781d1d]" />
+                <span className="mt-1 text-[8px] font-cinzel font-bold text-[#16110b] bg-[#faf5e8] px-1.5 py-0.5 rounded-sm border border-[#5c3a1e] whitespace-nowrap shadow-md">
                   {isRoundComplete ? 'Your Guess' : 'Selected Pin'}
                 </span>
               </div>
@@ -257,11 +261,11 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
                 }}
               >
                 <div className="flex flex-col items-center animate-in zoom-in duration-300">
-                  <div className="w-5 h-5 rounded-full bg-[#e8dcc8] border border-black shadow-md flex items-center justify-center">
-                    <Check className="w-3 h-3 text-black" />
+                  <div className="w-5 h-5 rounded-full bg-[#16110b] border border-black shadow-md flex items-center justify-center">
+                    <Check className="w-3 h-3 text-[#faf5e8]" />
                   </div>
-                  <div className="w-[1px] h-3 bg-[#e8dcc8]" />
-                  <span className="mt-1 text-[8px] font-cinzel font-bold text-black bg-[#e8dcc8] px-1.5 py-0.5 rounded-sm border border-black whitespace-nowrap shadow-sm">
+                  <div className="w-[1px] h-3 bg-[#16110b]" />
+                  <span className="mt-1 text-[8px] font-cinzel font-bold text-[#faf5e8] bg-[#16110b] px-1.5 py-0.5 rounded-sm border border-black whitespace-nowrap shadow-md">
                     {actualOnCurrentLevel.name}
                   </span>
                 </div>
@@ -280,7 +284,7 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
 
           {/* Hover Tooltip */}
           {hoveredZone && (
-            <div className="absolute top-3 left-3 pointer-events-none bg-black/90 text-[#e8dcc8] px-2.5 py-1 rounded-sm text-[10px] font-cinzel tracking-wider border border-[#c9a84c]/30 z-30 uppercase">
+            <div className="absolute top-3 left-3 pointer-events-none bg-[#faf5e8]/95 text-[#16110b] px-2.5 py-1 rounded-sm text-[10px] font-cinzel font-bold tracking-wider border border-[#5c3a1e] shadow-md z-30 uppercase">
               {hoveredZone}
             </div>
           )}
@@ -288,12 +292,15 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 h-11 sm:h-14 bg-[#0a0806] border-t border-[#c9a84c]/20 px-2.5 sm:px-4 flex items-center justify-between">
-        <div className="text-[9px] sm:text-[10px] font-cinzel tracking-wider sm:tracking-widest uppercase text-[#a09278] truncate mr-2">
+      <div 
+        className="absolute bottom-0 left-0 right-0 h-11 sm:h-14 border-t border-[#784b1e]/40 px-2.5 sm:px-4 flex items-center justify-between"
+        style={{ background: 'linear-gradient(180deg, #ecdcb9 0%, #faf5e8 100%)' }}
+      >
+        <div className="text-[9px] sm:text-[10px] font-cinzel tracking-wider sm:tracking-widest uppercase truncate mr-2 font-bold">
           {activeGuess ? (
-            <span className="text-[#c9a84c]">✦ Ready to cast</span>
+            <span className="text-[#781d1d]">✦ Ready to cast</span>
           ) : (
-            <span>
+            <span className="text-[#614124]">
               {currentLevel === 'world'
                 ? 'Drop pin on map'
                 : 'Click room to drop pin'}
@@ -305,10 +312,10 @@ export const MaraudersMap: React.FC<MaraudersMapProps> = ({
           <button
             onClick={handleSubmit}
             disabled={!activeGuess || disabled}
-            className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-sm font-cinzel text-[10px] sm:text-xs font-semibold tracking-wider sm:tracking-widest uppercase transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0 border ${
+            className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-sm font-cinzel text-[10px] sm:text-xs font-bold tracking-wider sm:tracking-widest uppercase transition-colors flex items-center gap-1.5 sm:gap-2 shrink-0 border ${
               activeGuess && !disabled
-                ? 'bg-[#0c0a08] hover:bg-[#181410] text-[#e8dcc8] border-[#c9a84c]/60 hover:border-[#c9a84c] cursor-pointer'
-                : 'bg-transparent text-[#5a4f3a] border-[#5a4f3a]/30 cursor-not-allowed'
+                ? 'bg-[#2b1810] hover:bg-[#3e2418] text-[#fbf8f0] border-[#5c3a1e] cursor-pointer shadow-md active:scale-[0.98]'
+                : 'bg-[#dfcca4]/40 text-[#8b6b4a] border-[#8b5a2b]/20 cursor-not-allowed'
             }`}
           >
             <Navigation className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -338,10 +345,10 @@ const FootprintsTrail: React.FC<{
         y1={`${startY}%`}
         x2={`${endX}%`}
         y2={`${endY}%`}
-        stroke="#c9a84c"
-        strokeWidth="1.5"
-        strokeDasharray="4 6"
-        className="opacity-60"
+        stroke="#781d1d"
+        strokeWidth="2"
+        strokeDasharray="4 5"
+        className="opacity-80"
       />
     </svg>
   );

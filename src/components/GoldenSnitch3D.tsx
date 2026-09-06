@@ -436,14 +436,20 @@ export const GoldenSnitch3D: React.FC<GoldenSnitch3DProps> = ({ onSnitchCatch, i
 
       {/* Clean Catch Notification Banner (Only during normal game, not intro) */}
       {!isIntro && showCatchBanner && (
-        <div className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-8 py-4 bg-[#0d0b08] border border-[#c9a84c]/60 shadow-[0_20px_60px_rgba(0,0,0,0.95)] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none">
-          <p className="font-cinzel text-[10px] tracking-widest text-[#a09278] uppercase font-bold mb-1">
+        <div 
+          className="fixed top-16 inset-x-0 mx-auto w-fit z-50 px-8 py-4 rounded-sm border-2 border-[#5c3a1e] text-center animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none"
+          style={{
+            background: 'linear-gradient(135deg, #faf5e8 0%, #f4ead2 50%, #eadbb6 100%)',
+            boxShadow: 'inset 0 0 25px rgba(120, 75, 30, 0.22), 0 20px 60px rgba(0, 0, 0, 0.9)',
+          }}
+        >
+          <p className="font-cinzel text-[10px] tracking-widest text-[#614124] uppercase font-bold mb-1">
             Quidditch Victory
           </p>
-          <h3 className="font-cinzel text-xl text-[#c9a84c] tracking-widest uppercase leading-none">
+          <h3 className="font-cinzel font-bold text-xl text-[#781d1d] tracking-widest uppercase leading-none">
             Snitch Captured!
           </h3>
-          <p className="text-[10px] font-cinzel tracking-widest text-[#e8dcc8] mt-2 uppercase">
+          <p className="text-[10px] font-cinzel font-bold tracking-widest text-[#16110b] mt-2 uppercase">
             +{caughtCount * 150} Points
           </p>
         </div>
